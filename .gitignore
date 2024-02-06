@@ -94,3 +94,5 @@ fmod_editor.log
 # Save Data Folder
 /[Aa]ssets/Save Data
 /[Aa]ssets/Save Data.meta
+
+\.idea/
