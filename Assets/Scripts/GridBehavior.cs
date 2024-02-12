@@ -11,8 +11,8 @@ public class GridBehavior : MonoBehaviour
     [SerializeField] private LayerMask _whatIsWall;
     
     [Header("Grid")]
-    [Tooltip("[Col, Row")]
-    [SerializeField] private NodeBasic[,] _grid;
+    [Tooltip("[Col, Row]")]
+    private NodeBasic[,] _grid;
 
     public NodeBasic StartNode;
     public NodeBasic EndNode;
@@ -20,16 +20,35 @@ public class GridBehavior : MonoBehaviour
     
     private int _columns;
     private int _rows;
+    
     // Para que el numero de filas y columnas sea 45x90 con unas celdas de 0.4m, el tamaño del grid debería de ser de 36x18m
 
     // public int Columns => _columns;
     // public int Rows => _rows;
-    public int Columns { get; private set; }
-    public int Rows { get; private set; }
+    
+    public int Columns
+    {
+        get { return _columns; }
+        private set { _columns = value; }
+    }
+
+    public int Rows
+    {
+        get { return _rows; }
+        private set { _rows = value; }
+    }
+
+    public GridBehavior(Vector2 nodeSize, Vector2 gridSize, LayerMask whatIsWall)
+    {
+        _nodeSize = nodeSize;
+        _gridSize = gridSize;
+        _whatIsWall = whatIsWall;
+    }
 
     void Awake()
     {
         CreateGrid();
+        CreateStage();
     }
 
     void Update()
@@ -43,8 +62,6 @@ public class GridBehavior : MonoBehaviour
         _columns = Mathf.FloorToInt(_gridSize.x / _nodeSize.x);
         _rows = Mathf.FloorToInt(_gridSize.y / _nodeSize.y);
         
-        Debug.Log(_rows + ", " +  _columns);
-
         Vector3 startingPosition = transform.position - new Vector3(_gridSize.x, 0f, _gridSize.y)/2f;
 
         _grid = new NodeBasic[_columns, _rows];
@@ -65,6 +82,12 @@ public class GridBehavior : MonoBehaviour
                 _grid[col, row] = new NodeBasic(col, row, nodePosition, isWall);
             }
         }
+    }
+
+    private void CreateStage()
+    {
+        RandomStage.CreateRandomStage(_rows, _columns, _nodeSize);
+        // RandomStage.CreateRandomScenario();
     }
 
     public NodeBasic GetNodeFromPosition(Vector3 pos)
