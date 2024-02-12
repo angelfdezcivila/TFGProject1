@@ -17,7 +17,7 @@ public class RandomStage
         return new Stage.Builder()
             .rows(_rows)
             .columns(_columns)
-            .cellDimension(_nodeSize)
+            .cellsDimension(_nodeSize)
             .build();
     }
 

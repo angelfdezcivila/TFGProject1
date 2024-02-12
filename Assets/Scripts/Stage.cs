@@ -24,35 +24,32 @@ public class Stage
         private GameObject _obstaclePrefab;
         private LayerMask _whatIsWall;
 
-        /// <param name="rows">Número de filas del escenario</param>
+        /// <param name="rows">Number of rows in stage</param>
         public Builder rows(int rows) {
             this._rows = rows;
             return this;
         }
         
-        /// <param name="columns">Número de columnas del escenario</param>
+        /// <param name="columns">Number of columns in stage</param>
         public Builder columns(int columns) {
             this._columns = columns;
             return this;
         }
 
-        /**
-         * @param cellDimension Cells are rectangles. Dimension (in meters) of both sides of a grid cell in stage.
-         */
-        public Builder cellDimension(Vector2 cellsDimension) {
+        /// <param name="cellsDimension">Dimension (in meters) of both sides of a cell</param>
+        public Builder cellsDimension(Vector2 cellsDimension) {
             this._cellsDimension = cellsDimension;
             return this;
         }
 
-        /**
-         * @param prefab of the obstacle
-         */
+        /// <param name="obstaclePrefab">Prefab of the obstacle</param>
         public Builder obstaclePrefab(GameObject obstaclePrefab)
         {
             this._obstaclePrefab = obstaclePrefab;
             return this;
         }
 
+        /// <param name="whatIsWall">Layers defined as obstacles</param>
         public Builder whatIsWall(LayerMask whatIsWall)
         {
             this._whatIsWall = whatIsWall;
