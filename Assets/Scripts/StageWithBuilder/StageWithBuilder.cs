@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class Stage
+public class StageWithBuilder
 {
     private GameObject _obstaclePrefab;
     private Vector2 _cellsDimension;
@@ -8,7 +8,7 @@ public class Stage
     private int _rows;
     private int _columns;
 
-    private Stage(GameObject obstaclePrefab, Vector2 cellsDimension, LayerMask whatIsWall, int rows, int columns)
+    private StageWithBuilder(GameObject obstaclePrefab, Vector2 cellsDimension, LayerMask whatIsWall, int rows, int columns)
     {
         _obstaclePrefab = obstaclePrefab;
         _cellsDimension = cellsDimension;
@@ -56,8 +56,8 @@ public class Stage
             return this;
         }
 
-        public Stage build() {
-            return new Stage(_obstaclePrefab, _cellsDimension, _whatIsWall, _rows, _columns);
+        public StageWithBuilder build() {
+            return new StageWithBuilder(_obstaclePrefab, _cellsDimension, _whatIsWall, _rows, _columns);
         }
     }
 }

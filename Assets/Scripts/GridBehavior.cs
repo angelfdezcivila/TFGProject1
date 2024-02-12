@@ -5,6 +5,8 @@ using UnityEngine;
 
 public class GridBehavior : MonoBehaviour
 {
+    public GameObject obstaclePrefab;
+    
     [Header("Parameters")] 
     [SerializeField] private Vector2 _nodeSize;
     [SerializeField] private Vector2 _gridSize;
@@ -86,8 +88,8 @@ public class GridBehavior : MonoBehaviour
 
     private void CreateStage()
     {
-        RandomStage.CreateRandomStage(_rows, _columns, _nodeSize);
-        // RandomStage.CreateRandomScenario();
+        // RandomStage.CreateRandomStage(_rows, _columns, _nodeSize);
+        Stage stage = new RandomStage(obstaclePrefab, _nodeSize, _whatIsWall, _rows, _columns);
     }
 
     public NodeBasic GetNodeFromPosition(Vector3 pos)
