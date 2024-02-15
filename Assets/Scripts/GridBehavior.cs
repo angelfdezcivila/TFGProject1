@@ -24,6 +24,8 @@ public class GridBehavior : MonoBehaviour
     private int _rows;
     
     // Para que el numero de filas y columnas sea 45x90 con unas celdas de 0.4m, el tamaño del grid debería de ser de 36x18m
+    
+    //Valores de prueba: 0.4x0.4m tamaño del nodo, y 30x20m el grid
 
     // public int Columns => _columns;
     // public int Rows => _rows;
@@ -81,7 +83,9 @@ public class GridBehavior : MonoBehaviour
                     new Vector3(_nodeSize.x, 1f, _nodeSize.y) / 2, 
                     Quaternion.identity, _whatIsWall);
 
-                _grid[col, row] = new NodeBasic(col, row, nodePosition, isWall);
+                NodeBasic.CellTypeEnum cellType = isWall? NodeBasic.CellTypeEnum.Obstacle : NodeBasic.CellTypeEnum.Floor;
+
+                _grid[col, row] = new NodeBasic(col, row, nodePosition, cellType);
             }
         }
     }
@@ -90,43 +94,6 @@ public class GridBehavior : MonoBehaviour
     {
         // RandomStage.CreateRandomStage(_rows, _columns, _nodeSize);
         Stage stage = new RandomStage(obstaclePrefab, _nodeSize, _whatIsWall, _rows, _columns);
-    }
-
-    public NodeBasic GetNodeFromPosition(Vector3 pos)
-    {
-        if (_grid == null)
-        {
-            Debug.LogWarning("[GridBehavior.cs]:: Grid has null reference when getting a Node from position");
-            return null;
-        }
-
-        int nodeColumnIndex = Mathf.FloorToInt((_gridSize.x/2f + pos.x) / _nodeSize.x);
-        int nodeRowIndex = Mathf.FloorToInt((_gridSize.y/2f + pos.z) / _nodeSize.y);
-
-        nodeColumnIndex = Mathf.Clamp(nodeColumnIndex, 0, _columns - 1);
-        nodeRowIndex = Mathf.Clamp(nodeRowIndex, 0, _rows - 1);
-
-        return _grid[nodeColumnIndex, nodeRowIndex];
-    }
-
-    public List<NodeBasic> GetNeighboursOfNode(NodeBasic node)
-    {
-        List<NodeBasic> _neighbours = new List<NodeBasic>();
-
-        if (node.ColumnIndex + 1 < _columns && !_grid[node.ColumnIndex + 1, node.RowIndex].isWall) // Derecha
-            _neighbours.Add(_grid[node.ColumnIndex + 1, node.RowIndex]);
-        
-        if (node.ColumnIndex - 1 > 0 && !_grid[node.ColumnIndex - 1, node.RowIndex].isWall) // Izquierda
-            _neighbours.Add(_grid[node.ColumnIndex - 1, node.RowIndex]);
-
-        if (node.RowIndex + 1 < _rows && !_grid[node.ColumnIndex, node.RowIndex + 1].isWall) // Arriba
-            _neighbours.Add(_grid[node.ColumnIndex, node.RowIndex + 1]);
-
-        if (node.RowIndex - 1 > 0 && !_grid[node.ColumnIndex, node.RowIndex - 1].isWall) // Abajo
-            _neighbours.Add(_grid[node.ColumnIndex, node.RowIndex - 1]);
-
-
-        return _neighbours;
     }
 
     private void OnDrawGizmos()
@@ -147,7 +114,8 @@ public class GridBehavior : MonoBehaviour
                 if (FinalPath.Contains(node))
                     Gizmos.color = Color.red;
             
-                if (node.isWall)
+                // if (node.isWall)
+                if (node.CellType == NodeBasic.CellTypeEnum.Obstacle)
                     Gizmos.color = Color.black;
                 
                 if(StartNode == node || EndNode == node)
