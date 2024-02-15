@@ -1,16 +1,22 @@
-using System;
 using UnityEngine;
 
-public sealed class RandomStageWithCells : StageWithCells
+namespace StageWithCells
 {
-    // public Vector2 _nodeSize = new Vector2(0.4f, 0.4f);
-    // public int _columns = 45;
-    // public int _rows = 90;
+    public sealed class RandomStageWithCells
+    {
+        public Vector2 _nodeSize = new Vector2(0.4f, 0.4f);
 
-    // public RandomStageWithCells(GameObject obstaclePrefab, Vector2 cellsDimension, LayerMask whatIsWall, int rows, int columns)
-    //     : base(obstaclePrefab, cellsDimension, whatIsWall, rows, columns)
-    // {
-    //     
-    // }
 
+        public static StageWithCells getRandomStage(GameObject cellsPrefab, Transform transform)
+        {
+            // return new StageWithCells.Builder().parent(transform).build();
+            return new StageWithCells.Builder()
+                .rows(45)
+                .columns(90)
+                .cellsDimension(new Vector2(0.4f, 0.4f))
+                .cellsPrefab(cellsPrefab)
+                .parent(transform).build();
+        }
+
+    }
 }
