@@ -1,36 +1,45 @@
-using System;
 using UnityEngine;
 
-public class RandomStageWithBuilder
+// Una implementación alternativa para la creación del esenario
+namespace StageWithBuilder
 {
-    private static Vector2 _nodeSize = new Vector2(0.4f, 0.4f);
-    private static int _columns = 45;
-    private static int _rows = 90;
-    
-    /// <summary>
-    /// Crea un escenario con las últimas variables usadas en esta clase.
-    /// En caso de no haber creado antes un escenario con esta clase, se usarán las que vienen definidas por defecto.
-    /// </summary>
-    public static StageWithBuilder CreateRandomStage()
+    public sealed class RandomStageWithBuilder : StageWithBuilder
     {
-        return new StageWithBuilder.Builder()
-            .rows(_rows)
-            .columns(_columns)
-            .cellsDimension(_nodeSize)
-            .build();
-    }
+        
+        /// <summary>
+        /// Crea un escenario con unos argumentos por defecto.
+        /// </summary>
+        /// <param name="cellsPrefab">Prefab del objeto celda que almacena el tipo a instanciar</param>
+        /// <param name="transform">Transform del padre de las celdas a instanciar</param>
+        public static StageWithBuilder getRandomStage(GameObject cellsPrefab, Transform transform)
+        {
+            return getRandomStage(cellsPrefab, transform, 45, 90, new Vector2(0.4f, 0.4f));
+        }
+        
+        /// <summary>
+        /// Crea un escenario con las variables que se le pase por argumento.
+        /// </summary>
+        /// <param name="cellsPrefab">Prefab del objeto celda que almacena el tipo a instanciar</param>
+        /// <param name="transform">Transform del padre de las celdas a instanciar</param>
+        /// <param name="rows">Número de filas</param>
+        /// <param name="columns">Número de columnas</param>
+        /// <param name="cellsSize">Dimensión de las celdas</param>
+        public static StageWithBuilder getRandomStage(GameObject cellsPrefab, Transform transform, int rows, int columns, Vector2 cellsSize)
+        {
+            return new StageWithBuilder.Builder()
+                .rows(rows)
+                .columns(columns)
+                .cellsDimension(cellsSize)
+                .cellsPrefab(cellsPrefab)
+                .parent(transform).build();
+        }
 
-    /// <summary>
-    /// Crea un escenario con las variables que se le pase por argumento.
-    /// </summary>
-    /// <param name="rows">Número de filas</param>
-    /// <param name="columns">Número de columnas</param>
-    /// <param name="nodeSize">Dimensión de las celdas</param>
-    public static StageWithBuilder CreateRandomStage(int rows, int columns, Vector2 nodeSize)
-    {
-        _rows = rows;
-        _columns = columns;
-        _nodeSize = nodeSize;
-        return CreateRandomStage();
+        public RandomStageWithBuilder(GameObject cellPrefab, Transform transformParent) : base(cellPrefab, transformParent)
+        {
+        }
+
+        public RandomStageWithBuilder(GameObject cellPrefab, Vector2 cellsDimension, Transform transformParent, int rows, int columns) : base(cellPrefab, cellsDimension, transformParent, rows, columns)
+        {
+        }
     }
 }

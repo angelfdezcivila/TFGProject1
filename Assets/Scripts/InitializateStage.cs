@@ -1,15 +1,15 @@
-using System.Collections;
-using System.Collections.Generic;
-using StageWithCells;
+using StageGenerators;
+using StageWithBuilder;
 using UnityEngine;
 
 public class InitializateStage : MonoBehaviour
 {
     public GameObject cellsPrefab;
-    private StageWithCells.StageWithCells _stage;
+    // private StageWithBuilder.StageWithBuilder _stageBuilder;
+    private StageGenerators.Stage _stage;
     void Start()
     {
-        // _stage = new RandomStageWithCells(cellsPrefab);
-        _stage = RandomStageWithCells.getRandomStage(cellsPrefab, transform);
+        // _stageBuilder = RandomStageWithBuilder.getRandomStage(cellsPrefab, transform);
+        _stage = new RandomStage(cellsPrefab, transform);
     }
 }
