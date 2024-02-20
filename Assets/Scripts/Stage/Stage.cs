@@ -1,46 +1,61 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace StageGenerators
+namespace StageGenerator
 {
     public abstract class Stage
     {
-        protected GameObject cellPivotPrefab;
+        protected enum CellStatus {Blocked, Clear, Exit}
+        
+        protected GameObject _cellPrefab;
         protected int _numberOfBlocks;
 
-        protected Vector2 _cellsDimension;
+        protected Vector3 _cellsDimension;
         protected int _rows;
         protected int _columns;
         protected List<List<NodeBasic>> _cellMatrix; // Matriz de casillas
         protected Transform _transformParent;
 
+        public int Rows => _rows;
+        public int Columns => _columns;
+        public Vector2 CellsDimension
+        {
+            get { return new Vector2(_cellsDimension.x, _cellsDimension.z); }
+        }
+
+        protected CellStatus[,] _cellsStatus;
+        
         #region Constructors
 
         protected Stage(GameObject cellPrefab, Transform transformParent)
         {
-            InitializeConstants(cellPrefab, transformParent,new Vector2(1f, 1f), 10, 10);
+            InitializeConstants(cellPrefab, transformParent,new Vector3(1f, 1f, 1f), 10, 10);
         }
         
-        protected Stage(GameObject cellPrefab, Vector2 cellsDimension, Transform transformParent, int rows,
-            int columns)
+        protected Stage(GameObject cellPrefab, Transform transformParent, Vector3 cellsDimension, int rows, int columns)
         {
             InitializeConstants(cellPrefab, transformParent, cellsDimension, rows, columns);
         }
 
-        private void InitializeConstants(GameObject cellPrefab, Transform transformParent, Vector2 cellsDimension,
+        private void InitializeConstants(GameObject cellPrefab, Transform transformParent, Vector3 cellsDimension,
             int rows, int columns)
         {
             // Los rangos son sobretodo para controlar que haya un mínimo de filas y columnas y no de error
-            this._rows = Mathf.Clamp(rows, 15, 100);
-            this._columns = Mathf.Clamp(columns, 15, 100);
+            _rows = Mathf.Clamp(rows, 15, 100);
+            _columns = Mathf.Clamp(columns, 15, 100);
+            
+            _cellsStatus = new CellStatus[_rows,_columns];
             _cellsDimension = cellsDimension;
-            cellPivotPrefab = cellPrefab;
-            this._transformParent = transformParent;
+            
+            _cellPrefab = cellPrefab;
+            _transformParent = transformParent;
             Start();
         }
 
         #endregion
     
+        #region Private Methods
+
         private void Start()
         {
             // InitializeConstants(cellPivotPrefab, new Vector2(1f, 1f), 10, 10);
@@ -53,7 +68,13 @@ namespace StageGenerators
             GenerateCells();
         }
         
-        #region Private Methods
+         /**
+         * Checks whether a grid cell is blocked in this scenario.
+         *
+         * @param row    vertical coordinate of cell.
+         * @param column horizontal coordinate of cell.
+         * @return {@code true} if grid cell is blocked in this scenario.
+         */
 
         private void InitializeBoard()
         {
@@ -62,7 +83,8 @@ namespace StageGenerators
                 _cellMatrix.Add(new List<NodeBasic>()); // Inicializa la lista de casillas de esa fila
                 for (int j = 0; j < _columns; j++) // Para cada columna
                 {
-                    GameObject cellObj = GameObject.Instantiate(cellPivotPrefab, new Vector3(j, 0f, i), Quaternion.identity, this._transformParent); // Instancia la casilla en una posición
+                    GameObject cellObj = GameObject.Instantiate(_cellPrefab, new Vector3(j, 0f, i), Quaternion.identity, this._transformParent); // Instancia la casilla en una posición
+                    cellObj.transform.localScale = _cellsDimension;
                     _cellMatrix[i].Add(cellObj.GetComponent<NodeBasic>()); // Añade la casilla a la lista de la fila (a la matriz) de casillas
                     // cellObj.name = "Cell " + "(" + i + "," + j + ")"; // Cambia el nombre del objeto
                     cellObj.name = $"Cell ({i},{j})"; // Cambia el nombre del objeto
@@ -81,8 +103,7 @@ namespace StageGenerators
         }
 
         #endregion
-    
-
+        
         #region Overwritable Methods
         
         protected abstract int SetNumberOfBlocks();
@@ -177,13 +198,25 @@ namespace StageGenerators
             return cellsAround;
         }
     
-        protected bool bernoulli(float successProbability) {
+        protected static bool bernoulli(float successProbability) {
             if (!(successProbability < 0.0) && !(successProbability > 1.0)) {
                 return Random.value < successProbability;
             } else {
                 Debug.LogError("bernoulli: probability " + successProbability + "must be in [0.0, 1.0]");
                 return false;
             }
+        }
+
+        public bool IsCellBlocked(int row, int column) {
+            return _cellsStatus[row,column] == CellStatus.Blocked;
+        }
+        
+        public bool IsCellBlocked(Location location) {
+            return IsCellBlocked(location.row, location.column);
+        }
+        
+        public bool IsCellExit(int row, int column) {
+            return _cellsStatus[row,column] == CellStatus.Exit;
         }
     
         #endregion

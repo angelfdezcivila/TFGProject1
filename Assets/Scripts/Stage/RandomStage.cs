@@ -1,16 +1,18 @@
 using UnityEngine;
 using Random = UnityEngine.Random;
 
-namespace StageGenerators
+namespace StageGenerator
 {
     public sealed class RandomStage : Stage
     {
         
-        public RandomStage(GameObject cellPrefab, Transform transformParent) : base(cellPrefab, new Vector2(0.4f, 0.4f), transformParent, 45, 90)
+        public RandomStage(GameObject cellPrefab, Transform transformParent)
+            : base(cellPrefab, transformParent, new Vector3(0.4f, 0.4f, 0.4f), 45, 90)
         {
         }
 
-        public RandomStage(GameObject cellPrefab, Vector2 cellsDimension, Transform transformParent, int rows, int columns) : base(cellPrefab, cellsDimension, transformParent, rows, columns)
+        public RandomStage(GameObject cellPrefab, Transform transformParent, Vector3 cellsDimension, int rows, int columns)
+            : base(cellPrefab, transformParent, cellsDimension, rows, columns)
         {
             
         }

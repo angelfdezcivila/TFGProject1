@@ -68,7 +68,11 @@ namespace StageWithBuilder
                 _cellMatrix.Add(new List<NodeBasic>()); // Inicializa la lista de casillas de esa fila
                 for (int j = 0; j < _columns; j++) // Para cada columna
                 {
-                    GameObject cellObj = GameObject.Instantiate(cellPivotPrefab, new Vector3(i, 0f, j), Quaternion.identity, this._transformParent); // Instancia la casilla en una posición
+                    float rowAxis = i * _cellsDimension.x;
+                    float columnAxis = j * _cellsDimension.y;
+                    // En cellMatrix se van a ordenar primero por filas y luego por columnas,
+                    // por lo que en la escena, las filas son representadas en el eje Z y las columnas en el eje X
+                    GameObject cellObj = GameObject.Instantiate(cellPivotPrefab, new Vector3(columnAxis, 0f, rowAxis), Quaternion.identity, _transformParent); // Instancia la casilla en una posición
                     _cellMatrix[i].Add(cellObj.GetComponent<NodeBasic>()); // Añade la casilla a la lista de la fila (a la matriz) de casillas
                     // cellObj.name = "Cell " + "(" + i + "," + j + ")"; // Cambia el nombre del objeto
                     cellObj.name = $"Cell ({i},{j})"; // Cambia el nombre del objeto
