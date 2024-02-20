@@ -83,7 +83,11 @@ namespace StageGenerator
                 _cellMatrix.Add(new List<NodeBasic>()); // Inicializa la lista de casillas de esa fila
                 for (int j = 0; j < _columns; j++) // Para cada columna
                 {
-                    GameObject cellObj = GameObject.Instantiate(_cellPrefab, new Vector3(j, 0f, i), Quaternion.identity, this._transformParent); // Instancia la casilla en una posición
+                    float rowAxis = i * _cellsDimension.x;
+                    float columnAxis = j * _cellsDimension.y;
+                    // En cellMatrix se van a ordenar primero por filas y luego por columnas,
+                    // por lo que en la escena, las filas son representadas en el eje Z y las columnas en el eje X
+                    GameObject cellObj = GameObject.Instantiate(_cellPrefab, new Vector3(columnAxis, 0f, rowAxis), Quaternion.identity, this._transformParent); // Instancia la casilla en una posición
                     cellObj.transform.localScale = _cellsDimension;
                     _cellMatrix[i].Add(cellObj.GetComponent<NodeBasic>()); // Añade la casilla a la lista de la fila (a la matriz) de casillas
                     // cellObj.name = "Cell " + "(" + i + "," + j + ")"; // Cambia el nombre del objeto
@@ -119,9 +123,9 @@ namespace StageGenerator
         #region Getters and Setters
 
         // Cambia el tipo de una casilla del tablero en la posición 'pos'
-        protected void SetCellType(Vector2 pos, NodeBasic.CellTypeEnum typeEnum)
+        protected void SetCellType(Vector2 pos, NodeBasic.CellTypeEnum type)
         {
-            _cellMatrix[(int)pos.x][(int)pos.y].CellType = typeEnum;
+            _cellMatrix[(int)pos.x][(int)pos.y].CellType = type;
         }
 
         // Devuelve el tipo de casilla de una posición
@@ -134,7 +138,7 @@ namespace StageGenerator
 
         #region Auxiliar Methods
 
-        protected bool CanBePlaced(int row, int column, int height, int width)
+        protected bool ObstacleCanBePlaced(int row, int column, int height, int width)
         {
             List<Vector2> obstacleCandidates = new List<Vector2>();
         
@@ -166,7 +170,6 @@ namespace StageGenerator
 
                     if (shouldBePlaced && isWall)
                     {
-                        // SetCellType(cellPosition, NodeBasic.CellTypeEnum.Obstacle);
                         obstacleCandidates.Add(cellPosition);
                     }
 

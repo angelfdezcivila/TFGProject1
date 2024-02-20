@@ -80,7 +80,7 @@ namespace StageGenerator
                 // int row = Random.Range(-_rows/2, _rows/2 - height); // Solo funciona para las filas impares
                 int column = Random.Range(2, 1 + _columns - width - 2);   
             
-                bool shouldBePlaced = CanBePlaced(row, column, height, width);
+                bool shouldBePlaced = ObstacleCanBePlaced(row, column, height, width);
     
                 if (shouldBePlaced) {
                     numberOfBlocksPlaced++;
