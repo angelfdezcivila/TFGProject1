@@ -283,99 +283,128 @@
 //   /**
 //    * Runs one discrete time step for this automaton.
 //    */
+//   
+//   // TODO: Como el proyecto original estaba realizado en Java, era necesario un hilo para que esperase a la GUI y se sincronizasen.
+//   // Sin embargo, como nosotros estamos en Unity, no es necesario hacerlo usando hilos, sino con Corrutinas o Invoke u otra alternativa
 //   public void timeStep() {
 //     // clear new state
 //     ClearCells(occupiedNextState);
 //
 //     // move each pedestrian
-//     synchronized (inScenarioPedestrians) {
-//       // in order to process pedestrians in random order
-//       random.shuffle(inScenarioPedestrians);
-//
-//       var pedestriansIterator = inScenarioPedestrians.iterator();
-//       while (pedestriansIterator.hasNext()) {
-//         var pedestrian = pedestriansIterator.next();
-//         int row = pedestrian.getRow();
-//         int column = pedestrian.getColumn();
-//
-//         if (scenario.IsCellExit(row, column)) {
-//           // pedestrian exits scenario
-//           pedestrian.setExitTimeSteps(timeSteps);
-//           outOfScenarioPedestrians.Add(pedestrian);
-//           pedestriansIterator.remove();
-//         } else {
-//           pedestrian.chooseMovement().ifPresentOrElse(
-//               location -> {
-//                 if (WillBeOccupied(location)) {
-//                   // new location already taken by another pedestrian. Don't move
-//                   occupiedNextState[row,column] = true;
-//                   pedestrian.doNotMove();
-//                 } else {
-//                   // move to new location
-//                   occupiedNextState[location.row(),location.column()] = true;
-//                   pedestrian.moveTo(location);
+//     lock (inScenarioPedestrians)
+//     {
+//         ListExtensions.Shuffle(inScenarioPedestrians);
+//         var pedestriansIterator = inScenarioPedestrians.GetEnumerator();
+//         while (pedestriansIterator.MoveNext())
+//         {
+//           var pedestrian = pedestriansIterator.Current;
+//           int row = pedestrian.GetRow();
+//           int column = pedestrian.GetColumn();
+//           if (scenario.IsCellExit(row, column))
+//           {
+//             pedestrian.SetExitTimeSteps(timeSteps);
+//             outOfScenarioPedestrians.Add(pedestrian);
+//             // Remove current pedestrian from the list
+//             pedestriansIterator = (List<>.Enumerator)ListExtensions.RemoveCurrent(inScenarioPedestrians, pedestriansIterator);
+//             pedestriansIterator = inScenarioPedestrians.RemoveCurrent(pedestriansIterator);
+//           }
+//           else
+//           {
+//             pedestrian.ChooseMovement().IfPresentOrElse(
+//               location =>
+//               {
+//                 if (WillBeOccupied(location))
+//                 {
+//                   occupiedNextState[row, column] = true;
+//                   pedestrian.DoNotMove();
+//                 }
+//                 else
+//                 {
+//                   occupiedNextState[location.Row, location.Column] = true;
+//                   pedestrian.MoveTo(location);
 //                 }
 //               },
-//               // no new location to consider. Don't move
-//               () -> {
-//                 occupiedNextState[row,column] = true;
-//                 pedestrian.doNotMove();
+//               () =>
+//               {
+//                 occupiedNextState[row, column] = true;
+//                 pedestrian.DoNotMove();
 //               }
-//           );
+//             );
+//           }
 //         }
 //       }
-//     }
-//     // make next state current one
-//     var temp = occupied;
-//     occupied = occupiedNextState;
-//     occupiedNextState = temp;
 //
-//     timeSteps++;
+//       var temp = occupied;
+//       occupied = occupiedNextState;
+//       occupiedNextState = temp;
+//       timeSteps++;
 //   }
 //
 //   /**
 //    * Thread for running the simulation.
 //    */
 //   private class RunThread : Thread {
-//     final Canvas canvas;
-//
-//     public RunThread(Canvas canvas) {
-//       this.canvas = canvas;
+//     private readonly Canvas canvas;
+//     public RunThread(Canvas canvas)
+//     {
+//         this.canvas = canvas;
 //     }
 //
-//     public void run() {
-//       scenario.getStaticFloorField().initialize();
-//       timeSteps = 0;
-//       var maximalTimeSteps = parameters.TimeLimit() / parameters.TimePerTick();
-//
-//       if (canvas != null) {
-//         // show initial configuration for 1.5 seconds
-//         canvas.update();
-//         try {
-//           Thread.sleep(1500);
-//         } catch (Exception ignored) {
+//     public void Run()
+//     {
+//         scenario.GetStaticFloorField().Initialize();
+//         timeSteps = 0;
+//         var maximalTimeSteps = parameters.TimeLimit / parameters.TimePerTick;
+//         if (canvas != null)
+//         {
+//             canvas.Update();
+//             Thread.Sleep(1500);
 //         }
-//       }
 //
-//       var millisBefore = System.currentTimeMillis();
-//       while (!inScenarioPedestrians.isEmpty() && timeSteps < maximalTimeSteps) {
-//         timeStep();
-//         if (canvas != null) {
-//           canvas.update();
-//           var elapsedMillis = (System.currentTimeMillis() - millisBefore);
-//           try {
-//             // wait some milliseconds to synchronize animation
-//             Thread.sleep(((int) (parameters.TimePerTick() * 1000) - elapsedMillis) / parameters.GUITimeFactor());
-//             millisBefore = System.currentTimeMillis();
-//           } catch (Exception ignored) {
+//         var millisBefore = Environment.TickCount;
+//         while (inScenarioPedestrians.Count > 0 && timeSteps < maximalTimeSteps)
+//         {
+//             TimeStep();
+//             if (canvas != null)
+//             {
+//                 canvas.Update();
+//                 var elapsedMillis = (Environment.TickCount - millisBefore);
+//                 Thread.Sleep((int)(parameters.TimePerTick * 1000 - elapsedMillis) / parameters.GUITimeFactor);
+//                 millisBefore = Environment.TickCount;
+//             }
+//         }
+//
+//         if (canvas != null)
+//         {
+//             canvas.Update();
+//         }
+//     }
+//   }
+//   
+//   public static class ListExtensions
+//   {
+//       private static System.Random rng = new System.Random();
+//
+//       public static void Shuffle<T>(IList<T> list)
+//       {
+//           int n = list.Count;
+//           while (n > 1)
+//           {
+//               n--;
+//               int k = rng.Next(n - 1);
+//               T value = list[k];
+//               list[k] = list[n];
+//               list[n] = value;
 //           }
-//         }
 //       }
-//       if (canvas != null) {
-//         // show final configuration
-//         canvas.update();
+//
+//       // Extension method to remove the current item from a list while iterating
+//       public static IEnumerator<T> RemoveCurrent<T>(IList<T> list, IEnumerator<T> enumerator)
+//       {
+//           var current = enumerator.Current;
+//           list.Remove(current);
+//           return list.GetEnumerator();
 //       }
-//     }
 //   }
 //
 //   /**
@@ -424,8 +453,8 @@
 //    *
 //    * @return number of evacuees.
 //    */
-//   public int numberOfEvacuees() {
-//     return outOfScenarioPedestrians.size();
+//   public int NumberOfEvacuees() {
+//     return outOfScenarioPedestrians.Count;
 //   }
 //
 //   /**
@@ -433,16 +462,16 @@
 //    *
 //    * @return number of non evacuees.
 //    */
-//   public int numberOfNonEvacuees() {
-//     return inScenarioPedestrians.size();
+//   public int NumberOfNonEvacuees() {
+//     return inScenarioPedestrians.Count;
 //   }
 //
 //   /**
 //    * Returns evacuation times for evacuees.
 //    * @return evacuation times for evacuees.
 //    */
-//   public double[] evacuationTimes() {
-//     int numberOfEvacuees = numberOfEvacuees();
+//   public double[] EvacuationTimes() {
+//     int numberOfEvacuees = NumberOfEvacuees();
 //     double[] times = new double[numberOfEvacuees];
 //
 //     int i = 0;
@@ -460,12 +489,12 @@
 //    * @return distances to closest exit for each non evacuee.
 //    */
 //   public double[] distancesToClosestExit() {
-//     int numberOfNonEvacuees = numberOfNonEvacuees();
+//     int numberOfNonEvacuees = NumberOfNonEvacuees();
 //     double[] shortestDistances = new double[numberOfNonEvacuees];
 //
 //     int i = 0;
 //     for (var nonEvacuee : inScenarioPedestrians) {
-//       var shortestDistance = Double.MAX_VALUE;
+//       var shortestDistance = Double.MaxValue;
 //       for(var exit : GetScenario().exits()) {
 //         var distance = exit.distance(nonEvacuee.getLocation());
 //         if (distance < shortestDistance)
@@ -484,8 +513,8 @@
 //    * @return statistics collected after running simulation.
 //    */
 //   public Statistics computeStatistics() {
-//     int numberOfEvacuees = numberOfEvacuees();
-//     double[] evacuationTimes = evacuationTimes();
+//     int numberOfEvacuees = NumberOfEvacuees();
+//     double[] evacuationTimes = EvacuationTimes();
 //     int[] steps = new int[numberOfEvacuees];
 //
 //     int i = 0;
