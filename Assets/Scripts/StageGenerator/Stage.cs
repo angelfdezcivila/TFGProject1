@@ -5,8 +5,6 @@ namespace StageGenerator
 {
     public abstract class Stage
     {
-        protected enum CellStatus {Blocked, Clear, Exit}
-        
         protected GameObject _cellPrefab;
         protected int _numberOfBlocks;
 
@@ -23,8 +21,6 @@ namespace StageGenerator
             get { return new Vector2(_cellsDimension.x, _cellsDimension.z); }
         }
 
-        protected CellStatus[,] _cellsStatus;
-        
         #region Constructors
 
         protected Stage(GameObject cellPrefab, Transform transformParent)
@@ -44,13 +40,31 @@ namespace StageGenerator
             _rows = Mathf.Clamp(rows, 15, 100);
             _columns = Mathf.Clamp(columns, 15, 100);
             
-            _cellsStatus = new CellStatus[_rows,_columns];
-            _cellsDimension = cellsDimension;
+            //Esto está para que el mapa no pueda ser más pequeño de lo que está pensado originalmente
+            if (cellsDimension.x < 1 || cellsDimension.y < 1 || cellsDimension.z < 1)
+                _cellsDimension = cellPrefab.transform.localScale;
+            else
+                _cellsDimension = cellsDimension;
             
             _cellPrefab = cellPrefab;
             _transformParent = transformParent;
+            
+            _numberOfBlocks = SetNumberOfBlocks();
+            _cellMatrix = new List<List<NodeBasic>>();
             Start();
         }
+
+        #endregion
+        
+        #region Overwritable Methods
+        
+        protected abstract int SetNumberOfBlocks();
+
+        // Calcula las casillas para las salidas
+        protected abstract void CalculateExit();
+
+        // Calcula las posiciones donde poner un obstáculo
+        protected abstract void CalculateObstacle();
 
         #endregion
     
@@ -59,9 +73,7 @@ namespace StageGenerator
         private void Start()
         {
             // InitializeConstants(cellPivotPrefab, new Vector2(1f, 1f), 10, 10);
-
-            _numberOfBlocks = SetNumberOfBlocks();
-            _cellMatrix = new List<List<NodeBasic>>();
+            
             InitializeBoard();
             CalculateExit();
             CalculateObstacle();
@@ -108,18 +120,6 @@ namespace StageGenerator
 
         #endregion
         
-        #region Overwritable Methods
-        
-        protected abstract int SetNumberOfBlocks();
-
-        // Calcula las casillas para las salidas
-        protected abstract void CalculateExit();
-
-        // Calcula las posiciones donde poner un obstáculo
-        protected abstract void CalculateObstacle();
-
-        #endregion
-
         #region Getters and Setters
 
         // Cambia el tipo de una casilla del tablero en la posición 'pos'
@@ -133,63 +133,7 @@ namespace StageGenerator
         {
             return _cellMatrix[(int)pos.x][(int)pos.y].CellType;
         }
-
-        #endregion
-
-        #region Auxiliar Methods
-
-        protected bool ObstacleCanBePlaced(int row, int column, int height, int width)
-        {
-            List<Vector2> obstacleCandidates = new List<Vector2>();
         
-            bool shouldBePlaced = true;
-            int rowBorder = row>2? row - 2 : 0; //Está para que si row = 1 o row = 0, siga siendo positiva y no se salga por debajo del tablero
-            int columnBorder = column>=4? column - 2 : 2; //Está para que si column = 3 o column = 2, siga teniendo un margen de 2 respecto a los bordes
-            // Debug.Log("(" + row + ", " + column + ") : (" + rowBorder + ", " + columnBorder + ") : (" + height + ", " + width + ")");
-        
-            int heightMax = row + height + 2<_rows? row + height + 2 : _rows-1; //Está para controlar que la altura máxima no sobrepase el máximo a la hora de comprobar si puede ser puesto
-            int widthMax = column + width + 2<_columns-2? column + width + 2 : _columns-1; //Está para controlar que la anchura máxima no sobrepase el máximo a la hora de comprobar si puede ser puesto
-        
-            int rowCounter = rowBorder;
-            int columnCounter = columnBorder;
-        
-            while (rowCounter < heightMax && shouldBePlaced)
-            {
-                columnCounter = columnBorder;
-
-                while (columnCounter < widthMax && shouldBePlaced)
-                {
-                    Vector2 cellPosition = new Vector2(rowCounter, columnCounter);
-                    //Si intersecta con otro objeto, no se puede poner el obstáculo
-                    shouldBePlaced = GetCellType(cellPosition) == NodeBasic.CellTypeEnum.Floor;
-
-                    // Comprueba si la posicion es parte del rango o es del propio obstaculo
-                    bool isWall = (rowCounter >= row && columnCounter >= column) &&
-                                  (rowCounter < row + height && columnCounter < column + width);
-                    // Debug.Log("counters: " + rowCounter + ", " + columnCounter + " - " + isWall);
-
-                    if (shouldBePlaced && isWall)
-                    {
-                        obstacleCandidates.Add(cellPosition);
-                    }
-
-                    columnCounter++;
-                }
-
-                rowCounter++;
-            }
-
-            if (shouldBePlaced)
-            {
-                foreach (Vector2 candidate in obstacleCandidates)
-                {
-                    SetCellType(candidate, NodeBasic.CellTypeEnum.Obstacle);
-                }
-            }
-        
-            return shouldBePlaced;
-        }
-    
         // Coge las casillas alrededor de otra
         protected List<Vector2> GetAroundCellsWithRange(Vector2 pos, int aroundRange)
         {
@@ -200,18 +144,13 @@ namespace StageGenerator
                     cellsAround.Add(new Vector2(i, j));
             return cellsAround;
         }
-    
-        protected static bool bernoulli(float successProbability) {
-            if (!(successProbability < 0.0) && !(successProbability > 1.0)) {
-                return Random.value < successProbability;
-            } else {
-                Debug.LogError("bernoulli: probability " + successProbability + "must be in [0.0, 1.0]");
-                return false;
-            }
-        }
 
+        #endregion
+
+        #region Public Methods
+        
         public bool IsCellBlocked(int row, int column) {
-            return _cellsStatus[row,column] == CellStatus.Blocked;
+            return _cellMatrix[row][column].CellType == NodeBasic.CellTypeEnum.Obstacle;
         }
         
         public bool IsCellBlocked(Location location) {
@@ -219,8 +158,13 @@ namespace StageGenerator
         }
         
         public bool IsCellExit(int row, int column) {
-            return _cellsStatus[row,column] == CellStatus.Exit;
+            return _cellMatrix[row][column].CellType == NodeBasic.CellTypeEnum.Exit;
         }
+        
+        public bool IsCellExit(Location location) {
+            return IsCellExit(location.row, location.column);
+        }
+
     
         #endregion
     }

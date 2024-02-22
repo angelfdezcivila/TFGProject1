@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
@@ -24,32 +25,32 @@ namespace StageGenerator
 
         protected override void CalculateExit()
         {
-            if (bernoulli(0.9f)) {
+            if (Statistics.bernoulli(0.9f)) {
                 for (int i = 2; i < 7; i++)
                 {
                     SetCellType(new Vector2(i, _columns-1), NodeBasic.CellTypeEnum.Exit);
                 }
                 // scenario.setExit(new Rectangle(2, columns - 1, 5, 1));
             }
-            if (bernoulli(0.9f)) {
+            if (Statistics.bernoulli(0.9f)) {
                 for (int i = _rows - 7; i < _rows - 2; i++)
                 {
                     SetCellType(new Vector2(i, _columns-1), NodeBasic.CellTypeEnum.Exit);
                 }
             }
-            if (bernoulli(0.9f)) {
+            if (Statistics.bernoulli(0.9f)) {
                 for (int i = 10; i < 15; i++)
                 {
                     SetCellType(new Vector2(i, 0), NodeBasic.CellTypeEnum.Exit);
                 }
             }
-            if (bernoulli(0.9f)) {
+            if (Statistics.bernoulli(0.9f)) {
                 for (int i = _rows - 15; i < _rows - 10; i++)
                 {
                     SetCellType(new Vector2(i, 0), NodeBasic.CellTypeEnum.Exit);
                 }
             }
-            if (bernoulli(0.5f)) {
+            if (Statistics.bernoulli(0.5f)) {
                 // En el caso de que el numero de filas y/o columnas sea impar,
                 // la salida central estará desplazada una casilla hacia la derecha y/o hacia arriba respectivamente
                 // Otra solución sería hacer la salida de 1x1 o 3x3
@@ -72,7 +73,7 @@ namespace StageGenerator
             while (numberOfBlocksPlaced < _numberOfBlocks && maxTries > 0) {
                 // Debug.Log("Number of blocks = " + _numberOfBlocks + " : " + numberOfBlocksPlaced + " : " + maxTries);
             
-                int width = bernoulli(0.5f) ? 1 + Random.Range(0, 2) : 1 + Random.Range(0, 20);
+                int width = Statistics.bernoulli(0.5f) ? 1 + Random.Range(0, 2) : 1 + Random.Range(0, 20);
                 // int width = bernoulli(0.5f) ? 1 + Random.Range(0, 2) : 1 + Random.Range(0, 20);
                 int height = 1 + Random.Range(0, Mathf.Max(1, _rows / (int)(2 * width)));
     
@@ -87,6 +88,58 @@ namespace StageGenerator
                 }
                 maxTries -= 1;
             }
+        }
+        
+        protected bool ObstacleCanBePlaced(int row, int column, int height, int width)
+        {
+            List<Vector2> obstacleCandidates = new List<Vector2>();
+        
+            bool shouldBePlaced = true;
+            int rowBorder = row>2? row - 2 : 0; //Está para que si row = 1 o row = 0, siga siendo positiva y no se salga por debajo del tablero
+            int columnBorder = column>=4? column - 2 : 2; //Está para que si column = 3 o column = 2, siga teniendo un margen de 2 respecto a los bordes
+            // Debug.Log("(" + row + ", " + column + ") : (" + rowBorder + ", " + columnBorder + ") : (" + height + ", " + width + ")");
+        
+            int heightMax = row + height + 2<_rows? row + height + 2 : _rows-1; //Está para controlar que la altura máxima no sobrepase el máximo a la hora de comprobar si puede ser puesto
+            int widthMax = column + width + 2<_columns-2? column + width + 2 : _columns-1; //Está para controlar que la anchura máxima no sobrepase el máximo a la hora de comprobar si puede ser puesto
+        
+            int rowCounter = rowBorder;
+            int columnCounter = columnBorder;
+        
+            while (rowCounter < heightMax && shouldBePlaced)
+            {
+                columnCounter = columnBorder;
+
+                while (columnCounter < widthMax && shouldBePlaced)
+                {
+                    Vector2 cellPosition = new Vector2(rowCounter, columnCounter);
+                    //Si intersecta con otro objeto, no se puede poner el obstáculo
+                    shouldBePlaced = GetCellType(cellPosition) == NodeBasic.CellTypeEnum.Floor;
+
+                    // Comprueba si la posicion es parte del rango o es del propio obstaculo
+                    bool isWall = (rowCounter >= row && columnCounter >= column) &&
+                                  (rowCounter < row + height && columnCounter < column + width);
+                    // Debug.Log("counters: " + rowCounter + ", " + columnCounter + " - " + isWall);
+
+                    if (shouldBePlaced && isWall)
+                    {
+                        obstacleCandidates.Add(cellPosition);
+                    }
+
+                    columnCounter++;
+                }
+
+                rowCounter++;
+            }
+
+            if (shouldBePlaced)
+            {
+                foreach (Vector2 candidate in obstacleCandidates)
+                {
+                    SetCellType(candidate, NodeBasic.CellTypeEnum.Obstacle);
+                }
+            }
+        
+            return shouldBePlaced;
         }
 
 

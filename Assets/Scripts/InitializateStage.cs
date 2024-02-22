@@ -1,6 +1,10 @@
+using System;
+using System.IO;
+using Pedestrian;
 using StageGenerator;
-using StageWithBuilder;
+using TestingStageWithBuilder;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 public class InitializateStage : MonoBehaviour
 {
@@ -22,7 +26,32 @@ public class InitializateStage : MonoBehaviour
                 .GUITimeFactor(8) // perform GUI animation x8 times faster than real time
                 .Build();
         
-        // var automaton = new CellularAutomaton(cellularAutomatonParameters);
+        var automaton = new CellularAutomaton(cellularAutomatonParameters);
+        
+        Func<PedestrianParameters> pedestrianParametersSupplier = () =>
+        new PedestrianParameters.Builder()
+            .FieldAttractionBias(Random.Range(0.0f, 10.0f))
+            .CrowdRepulsion(Random.Range(0.1f, 0.5f))
+            .VelocityPercent(Random.Range(0.3f, 1.0f))
+            .Build();
+
+        var numberOfPedestrians = Random.Range(150, 600);
+        automaton.AddPedestriansUniformly(numberOfPedestrians, pedestrianParametersSupplier);
+        
+        automaton.runGUI(); // automaton.run() to run without GUI
+        Statistics statistics = automaton.computeStatistics();
+        Debug.Log(statistics);
+        
+        // // write trace to json file
+        // var jsonTrace = automaton.jsonTrace();
+        // String fileName = "data/traces/trace.json";
+        // try (FileWriter fileWriter = new FileWriter(fileName)) {
+        //     fileWriter.write(Jsoner.prettyPrint(jsonTrace.toJson()));
+        //     fileWriter.flush();
+        //     System.out.printf("Trace written to file %s successfully.%n", fileName);
+        // } catch (IOException e) {
+        //     e.printStackTrace();
+        // }
 
     }
 }

@@ -1,7 +1,7 @@
 using UnityEngine;
 
 // Una implementación alternativa para la creación del esenario
-namespace StageWithBuilder
+namespace TestingStageWithBuilder
 {
     public sealed class RandomStageWithBuilder : StageWithBuilder
     {

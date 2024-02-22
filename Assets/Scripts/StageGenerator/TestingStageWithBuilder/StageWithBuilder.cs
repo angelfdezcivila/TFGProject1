@@ -5,7 +5,7 @@ using Random = UnityEngine.Random;
 
 
 // Una implementación alternativa para la creación del esenario
-namespace StageWithBuilder
+namespace TestingStageWithBuilder
 {
     public class StageWithBuilder
     {
