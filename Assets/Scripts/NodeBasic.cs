@@ -2,34 +2,39 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 [Serializable]
 public class NodeBasic : MonoBehaviour
 {
     // Datos del nodo
-    public int ColumnIndex;
-    public int RowIndex;
-    public Vector3 NodePosition;
     public GameObject floorPrefab;
     public GameObject obstaclePrefab;
     public GameObject exitPrefab;
 
-    // Parámetros
-    // public bool isWall;
-    public CellTypeEnum CellType { get; set; }
+    [SerializeField]
+    private int _rowIndex;
+    [SerializeField]
+    private int _columnIndex;
+    [SerializeField]
+    private CellTypeEnum _cellType;
+    
+    public CellTypeEnum CellType
+    {
+        get => _cellType;
+        set => _cellType = value;
+    }
+
     public enum CellTypeEnum
     {
         Floor, Obstacle, Exit
     }
 
-    public NodeBasic(int column, int row, Vector3 pos, CellTypeEnum cellTypeEnum)
+    public void SetCellPosition(int row, int column)
     {
-        ColumnIndex = column;
-        RowIndex = row;
-        NodePosition = pos;
-        this.CellType = cellTypeEnum;
+        _rowIndex = row;
+        _columnIndex = column;
     }
-
 
     public void Build()
     {
@@ -45,6 +50,20 @@ public class NodeBasic : MonoBehaviour
                 Instantiate(exitPrefab, transform.position, Quaternion.identity, this.transform);
                 break;
         }
+    }
+    
+    public float DistanceTo(int row, int column) {
+        return Mathf.Sqrt(distanceSqr(row, column));
+    }
+        
+    public float DistanceTo(Location location) {
+        return DistanceTo(location.row, location.column);
+    }
+        
+    public int distanceSqr(int row, int column) {
+        var dh = Mathf.Max(_columnIndex - column, Mathf.Max(0, column - _columnIndex));
+        var dv = Mathf.Max(_rowIndex - row, Mathf.Max(0, row - _rowIndex));
+        return dh*dh + dv*dv;
     }
     
     // public override bool Equals(System.Object obj)

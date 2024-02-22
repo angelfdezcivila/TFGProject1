@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Threading;
 using Pedestrian;
@@ -38,15 +39,18 @@ public class CellularAutomaton {
   /**
    * List of pedestrians currently within the scenario.
    */
-  protected readonly List<Pedestrian> inScenarioPedestrians;
+  protected readonly List<Pedestrian.Pedestrian> inScenarioPedestrians;
   /**
    * List of pedestrians that have evacuated the scenario.
    */
-  protected readonly List<Pedestrian> outOfScenarioPedestrians;
+  protected readonly List<Pedestrian.Pedestrian> outOfScenarioPedestrians;
   /**
    * Number of discrete time steps elapsed since the start of the simulation.
    */
   protected int timeSteps;
+
+  public readonly float TimePerTick;
+
   
   #endregion
 
@@ -76,8 +80,10 @@ public class CellularAutomaton {
     this.pedestrianFactory = new PedestrianFactory(this);
 
     // this.inScenarioPedestrians = Collections.synchronizedList(new List<>());
-    this.inScenarioPedestrians = new List<Pedestrian>();
-    this.outOfScenarioPedestrians = new List<Pedestrian>();
+    this.inScenarioPedestrians = new List<Pedestrian.Pedestrian>();
+    this.outOfScenarioPedestrians = new List<Pedestrian.Pedestrian>();
+    
+    this.TimePerTick  = parameters.TimePerTick;
     Reset();
   }
   
@@ -117,7 +123,7 @@ public class CellularAutomaton {
     if (row < 0 || row >= Rows) throw new ArgumentOutOfRangeException("AddPedestrian: invalid row");
     if (column < 0 || column >= Columns) throw new ArgumentOutOfRangeException("AddPedestrian: invalid column");
     if (IsCellReachable(row, column)) {
-      Pedestrian pedestrian = pedestrianFactory.GetInstance(row, column, parameters);
+      Pedestrian.Pedestrian pedestrian = pedestrianFactory.GetInstance(row, column, parameters);
       occupied[row, column] = true;
       inScenarioPedestrians.Add(pedestrian);
       return true;
@@ -284,172 +290,115 @@ public class CellularAutomaton {
     return scenario;
   }
 
-  /**
-   * Runs one discrete time step for this automaton.
-   */
+  public static class ListExtensions
+  {
+    private static System.Random rng = new System.Random();
+
+    public static void Shuffle<T>(IList<T> list)
+    {
+      int n = list.Count;
+      while (n > 1)
+      {
+        n--;
+        int k = rng.Next(n - 1);
+        T value = list[k];
+        list[k] = list[n];
+        list[n] = value;
+      }
+    }
+
+    // Extension method to remove the current item from a list while iterating
+    public static IEnumerator<T> RemoveCurrent<T>(IList<T> list, IEnumerator<T> enumerator)
+    {
+      var current = enumerator.Current;
+      list.Remove(current);
+      return list.GetEnumerator();
+    }
+  }
+  
+
   
   // TODO: Como el proyecto original estaba realizado en Java, era necesario un hilo para que esperase a la GUI y se sincronizasen.
   // Sin embargo, como nosotros estamos en Unity, no es necesario hacerlo usando hilos, sino con Corrutinas o Invoke u otra alternativa
-  public void timeStep() {
+  
+  /**
+   * Runs one discrete time step for this automaton.
+   */
+  public void TimeStep() {
+    // Debug.Log(TimePerTick);
     // clear new state
     ClearCells(occupiedNextState);
 
-    // move each pedestrian
-    lock (inScenarioPedestrians)
+    ListExtensions.Shuffle(inScenarioPedestrians);
+    var pedestriansIterator = inScenarioPedestrians.GetEnumerator();
+    while (pedestriansIterator.MoveNext())
     {
-        ListExtensions.Shuffle(inScenarioPedestrians);
-        var pedestriansIterator = inScenarioPedestrians.GetEnumerator();
-        while (pedestriansIterator.MoveNext())
+      Pedestrian.Pedestrian pedestrian = (Pedestrian.Pedestrian) pedestriansIterator.Current;
+      int row = pedestrian.GetRow();
+      int column = pedestrian.GetColumn();
+      if (scenario.IsCellExit(row, column))
+      {
+        pedestrian.SetExitTimeSteps(timeSteps);
+        outOfScenarioPedestrians.Add(pedestrian);
+        // Remove current pedestrian from the list
+        pedestriansIterator = (List<Pedestrian.Pedestrian>.Enumerator)ListExtensions.RemoveCurrent(inScenarioPedestrians, pedestriansIterator);
+        // pedestriansIterator = inScenarioPedestrians.RemoveCurrent(pedestriansIterator);
+      }
+      else
+      {
+        Location location = pedestrian.ChooseMovement();
+        if (location != null)
         {
-          var pedestrian = pedestriansIterator.Current;
-          int row = pedestrian.GetRow();
-          int column = pedestrian.GetColumn();
-          if (scenario.IsCellExit(row, column))
-          {
-            pedestrian.SetExitTimeSteps(timeSteps);
-            outOfScenarioPedestrians.Add(pedestrian);
-            // Remove current pedestrian from the list
-            pedestriansIterator = (List<Pedestrian>.Enumerator)ListExtensions.RemoveCurrent(inScenarioPedestrians, pedestriansIterator);
-            // pedestriansIterator = inScenarioPedestrians.RemoveCurrent(pedestriansIterator);
+          if (WillBeOccupied(location)) {
+            // new location already taken by another pedestrian. Don't move
+            occupiedNextState[row,column] = true;
+            pedestrian.doNotMove();
+          } else {
+            // move to new location
+            occupiedNextState[location.row,location.column] = true;
+            pedestrian.moveTo(location);
           }
-          else
-          {
-            pedestrian.ChooseMovement().IfPresentOrElse(
-              location =>
-              {
-                if (WillBeOccupied(location))
-                {
-                  occupiedNextState[row, column] = true;
-                  pedestrian.DoNotMove();
-                }
-                else
-                {
-                  occupiedNextState[location.Row, location.Column] = true;
-                  pedestrian.MoveTo(location);
-                }
-              },
-              () =>
-              {
-                occupiedNextState[row, column] = true;
-                pedestrian.DoNotMove();
-              }
-            );
-          }
+        }
+        else
+        {
+          occupiedNextState[row,column] = true;
+          pedestrian.doNotMove();
         }
       }
-
-      var temp = occupied;
-      occupied = occupiedNextState;
-      occupiedNextState = temp;
-      timeSteps++;
-  }
-
-  /**
-   * Thread for running the simulation.
-   */
-  private class RunThread : Thread {
-    private readonly Canvas canvas;
-    public RunThread(Canvas canvas)
-    {
-        this.canvas = canvas;
     }
 
-    public void Run()
-    {
-        scenario.GetStaticFloorField().Initialize();
-        timeSteps = 0;
-        var maximalTimeSteps = parameters.TimeLimit / parameters.TimePerTick;
-        if (canvas != null)
-        {
-            canvas.Update();
-            Thread.Sleep(1500);
-        }
-
-        var millisBefore = Environment.TickCount;
-        while (inScenarioPedestrians.Count > 0 && timeSteps < maximalTimeSteps)
-        {
-            TimeStep();
-            if (canvas != null)
-            {
-                canvas.Update();
-                var elapsedMillis = (Environment.TickCount - millisBefore);
-                Thread.Sleep((int)(parameters.TimePerTick * 1000 - elapsedMillis) / parameters.GUITimeFactor);
-                millisBefore = Environment.TickCount;
-            }
-        }
-
-        if (canvas != null)
-        {
-            canvas.Update();
-        }
-    }
+    var temp = occupied;
+    occupied = occupiedNextState;
+    occupiedNextState = temp;
+    timeSteps++;
   }
   
-  public static class ListExtensions
+  /**
+   * Runs this automaton until end conditions are met.
+   */
+  public void Run() {
+    TimeStep();
+  }
+
+  public bool simulationShouldContinue()
   {
-      private static System.Random rng = new System.Random();
+    timeSteps = 0;
+    var maximalTimeSteps = parameters.TimeLimit / TimePerTick;
 
-      public static void Shuffle<T>(IList<T> list)
-      {
-          int n = list.Count;
-          while (n > 1)
-          {
-              n--;
-              int k = rng.Next(n - 1);
-              T value = list[k];
-              list[k] = list[n];
-              list[n] = value;
-          }
-      }
-
-      // Extension method to remove the current item from a list while iterating
-      public static IEnumerator<T> RemoveCurrent<T>(IList<T> list, IEnumerator<T> enumerator)
-      {
-          var current = enumerator.Current;
-          list.Remove(current);
-          return list.GetEnumerator();
-      }
+    return inScenarioPedestrians.Count > 0 && timeSteps < maximalTimeSteps;
   }
+  
+  public IEnumerator run2() {
+    timeSteps = 0;
+    float timePerTick = parameters.TimePerTick * 10;
+    var maximalTimeSteps = parameters.TimeLimit / timePerTick;
 
-  /**
-   * Runs this automaton until end conditions are met.
-   *
-   * @param gui if this parameter is {@code true} the simulation is displayed in a GUI.
-   */
-  private void run(bool gui) {
-    Canvas canvas = null;
-    if (gui) {
-      canvas =
-          new Canvas.Builder()
-              .rows(scenario.Rows)
-              .columns(scenario.Columns)
-              .pixelsPerCell(10)
-              .paint(CellularAutomaton.this::paint)
-              .build();
+    while (inScenarioPedestrians.Count > 0 && timeSteps < maximalTimeSteps)
+    {
+      TimeStep();
 
-      new TexturePacker_JsonArray.Frame(canvas);
+      yield return new WaitForSeconds(timePerTick);
     }
-    var thread = new RunThread(canvas);
-    thread.start();
-    try {
-      thread.join(); // wait for thread to complete
-    } catch (InterruptedException e) {
-      Debug.Log("Interrupted!");
-    }
-  }
-
-  /**
-   * Runs this automaton until end conditions are met.
-   */
-  public void run() {
-    run(false);
-  }
-
-  /**
-   * Runs this automaton until end conditions are met and displays simulation in a GUI.
-   */
-  public void runGUI() {
-    run(true);
   }
 
   /**
@@ -476,10 +425,10 @@ public class CellularAutomaton {
    */
   public float[] EvacuationTimes() {
     int numberOfEvacuees = NumberOfEvacuees();
-    double[] times = new double[numberOfEvacuees];
+    float[] times = new float[numberOfEvacuees];
 
     int i = 0;
-    for (Pedestrian evacuee : outOfScenarioPedestrians) {
+    foreach (Pedestrian.Pedestrian evacuee in outOfScenarioPedestrians) {
       times[i] = evacuee.getExitTimeSteps() * parameters.TimePerTick;
       i += 1;
     }
@@ -497,10 +446,10 @@ public class CellularAutomaton {
     float[] shortestDistances = new float[numberOfNonEvacuees];
 
     int i = 0;
-    for (Pedestrian nonEvacuee : inScenarioPedestrians) {
-      var shortestDistance = Double.MaxValue;
-      for(var exit : GetScenario().exits()) {
-        var distance = exit.distance(nonEvacuee.getLocation());
+    foreach (Pedestrian.Pedestrian nonEvacuee in inScenarioPedestrians) {
+      float shortestDistance = (float)Double.MaxValue;
+      foreach(NodeBasic exit in GetScenario().Exits) {
+        var distance = exit.DistanceTo(nonEvacuee.getLocation());
         if (distance < shortestDistance)
           shortestDistance = distance;
       }
@@ -522,14 +471,14 @@ public class CellularAutomaton {
     int[] steps = new int[numberOfEvacuees];
 
     int i = 0;
-    for (Pedestrian pedestrian : outOfScenarioPedestrians) {
+    foreach (Pedestrian.Pedestrian pedestrian in outOfScenarioPedestrians) {
       steps[i] = pedestrian.getNumberOfSteps();
       i += 1;
     }
-    double meanSteps = Statistics.Mean(steps);
-    double meanEvacuationTime = Statistics.Mean(evacuationTimes);
-    double medianSteps = Statistics.Median(steps);
-    double medianEvacuationTime = Statistics.Median(evacuationTimes);
+    float meanSteps = Statistics.Mean(steps);
+    float meanEvacuationTime = Statistics.Mean(evacuationTimes);
+    float medianSteps = Statistics.Median(steps);
+    float medianEvacuationTime = Statistics.Median(evacuationTimes);
     int numberOfNonEvacuees = NumberOfNonEvacuees();
 
     return new Statistics(meanSteps, meanEvacuationTime

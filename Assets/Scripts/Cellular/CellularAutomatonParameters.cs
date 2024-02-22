@@ -5,15 +5,15 @@ using UnityEngine;
 public record CellularAutomatonParameters(
     Stage Scenario
     , Neighbourhood Neighbourhood
-    , double TimeLimit
-    , double TimePerTick
+    , float TimeLimit
+    , float TimePerTick
     , int GUITimeFactor
 ) {
   
   public Stage Scenario { get; set; } = Scenario;
   public Neighbourhood Neighbourhood { get; set; } = Neighbourhood;
-  public double TimeLimit { get; set; } = TimeLimit;
-  public double TimePerTick { get; set; } = TimePerTick;
+  public float TimeLimit { get; set; } = TimeLimit;
+  public float TimePerTick { get; set; } = TimePerTick;
   public int GUITimeFactor { get; set; } = GUITimeFactor;
 
   /**
@@ -37,7 +37,7 @@ public record CellularAutomatonParameters(
       /**
        * @param timeLimit Time limit of simulation in seconds.
        */
-      public BuilderWithScenarioWithTimeLimit TimeLimit(double timeLimit) {
+      public BuilderWithScenarioWithTimeLimit TimeLimit(float timeLimit) {
         BuilderWithScenarioWithTimeLimit builder = new BuilderWithScenarioWithTimeLimit(this);
         builder._timeLimit = timeLimit;
         return builder;
@@ -46,15 +46,15 @@ public record CellularAutomatonParameters(
 
     public class BuilderWithScenarioWithTimeLimit {
       private Stage _stage;
-      public double _timeLimit;
+      public float _timeLimit;
       private Neighbourhood _neighbourhood;
-      private double _timePerTick;
+      private float _timePerTick;
       private int _GUITimeFactor;
 
       public BuilderWithScenarioWithTimeLimit(BuilderWithScenario builder) {
         this._stage = builder._stage;
         this._neighbourhood = VonNeumannNeighbourhood.of(_stage); // default neighbourhood
-        this._timePerTick = 0.4; // default is 0.4 secs per tick
+        this._timePerTick = 0.4f; // default is 0.4 secs per tick
         this._GUITimeFactor = 20; // default GUI time is x20 faster
       }
 
@@ -74,7 +74,7 @@ public record CellularAutomatonParameters(
        *                       a redefinition of {@link BuilderWithScenarioWithTimeLimit#pedestrianReferenceVelocity(double)}
        *                       in accordance with scenario's cell dimensions.
        */
-      public BuilderWithScenarioWithTimeLimit TimePerTick(double timePerTick) {
+      public BuilderWithScenarioWithTimeLimit TimePerTick(float timePerTick) {
         this._timePerTick = timePerTick;
         return this;
       }
@@ -85,7 +85,7 @@ public record CellularAutomatonParameters(
        *                       a redefinition of {@link BuilderWithScenarioWithTimeLimit#timePerTick(double)}
        *                       in accordance with scenario's cell dimensions.
        */
-      public BuilderWithScenarioWithTimeLimit PedestrianReferenceVelocity(double pedestrianReferenceVelocity) {
+      public BuilderWithScenarioWithTimeLimit PedestrianReferenceVelocity(float pedestrianReferenceVelocity) {
         this._timePerTick = pedestrianReferenceVelocity * _stage.CellsDimension.x;
         return this;
       }

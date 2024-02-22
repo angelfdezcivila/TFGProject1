@@ -89,8 +89,8 @@ namespace StageGenerator
                 maxTries -= 1;
             }
         }
-        
-        protected bool ObstacleCanBePlaced(int row, int column, int height, int width)
+
+        private bool ObstacleCanBePlaced(int row, int column, int height, int width)
         {
             List<Vector2> obstacleCandidates = new List<Vector2>();
         

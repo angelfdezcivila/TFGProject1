@@ -22,7 +22,7 @@ public class InitializateStage : MonoBehaviour
                 .Scenario(_stage) // use this scenario
                 .TimeLimit(10 * 60) // 10 minutes is time limit for simulation
                 .Neighbourhood(MooreNeighbourhood.of) // use Moore's Neighbourhood for automaton
-                .PedestrianReferenceVelocity(1.3) // fastest pedestrians walk at 1.3 m/s
+                .PedestrianReferenceVelocity(1.3f) // fastest pedestrians walk at 1.3 m/s
                 .GUITimeFactor(8) // perform GUI animation x8 times faster than real time
                 .Build();
         
@@ -34,13 +34,20 @@ public class InitializateStage : MonoBehaviour
             .CrowdRepulsion(Random.Range(0.1f, 0.5f))
             .VelocityPercent(Random.Range(0.3f, 1.0f))
             .Build();
-
+        
         var numberOfPedestrians = Random.Range(150, 600);
         automaton.AddPedestriansUniformly(numberOfPedestrians, pedestrianParametersSupplier);
         
-        automaton.runGUI(); // automaton.run() to run without GUI
+        // RunAutomaton(automaton);
+        // while (automaton.simulationShouldContinue())
+            automaton.Run();
+            automaton.Run();
+            automaton.Run();
+        
         Statistics statistics = automaton.computeStatistics();
         Debug.Log(statistics);
+        
+        
         
         // // write trace to json file
         // var jsonTrace = automaton.jsonTrace();
@@ -53,5 +60,24 @@ public class InitializateStage : MonoBehaviour
         //     e.printStackTrace();
         // }
 
+    }
+
+    private void RunAutomaton(CellularAutomaton automaton)
+    {
+        float timer = automaton.TimePerTick;
+        
+        while (automaton.simulationShouldContinue())
+        {
+            // Invoke(nameof(automaton.TimeStep), automaton.TimePerTick);
+            timer -= Time.deltaTime;
+            if (timer <= 0)
+            {
+                Debug.Log("a");
+                automaton.Run();
+                Debug.Log("b");
+                timer += automaton.TimePerTick;
+            }
+
+        }
     }
 }

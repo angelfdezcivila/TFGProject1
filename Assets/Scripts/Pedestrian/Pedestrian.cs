@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using JetBrains.Annotations;
 using StageGenerator;
 using UnityEngine;
 
@@ -61,15 +62,17 @@ namespace Pedestrian
          * @param desirability willing to move to such location
          */
         
-        protected record TentativeMovement(Location location, double desirability) : IComparable<TentativeMovement>
+        protected record TentativeMovement(Location location, float desirability) : IComparable<TentativeMovement>
         {
-            public int CompareTo(TentativeMovement that)
+
+            public int CompareTo(TentativeMovement other)
             {
-                return this.desirability.CompareTo(that.desirability);
+                return this.desirability.CompareTo(other.desirability);
             }
 
             public Location location { get; } = location;
-            public double desirability { get; } = desirability;
+            public float desirability { get; } = desirability;
+
         }
 
         /**
@@ -107,7 +110,7 @@ namespace Pedestrian
          *
          * @return row in scenario where this pedestrian is currently located.
          */
-        public int getRow()
+        public int GetRow()
         {
             return row;
         }
@@ -117,7 +120,7 @@ namespace Pedestrian
          *
          * @return column in scenario where this pedestrian is currently located.
          */
-        public int getColumn()
+        public int GetColumn()
         {
             return column;
         }
@@ -189,7 +192,7 @@ namespace Pedestrian
          *
          * @param timeSteps number of discrete time steps elapsed when pedestrian exited the scenario.
          */
-        public void setExitTimeSteps(int timeSteps)
+        public void SetExitTimeSteps(int timeSteps)
         {
             this.exitTimeSteps = timeSteps;
         }
@@ -225,7 +228,7 @@ namespace Pedestrian
             // var movements = new List<TentativeMovement>(neighbours.size());
             var movements = new List<TentativeMovement>();
             movements.Capacity = neighbours.Count; //No se si funciona correctamente
-            double minDesirability = Double.MaxValue;
+            float minDesirability = (float)Double.MaxValue;
             foreach (Location neighbour in neighbours) {
                 if (automaton.IsCellReachable(neighbour))
                 {
@@ -238,10 +241,10 @@ namespace Pedestrian
                         }
                     }
 
-                    var attraction = parameters.fieldAttractionBias *
-                                     scenario.getStaticFloorField().getField(neighbour);
-                    var repulsion = parameters.crowdRepulsion / (1 + numberOfReachableCellsAround);
-                    var desirability = Math.Exp(attraction - repulsion);
+                    // float attraction = parameters.fieldAttractionBias * scenario.getStaticFloorField().getField(neighbour);
+                    float attraction = parameters.fieldAttractionBias;
+                    float repulsion = parameters.crowdRepulsion / (1 + numberOfReachableCellsAround);
+                    float desirability = (float)Math.Exp(attraction - repulsion);
                     movements.Add(new TentativeMovement(neighbour, desirability));
                     if (desirability < minDesirability)
                         minDesirability = desirability;
@@ -249,8 +252,8 @@ namespace Pedestrian
             }
             var gradientMovements = new List<TentativeMovement>(neighbours.Count);
             foreach (TentativeMovement m in movements)
-                gradientMovements.Add(new TentativeMovement(m.location(),
-                DESIRABILITY_EPSILON + m.desirability() - minDesirability));
+                gradientMovements.Add(new TentativeMovement(m.location,
+                    (float)DESIRABILITY_EPSILON + m.desirability - minDesirability));
 
             return gradientMovements;
         }
@@ -260,26 +263,26 @@ namespace Pedestrian
          *
          * @return {@code Optional.empty} if no move is available or {@code Optional(m)} if move {@code m} was chosen.
          */
-        public Optional<Location> chooseMovement()
+        public Location ChooseMovement()
         {
-            if (Statistics.bernoulli(parameters.velocityPercent()))
+            if (Statistics.bernoulli(parameters.velocityPercent))
             {
                 // try to move at this step to respect pedestrian speed
-                var movements = computeTransitionDesirabilities();
-                if (movements.isEmpty())
+                List<TentativeMovement> movements = computeTransitionDesirabilities();
+                if (movements.Count <= 0)
                 {
                     // cannot make a movement
-                    return Optional.empty();
+                    return null;
                 }
 
                 // choose one movement according to discrete distribution of desirabilities
-                var chosen = random.discrete(movements, TentativeMovement::desirability);
-                return Optional.of(chosen.location);
+                var chosen = Statistics.Discrete(movements, m => m.desirability);
+                return chosen.location;
             }
             else
             {
                 // do not move at this step to respect pedestrian speed
-                return Optional.empty();
+                return null;
             }
         }
 

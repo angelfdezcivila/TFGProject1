@@ -7,13 +7,16 @@ namespace StageGenerator
     {
         protected GameObject _cellPrefab;
         protected int _numberOfBlocks;
-
         protected Vector3 _cellsDimension;
         protected int _rows;
         protected int _columns;
         protected List<List<NodeBasic>> _cellMatrix; // Matriz de casillas
         protected Transform _transformParent;
+        private List<NodeBasic> _exits;
+        private List<NodeBasic> _obstacles;
 
+        public List<NodeBasic> Exits => _exits;
+        public List<NodeBasic> Obstacles => _obstacles;
         public int Rows => _rows;
         public int Columns => _columns;
         public Vector2 CellsDimension
@@ -51,6 +54,8 @@ namespace StageGenerator
             
             _numberOfBlocks = SetNumberOfBlocks();
             _cellMatrix = new List<List<NodeBasic>>();
+            _exits = new List<NodeBasic>();
+            _obstacles = new List<NodeBasic>();
             Start();
         }
 
@@ -101,7 +106,9 @@ namespace StageGenerator
                     // por lo que en la escena, las filas son representadas en el eje Z y las columnas en el eje X
                     GameObject cellObj = GameObject.Instantiate(_cellPrefab, new Vector3(columnAxis, 0f, rowAxis), Quaternion.identity, this._transformParent); // Instancia la casilla en una posición
                     cellObj.transform.localScale = _cellsDimension;
-                    _cellMatrix[i].Add(cellObj.GetComponent<NodeBasic>()); // Añade la casilla a la lista de la fila (a la matriz) de casillas
+                    NodeBasic nodeBasic = cellObj.GetComponent<NodeBasic>();
+                    nodeBasic.SetCellPosition(i, j);
+                    _cellMatrix[i].Add(nodeBasic); // Añade la casilla a la lista de la fila (a la matriz) de casillas
                     // cellObj.name = "Cell " + "(" + i + "," + j + ")"; // Cambia el nombre del objeto
                     cellObj.name = $"Cell ({i},{j})"; // Cambia el nombre del objeto
                 }
@@ -126,6 +133,10 @@ namespace StageGenerator
         protected void SetCellType(Vector2 pos, NodeBasic.CellTypeEnum type)
         {
             _cellMatrix[(int)pos.x][(int)pos.y].CellType = type;
+            if (type == NodeBasic.CellTypeEnum.Exit)
+                _exits.Add(_cellMatrix[(int)pos.x][(int)pos.y]);
+            else if (type == NodeBasic.CellTypeEnum.Obstacle)
+                _obstacles.Add(_cellMatrix[(int)pos.x][(int)pos.y]);
         }
 
         // Devuelve el tipo de casilla de una posición
@@ -164,7 +175,6 @@ namespace StageGenerator
         public bool IsCellExit(Location location) {
             return IsCellExit(location.row, location.column);
         }
-
     
         #endregion
     }

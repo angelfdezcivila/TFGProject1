@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
@@ -27,18 +29,27 @@ public record Statistics(
         }
     }
     
-    public static float Mean(float[] data) {
-        if (data == null || data.Length == 0) {
-            throw new ArgumentException("mean: data cannot be empty");
-        } else {
-            float sum = 0.0f;
-            int length = data.Length;
-
-            for(int i = 0; i < length; i++) {
-                sum += data[i];
+    public static T Discrete<T>(IEnumerable<T> collection, Func<T, float> desirability)
+    {
+        float sum = collection.Sum(item => desirability(item));
+        if (sum <= 0.0)
+        {
+            throw new ArgumentException("Discrete: sum of desirabilities must be larger than 0");
+        }
+        else
+        {
+            float choose = Random.value * sum;
+            sum = 0.0f;
+            foreach (var element in collection)
+            {
+                sum += desirability(element);
+                if (sum > choose)
+                {
+                    return element;
+                }
             }
-
-            return sum / length;
+            Debug.Log(sum);
+            throw new InvalidOperationException("Should not get here if the desirabilities sum to more than 0");
         }
     }
     
@@ -57,6 +68,21 @@ public record Statistics(
         }
     }
     
+    public static float Mean(float[] data) {
+        if (data == null || data.Length == 0) {
+            throw new ArgumentException("mean: data cannot be empty");
+        } else {
+            float sum = 0.0f;
+            int length = data.Length;
+
+            for(int i = 0; i < length; i++) {
+                sum += data[i];
+            }
+
+            return sum / length;
+        }
+    }
+    
     public static float Median(int[] data) {
         if (data == null || data.Length == 0) {
             throw new ArgumentException("median: data cannot be empty");
@@ -68,7 +94,23 @@ public record Statistics(
             //get the median
             int size = sortedPNumbers.Length;
             int mid = size / 2;
-            float median = (size % 2 != 0) ? (float)sortedPNumbers[mid] : ((float)sortedPNumbers[mid] + (float)sortedPNumbers[mid - 1]) / 2;
+            float median = (size % 2 != 0) ? sortedPNumbers[mid] : (float)(sortedPNumbers[mid] + sortedPNumbers[mid - 1]) / 2;
+            return median;
+        }
+    }
+    
+    public static float Median(float[] data) {
+        if (data == null || data.Length == 0) {
+            throw new ArgumentException("median: data cannot be empty");
+        } else {
+            //make sure the list is sorted, but use a new array
+            float[] sortedPNumbers = (float[])data.Clone();
+            Array.Sort(sortedPNumbers);
+
+            //get the median
+            int size = sortedPNumbers.Length;
+            int mid = size / 2;
+            float median = (size % 2 != 0) ? sortedPNumbers[mid] : (sortedPNumbers[mid] +sortedPNumbers[mid - 1]) / 2;
             return median;
         }
     }
