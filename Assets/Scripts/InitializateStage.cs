@@ -41,8 +41,6 @@ public class InitializateStage : MonoBehaviour
         // RunAutomaton(automaton);
         // while (automaton.simulationShouldContinue())
             automaton.Run();
-            automaton.Run();
-            automaton.Run();
         
         Statistics statistics = automaton.computeStatistics();
         Debug.Log(statistics);

@@ -164,8 +164,8 @@ public class CellularAutomaton {
       throw new ArgumentException("AddPedestriansUniformly: number of pedestrian cannot be negative");
     var numberOfPedestriansPlaced = 0;
     while (numberOfPedestriansPlaced < numberOfPedestrians) {
-      var row = Random.Range(0, Rows);
-      var column = Random.Range(0, Columns);
+      int row = Random.Range(0, Rows);
+      int column = Random.Range(0, Columns);
 
       if (AddPedestrian(row, column, parametersSupplier.Invoke())) {
         numberOfPedestriansPlaced++;
@@ -329,11 +329,12 @@ public class CellularAutomaton {
     // clear new state
     ClearCells(occupiedNextState);
 
+    inScenarioPedestrians.ForEach(pedestrian => Debug.Log(pedestrian));
     ListExtensions.Shuffle(inScenarioPedestrians);
-    var pedestriansIterator = inScenarioPedestrians.GetEnumerator();
+    List<Pedestrian.Pedestrian>.Enumerator pedestriansIterator = inScenarioPedestrians.GetEnumerator();
     while (pedestriansIterator.MoveNext())
     {
-      Pedestrian.Pedestrian pedestrian = (Pedestrian.Pedestrian) pedestriansIterator.Current;
+      Pedestrian.Pedestrian pedestrian = pedestriansIterator.Current;
       int row = pedestrian.GetRow();
       int column = pedestrian.GetColumn();
       if (scenario.IsCellExit(row, column))
@@ -473,6 +474,7 @@ public class CellularAutomaton {
     int i = 0;
     foreach (Pedestrian.Pedestrian pedestrian in outOfScenarioPedestrians) {
       steps[i] = pedestrian.getNumberOfSteps();
+      Debug.Log("Step: " + steps[i]);
       i += 1;
     }
     float meanSteps = Statistics.Mean(steps);
