@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using StageGenerator;
+using UnityEngine;
 
 public class MooreNeighbourhood : Neighbourhood
 {

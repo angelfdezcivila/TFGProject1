@@ -241,8 +241,8 @@ namespace Pedestrian
                         }
                     }
 
-                    // float attraction = parameters.fieldAttractionBias * scenario.getStaticFloorField().getField(neighbour);
-                    float attraction = parameters.fieldAttractionBias;
+                    float attraction = parameters.fieldAttractionBias * scenario.StaticFloorField.getField(neighbour);
+                    // float attraction = parameters.fieldAttractionBias;
                     float repulsion = parameters.crowdRepulsion / (1 + numberOfReachableCellsAround);
                     float desirability = (float)Math.Exp(attraction - repulsion);
                     movements.Add(new TentativeMovement(neighbour, desirability));

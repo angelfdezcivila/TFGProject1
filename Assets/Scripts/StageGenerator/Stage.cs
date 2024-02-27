@@ -14,6 +14,10 @@ namespace StageGenerator
         protected Transform _transformParent;
         private List<NodeBasic> _exits;
         private List<NodeBasic> _obstacles;
+        
+        private FloorField _staticFloorField;
+        public FloorField StaticFloorField => _staticFloorField;
+        
 
         public List<NodeBasic> Exits => _exits;
         public List<NodeBasic> Obstacles => _obstacles;
@@ -44,9 +48,9 @@ namespace StageGenerator
             _columns = Mathf.Clamp(columns, 15, 100);
             
             //Esto está para que el mapa no pueda ser más pequeño de lo que está pensado originalmente
-            if (cellsDimension.x < 1 || cellsDimension.y < 1 || cellsDimension.z < 1)
-                _cellsDimension = cellPrefab.transform.localScale;
-            else
+            // if (cellsDimension.x < 1 || cellsDimension.y < 1 || cellsDimension.z < 1)
+            //     _cellsDimension = cellPrefab.transform.localScale;
+            // else
                 _cellsDimension = cellsDimension;
             
             _cellPrefab = cellPrefab;
@@ -56,6 +60,9 @@ namespace StageGenerator
             _cellMatrix = new List<List<NodeBasic>>();
             _exits = new List<NodeBasic>();
             _obstacles = new List<NodeBasic>();
+            
+            _staticFloorField = DijkstraStaticFloorFieldWithMooreNeighbourhood.of(this);
+            
             Start();
         }
 
@@ -101,7 +108,7 @@ namespace StageGenerator
                 for (int j = 0; j < _columns; j++) // Para cada columna
                 {
                     float rowAxis = i * _cellsDimension.x;
-                    float columnAxis = j * _cellsDimension.y;
+                    float columnAxis = j * _cellsDimension.z;
                     // En cellMatrix se van a ordenar primero por filas y luego por columnas,
                     // por lo que en la escena, las filas son representadas en el eje Z y las columnas en el eje X
                     GameObject cellObj = GameObject.Instantiate(_cellPrefab, new Vector3(columnAxis, 0f, rowAxis), Quaternion.identity, this._transformParent); // Instancia la casilla en una posición

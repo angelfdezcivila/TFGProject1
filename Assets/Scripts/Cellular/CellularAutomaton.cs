@@ -8,7 +8,7 @@ using TMPro.SpriteAssetUtilities;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
-public class CellularAutomaton {
+public class CellularAutomaton{
 
   #region Protected variables
 
@@ -311,7 +311,8 @@ public class CellularAutomaton {
     public static IEnumerator<T> RemoveCurrent<T>(IList<T> list, IEnumerator<T> enumerator)
     {
       var current = enumerator.Current;
-      list.Remove(current);
+      bool a = list.Remove(current);
+      Debug.Log("estrue? " + a);
       return list.GetEnumerator();
     }
   }
@@ -329,9 +330,15 @@ public class CellularAutomaton {
     // clear new state
     ClearCells(occupiedNextState);
 
-    inScenarioPedestrians.ForEach(pedestrian => Debug.Log(pedestrian));
+    // inScenarioPedestrians.ForEach(pedestrian => Debug.Log(pedestrian));
     ListExtensions.Shuffle(inScenarioPedestrians);
+    // Debug.Log("SHUFFLE:");
+    // inScenarioPedestrians.ForEach(pedestrian => Debug.Log(pedestrian));
+    // Debug.Log("SHUFFLED");
+
     List<Pedestrian.Pedestrian>.Enumerator pedestriansIterator = inScenarioPedestrians.GetEnumerator();
+    // List<Pedestrian.Pedestrian> pedestriansIterator = inScenarioPedestrians;
+    
     while (pedestriansIterator.MoveNext())
     {
       Pedestrian.Pedestrian pedestrian = pedestriansIterator.Current;
@@ -342,8 +349,9 @@ public class CellularAutomaton {
         pedestrian.SetExitTimeSteps(timeSteps);
         outOfScenarioPedestrians.Add(pedestrian);
         // Remove current pedestrian from the list
-        pedestriansIterator = (List<Pedestrian.Pedestrian>.Enumerator)ListExtensions.RemoveCurrent(inScenarioPedestrians, pedestriansIterator);
-        // pedestriansIterator = inScenarioPedestrians.RemoveCurrent(pedestriansIterator);
+        // pedestriansIterator = (List<Pedestrian.Pedestrian>.Enumerator)ListExtensions.RemoveCurrent(inScenarioPedestrians, pedestriansIterator);
+        inScenarioPedestrians.Remove(pedestriansIterator.Current);
+        pedestriansIterator = inScenarioPedestrians.GetEnumerator();
       }
       else
       {
@@ -372,6 +380,7 @@ public class CellularAutomaton {
     occupied = occupiedNextState;
     occupiedNextState = temp;
     timeSteps++;
+    Debug.Log("TIMEsTEP++: " + timeSteps);
   }
   
   /**
@@ -379,27 +388,45 @@ public class CellularAutomaton {
    */
   public void Run() {
     TimeStep();
+    // StartCoroutine(nameof(RunCoroutine));
   }
 
   public bool simulationShouldContinue()
   {
+    Debug.Log("TimeSteps = " + timeSteps);
     timeSteps = 0;
-    var maximalTimeSteps = parameters.TimeLimit / TimePerTick;
+    float maximalTimeSteps = parameters.TimeLimit / TimePerTick;
 
     return inScenarioPedestrians.Count > 0 && timeSteps < maximalTimeSteps;
   }
   
-  public IEnumerator run2() {
+  public bool simulationShouldContinue(float maximalTimeSteps)
+  {
+    return inScenarioPedestrians.Count > 0 && timeSteps < maximalTimeSteps;
+  }
+  
+  // private void RunCoroutine() {
+  public IEnumerator RunCoroutine() {
     timeSteps = 0;
-    float timePerTick = parameters.TimePerTick * 10;
-    var maximalTimeSteps = parameters.TimeLimit / timePerTick;
-
-    while (inScenarioPedestrians.Count > 0 && timeSteps < maximalTimeSteps)
+    float timePerTick = parameters.TimePerTick / parameters.GUITimeFactor;
+    float maximalTimeSteps = parameters.TimeLimit / parameters.TimePerTick;
+    float timer = timePerTick;
+    Debug.Log(parameters.TimeLimit + "/" + parameters.TimePerTick + " = " + maximalTimeSteps);
+    Debug.Log("Real time per tick" + timePerTick);
+    while (simulationShouldContinue(maximalTimeSteps))
     {
-      TimeStep();
+      // Debug.Log(timer);
+      
+      timer -= Time.deltaTime;
+      if (timer <= 0)
+      {
+        TimeStep();
+        timer += timePerTick;
+        yield return new WaitForSeconds(timePerTick);
+      }
 
-      yield return new WaitForSeconds(timePerTick);
     }
+    Debug.Log("dadwadwa" + inScenarioPedestrians.Count + " fwadwadwa " + outOfScenarioPedestrians.Count);
   }
 
   /**

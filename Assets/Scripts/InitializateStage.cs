@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.IO;
 using Pedestrian;
 using StageGenerator;
@@ -40,10 +41,15 @@ public class InitializateStage : MonoBehaviour
         
         // RunAutomaton(automaton);
         // while (automaton.simulationShouldContinue())
-            automaton.Run();
+        // {
+        //     // automaton.Run();
+        // }
+        // // automaton.Run();
+        // automaton.Run();
+        StartCoroutine(nameof(a), automaton);
         
-        Statistics statistics = automaton.computeStatistics();
-        Debug.Log(statistics);
+        // Statistics statistics = automaton.computeStatistics();
+        // Debug.Log(statistics);
         
         
         
@@ -62,20 +68,35 @@ public class InitializateStage : MonoBehaviour
 
     private void RunAutomaton(CellularAutomaton automaton)
     {
-        float timer = automaton.TimePerTick;
+        // Debug.Log("TimeSteps = " + timeSteps);
+        // timeSteps = 0;
+        // float timePerTick = automaton.parameters.TimePerTick;
+        // float maximalTimeSteps = automaton.parameters.TimeLimit / timePerTick;
+        // float timer = timePerTick;
+        float timer = 0;
         
         while (automaton.simulationShouldContinue())
         {
-            // Invoke(nameof(automaton.TimeStep), automaton.TimePerTick);
             timer -= Time.deltaTime;
             if (timer <= 0)
             {
                 Debug.Log("a");
                 automaton.Run();
                 Debug.Log("b");
+                // timer += timePerTick;
                 timer += automaton.TimePerTick;
             }
 
         }
+        // Debug.Log("dadwadwa" + inScenarioPedestrians.Count + " fwadwadwa " + outOfScenarioPedestrians.Count);
+
     }
+
+    private IEnumerator a(CellularAutomaton automaton)
+    {
+        yield return automaton.RunCoroutine();
+        Statistics statistics = automaton.computeStatistics();
+        Debug.Log(statistics);
+    }
+    
 }
