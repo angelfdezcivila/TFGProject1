@@ -10,10 +10,12 @@ using Random = UnityEngine.Random;
 public class InitializateStage : MonoBehaviour
 {
     public GameObject cellsPrefab;
+    public GameObject pedestrianPrefab;
     // private StageWithBuilder.StageWithBuilder _stageBuilder;
     private StageGenerator.Stage _stage;
     void Start()
     {
+        Vector3 cellsDimension = new Vector3(0.4f, 0.4f, 0.4f);
         // _stageBuilder = RandomStageWithBuilder.getRandomStage(cellsPrefab, transform);
         _stage = new RandomStage(cellsPrefab, transform);
         // _stage = new RandomStage(cellsPrefab, transform, new Vector3(0.9f, 0.75f, 0.9f), 40, 90);
@@ -26,8 +28,9 @@ public class InitializateStage : MonoBehaviour
                 .PedestrianReferenceVelocity(1.3f) // fastest pedestrians walk at 1.3 m/s
                 .GUITimeFactor(8) // perform GUI animation x8 times faster than real time
                 .Build();
-        
-        var automaton = new CellularAutomaton(cellularAutomatonParameters);
+
+        pedestrianPrefab.transform.localScale = cellsDimension;
+        var automaton = new CellularAutomaton(cellularAutomatonParameters, pedestrianPrefab);
         
         Func<PedestrianParameters> pedestrianParametersSupplier = () =>
         new PedestrianParameters.Builder()
@@ -46,14 +49,24 @@ public class InitializateStage : MonoBehaviour
         // }
         // // automaton.Run();
         // automaton.Run();
-        StartCoroutine(nameof(a), automaton);
+        StartCoroutine(nameof(RunAutomatonCoroutine), automaton);
         
         // Statistics statistics = automaton.computeStatistics();
         // Debug.Log(statistics);
         
-        
-        
-        // // write trace to json file
+        SaveInJson(automaton);
+    }
+
+    private IEnumerator RunAutomatonCoroutine(CellularAutomaton automaton)
+    {
+        yield return automaton.RunCoroutine();
+        Statistics statistics = automaton.computeStatistics();
+        Debug.Log(statistics);
+    }
+    
+    private void SaveInJson(CellularAutomaton automaton)
+    {
+        // write trace to json file
         // var jsonTrace = automaton.jsonTrace();
         // String fileName = "data/traces/trace.json";
         // try (FileWriter fileWriter = new FileWriter(fileName)) {
@@ -63,9 +76,9 @@ public class InitializateStage : MonoBehaviour
         // } catch (IOException e) {
         //     e.printStackTrace();
         // }
-
     }
 
+    //Este método debería de ir en un update
     private void RunAutomaton(CellularAutomaton automaton)
     {
         // Debug.Log("TimeSteps = " + timeSteps);
@@ -75,7 +88,7 @@ public class InitializateStage : MonoBehaviour
         // float timer = timePerTick;
         float timer = 0;
         
-        while (automaton.simulationShouldContinue())
+        while (automaton.SimulationShouldContinue())
         {
             timer -= Time.deltaTime;
             if (timer <= 0)
@@ -90,13 +103,6 @@ public class InitializateStage : MonoBehaviour
         }
         // Debug.Log("dadwadwa" + inScenarioPedestrians.Count + " fwadwadwa " + outOfScenarioPedestrians.Count);
 
-    }
-
-    private IEnumerator a(CellularAutomaton automaton)
-    {
-        yield return automaton.RunCoroutine();
-        Statistics statistics = automaton.computeStatistics();
-        Debug.Log(statistics);
     }
     
 }

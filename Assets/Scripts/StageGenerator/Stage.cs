@@ -134,12 +134,13 @@ namespace StageGenerator
 
         #endregion
         
-        #region Getters and Setters
+        #region Protected Getters and Setters
 
         // Cambia el tipo de una casilla del tablero en la posición 'pos'
         protected void SetCellType(Vector2 pos, NodeBasic.CellTypeEnum type)
         {
-            _cellMatrix[(int)pos.x][(int)pos.y].CellType = type;
+            // _cellMatrix[(int)pos.x][(int)pos.y].CellType = type;
+            GetRowColumnPosition(pos).CellType = type;
             if (type == NodeBasic.CellTypeEnum.Exit)
                 _exits.Add(_cellMatrix[(int)pos.x][(int)pos.y]);
             else if (type == NodeBasic.CellTypeEnum.Obstacle)
@@ -149,7 +150,8 @@ namespace StageGenerator
         // Devuelve el tipo de casilla de una posición
         protected NodeBasic.CellTypeEnum GetCellType(Vector2 pos)
         {
-            return _cellMatrix[(int)pos.x][(int)pos.y].CellType;
+            // return _cellMatrix[(int)pos.x][(int)pos.y].CellType;
+            return GetRowColumnPosition(pos).CellType;
         }
         
         // Coge las casillas alrededor de otra
@@ -165,18 +167,24 @@ namespace StageGenerator
 
         #endregion
 
-        #region Public Methods
+        #region Public Getters and Setters
+        
+        public NodeBasic GetRowColumnPosition(Vector2 pos)
+        {
+            return _cellMatrix[(int)pos.x][(int)pos.y];
+        }
         
         public bool IsCellBlocked(int row, int column) {
-            return _cellMatrix[row][column].CellType == NodeBasic.CellTypeEnum.Obstacle;
+            return GetCellType(new Vector2(row, column)) == NodeBasic.CellTypeEnum.Obstacle;
         }
         
         public bool IsCellBlocked(Location location) {
             return IsCellBlocked(location.row, location.column);
         }
         
-        public bool IsCellExit(int row, int column) {
-            return _cellMatrix[row][column].CellType == NodeBasic.CellTypeEnum.Exit;
+        public bool IsCellExit(int row, int column)
+        {
+            return GetCellType(new Vector2(row, column)) == NodeBasic.CellTypeEnum.Exit;
         }
         
         public bool IsCellExit(Location location) {

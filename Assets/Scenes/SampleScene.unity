@@ -778,6 +778,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cellsPrefab: {fileID: 1686334847983982523, guid: c6902151138271040b2db755e958f8e2, type: 3}
+  pedestrianPrefab: {fileID: 976390041658431882, guid: 917f2bc8af5fb18499dce68a0b8116dc, type: 3}
 --- !u!1 &963194225
 GameObject:
   m_ObjectHideFlags: 0

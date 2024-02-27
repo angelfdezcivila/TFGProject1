@@ -48,11 +48,11 @@ public class CellularAutomaton{
    * Number of discrete time steps elapsed since the start of the simulation.
    */
   protected int timeSteps;
-
-  public readonly float TimePerTick;
-
   
   #endregion
+  
+  public readonly float TimePerTick;
+  private GameObject _pedestrianPrefab;
 
   #region Properties
 
@@ -71,19 +71,21 @@ public class CellularAutomaton{
    *
    * @param parameters parameters describing this automaton.
    */
-  public CellularAutomaton(CellularAutomatonParameters parameters) {
+  public CellularAutomaton(CellularAutomatonParameters parameters, GameObject pedestrianPrefab) {
     this.parameters = parameters;
     this.scenario = parameters.Scenario;
     this.neighbourhood = parameters.Neighbourhood;
     this.occupied = new bool[scenario.Rows,scenario.Columns];
     this.occupiedNextState = new bool[scenario.Rows,scenario.Columns];
-    this.pedestrianFactory = new PedestrianFactory(this);
+    this.pedestrianFactory = new PedestrianFactory(this, pedestrianPrefab);
 
     // this.inScenarioPedestrians = Collections.synchronizedList(new List<>());
     this.inScenarioPedestrians = new List<Pedestrian.Pedestrian>();
     this.outOfScenarioPedestrians = new List<Pedestrian.Pedestrian>();
     
     this.TimePerTick  = parameters.TimePerTick;
+
+    this._pedestrianPrefab = pedestrianPrefab;
     Reset();
   }
   
@@ -312,15 +314,14 @@ public class CellularAutomaton{
     {
       var current = enumerator.Current;
       bool a = list.Remove(current);
-      Debug.Log("estrue? " + a);
       return list.GetEnumerator();
     }
   }
   
 
   
-  // TODO: Como el proyecto original estaba realizado en Java, era necesario un hilo para que esperase a la GUI y se sincronizasen.
-  // Sin embargo, como nosotros estamos en Unity, no es necesario hacerlo usando hilos, sino con Corrutinas o Invoke u otra alternativa
+  // Como el proyecto original estaba realizado en Java, era necesario hilos que esperasen a la GUI para que se sincronizase.
+  // Sin embargo, como nosotros estamos en Unity, no es necesario hacerlo usando hilos, sino con Corrutinas o Invoke, u otra alternativa
   
   /**
    * Runs one discrete time step for this automaton.
@@ -344,14 +345,15 @@ public class CellularAutomaton{
       Pedestrian.Pedestrian pedestrian = pedestriansIterator.Current;
       int row = pedestrian.GetRow();
       int column = pedestrian.GetColumn();
+      Debug.Log(scenario.GetRowColumnPosition(new Vector2(row, column)));
       if (scenario.IsCellExit(row, column))
       {
         pedestrian.SetExitTimeSteps(timeSteps);
         outOfScenarioPedestrians.Add(pedestrian);
         // Remove current pedestrian from the list
-        // pedestriansIterator = (List<Pedestrian.Pedestrian>.Enumerator)ListExtensions.RemoveCurrent(inScenarioPedestrians, pedestriansIterator);
-        inScenarioPedestrians.Remove(pedestriansIterator.Current);
-        pedestriansIterator = inScenarioPedestrians.GetEnumerator();
+        pedestriansIterator = (List<Pedestrian.Pedestrian>.Enumerator)ListExtensions.RemoveCurrent(inScenarioPedestrians, pedestriansIterator);
+        // inScenarioPedestrians.Remove(pedestriansIterator.Current);
+        // pedestriansIterator = inScenarioPedestrians.GetEnumerator();
       }
       else
       {
@@ -380,7 +382,7 @@ public class CellularAutomaton{
     occupied = occupiedNextState;
     occupiedNextState = temp;
     timeSteps++;
-    Debug.Log("TIMEsTEP++: " + timeSteps);
+    Debug.Log("TIMESTEP: " + timeSteps);
   }
   
   /**
@@ -391,16 +393,16 @@ public class CellularAutomaton{
     // StartCoroutine(nameof(RunCoroutine));
   }
 
-  public bool simulationShouldContinue()
+  public bool SimulationShouldContinue()
   {
     Debug.Log("TimeSteps = " + timeSteps);
     timeSteps = 0;
     float maximalTimeSteps = parameters.TimeLimit / TimePerTick;
 
-    return inScenarioPedestrians.Count > 0 && timeSteps < maximalTimeSteps;
+    return SimulationShouldContinue(maximalTimeSteps);
   }
   
-  public bool simulationShouldContinue(float maximalTimeSteps)
+  private bool SimulationShouldContinue(float maximalTimeSteps)
   {
     return inScenarioPedestrians.Count > 0 && timeSteps < maximalTimeSteps;
   }
@@ -409,24 +411,39 @@ public class CellularAutomaton{
   public IEnumerator RunCoroutine() {
     timeSteps = 0;
     float timePerTick = parameters.TimePerTick / parameters.GUITimeFactor;
+    // float timePerTick = 1; // Para poder ver cada tick
     float maximalTimeSteps = parameters.TimeLimit / parameters.TimePerTick;
     float timer = timePerTick;
     Debug.Log(parameters.TimeLimit + "/" + parameters.TimePerTick + " = " + maximalTimeSteps);
     Debug.Log("Real time per tick" + timePerTick);
-    while (simulationShouldContinue(maximalTimeSteps))
+    
+    Paint();
+    while (SimulationShouldContinue(maximalTimeSteps))
     {
       // Debug.Log(timer);
+      // timer -= Time.deltaTime;
+      // if (timer <= 0)
+      // {
+      //   TimeStep();
+      //   Paint();
+      //   timer += timePerTick;
+      // }
       
-      timer -= Time.deltaTime;
-      if (timer <= 0)
-      {
-        TimeStep();
-        timer += timePerTick;
-        yield return new WaitForSeconds(timePerTick);
-      }
+      TimeStep();
+      Paint();
+      yield return new WaitForSeconds(timePerTick);
 
     }
+    Paint();
     Debug.Log("dadwadwa" + inScenarioPedestrians.Count + " fwadwadwa " + outOfScenarioPedestrians.Count);
+  }
+
+  private void Paint()
+  {
+    foreach (Pedestrian.Pedestrian pedestrian in inScenarioPedestrians)
+    {
+      pedestrian.paint();
+    }
   }
 
   /**

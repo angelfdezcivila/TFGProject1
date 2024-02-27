@@ -12,6 +12,11 @@ namespace StageGenerator
         {
         }
 
+        public RandomStage(GameObject cellPrefab, Transform transformParent, Vector3 cellsDimension)
+            : base(cellPrefab, transformParent, cellsDimension, 45, 90)
+        {
+        }
+        
         public RandomStage(GameObject cellPrefab, Transform transformParent, Vector3 cellsDimension, int rows, int columns)
             : base(cellPrefab, transformParent, cellsDimension, rows, columns)
         {

@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace Pedestrian
 {
-    public class Pedestrian
+    public class Pedestrian : MonoBehaviour
     {
         /**
          * Class counter to generate unique identifiers for pedestrians.
@@ -16,7 +16,7 @@ namespace Pedestrian
         /**
          * Each pedestrian has a unique identifier.
          */
-        protected readonly int identifier;
+        protected int identifier;
 
         /**
          * Row in scenario where pedestrian is currently located.
@@ -41,17 +41,17 @@ namespace Pedestrian
         /**
          * Parameters describing this pedestrian.
          */
-        protected readonly PedestrianParameters parameters;
+        protected PedestrianParameters parameters;
 
         /**
          * Automaton where this pedestrian is running.
          */
-        protected readonly CellularAutomaton automaton;
+        protected CellularAutomaton automaton;
 
         /**
          * Path followed by pedestrian in scenario during simulation.
          */
-        protected readonly List<Location> path;
+        protected List<Location> path;
 
         /**
          * A tentative movement consists of a location (where we should move) and a desirability (the higher the
@@ -83,7 +83,12 @@ namespace Pedestrian
          * @param parameters parameters describing new pedestrian.
          * @param automaton  automaton where this pedestrian evolves.
          */
-        public Pedestrian(int row, int column, PedestrianParameters parameters, CellularAutomaton automaton)
+        protected Pedestrian(int row, int column, PedestrianParameters parameters, CellularAutomaton automaton)
+        {
+            Initialize(row, column, parameters, automaton);
+        }
+
+        public void Initialize(int row, int column, PedestrianParameters parameters, CellularAutomaton automaton)
         {
             this.identifier = nextIdentifier++;
             this.row = row;
@@ -284,6 +289,12 @@ namespace Pedestrian
                 // do not move at this step to respect pedestrian speed
                 return null;
             }
+        }
+
+        public void paint()
+        {
+            Vector3 position = automaton.GetScenario().GetRowColumnPosition(new Vector2(row, column)).transform.position;
+            transform.position = new Vector3(position.x, position.y + transform.localScale.y/2, position.z);
         }
 
         /**
