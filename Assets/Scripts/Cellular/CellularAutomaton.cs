@@ -51,13 +51,20 @@ namespace Cellular
   
     #endregion
   
-    public readonly float TimePerTick;
 
     #region Properties
 
     public int Rows => scenario.Rows;
 
     public int Columns => scenario.Columns;
+    
+    /// <summary>
+    /// Tiempo visible entre cada movimiento de los agentes como grupo.
+    /// </summary>
+    public float RealTimePerTick => parameters.TimePerTick / parameters.GUITimeFactor;
+    // public float RealTimePerTick => 1;  // Para poder ver cada tick
+
+
 
     #endregion
   
@@ -79,11 +86,9 @@ namespace Cellular
       this.pedestrianFactory = new PedestrianFactory(this, pedestrianPrefab);
 
       // this.inScenarioPedestrians = Collections.synchronizedList(new List<>());
-      this.inScenarioPedestrians = new List<Pedestrians.Pedestrian>();
-      this.outOfScenarioPedestrians = new List<Pedestrians.Pedestrian>();
+      this.inScenarioPedestrians = new List<Pedestrian>();
+      this.outOfScenarioPedestrians = new List<Pedestrian>();
     
-      this.TimePerTick  = parameters.TimePerTick;
-
       Reset();
     }
   
@@ -389,17 +394,15 @@ namespace Cellular
     /**
    * Runs this automaton until end conditions are met.
    */
-    public void Run() {
+    public void RunStep() {
       TimeStep();
-      // StartCoroutine(nameof(RunCoroutine));
+      Paint();
     }
 
     public bool SimulationShouldContinue()
     {
-      Debug.Log("TimeSteps = " + timeSteps);
-      timeSteps = 0;
-      float maximalTimeSteps = parameters.TimeLimit / TimePerTick;
-
+      float maximalTimeSteps = parameters.TimeLimit / parameters.TimePerTick;
+      Debug.Log(parameters.TimeLimit + "/" + parameters.TimePerTick + " = " + maximalTimeSteps);
       return SimulationShouldContinue(maximalTimeSteps);
     }
   
@@ -408,39 +411,29 @@ namespace Cellular
       return inScenarioPedestrians.Count > 0 && timeSteps < maximalTimeSteps;
     }
   
-    // private void RunCoroutine() {
     public IEnumerator RunCoroutine() {
-      scenario.StaticFloorField.initialize();
-      timeSteps = 0;
-      float timePerTick = parameters.TimePerTick / parameters.GUITimeFactor;
-      // float timePerTick = 1; // Para poder ver cada tick
-      float maximalTimeSteps = parameters.TimeLimit / parameters.TimePerTick;
-      float timer = timePerTick;
-      Debug.Log(parameters.TimeLimit + "/" + parameters.TimePerTick + " = " + maximalTimeSteps);
-      Debug.Log("Real time per tick" + timePerTick);
+      InitializeStaticFloor();
+      
+      float timer = RealTimePerTick;
+      Debug.Log("Real time per tick" + RealTimePerTick);
     
       Paint();
-      while (SimulationShouldContinue(maximalTimeSteps))
+      while (SimulationShouldContinue())
       {
-        // Debug.Log(timer);
-        // timer -= Time.deltaTime;
-        // if (timer <= 0)
-        // {
-        //   TimeStep();
-        //   Paint();
-        //   timer += timePerTick;
-        // }
-      
-        TimeStep();
-        Paint();
-        yield return new WaitForSeconds(timePerTick);
+        RunStep();
+        yield return new WaitForSeconds(RealTimePerTick);
 
       }
       Paint();
-      Debug.Log("dadwadwa" + inScenarioPedestrians.Count + " fwadwadwa " + outOfScenarioPedestrians.Count);
     }
 
-    private void Paint()
+    public void InitializeStaticFloor()
+    {
+      scenario.StaticFloorField.initialize();
+      timeSteps = 0;
+    }
+
+    public void Paint()
     {
       foreach (Pedestrians.Pedestrian pedestrian in inScenarioPedestrians)
       {

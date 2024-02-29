@@ -15,6 +15,7 @@ public class InitializateStage : MonoBehaviour
     public GameObject pedestrianPrefab;
     // private StageWithBuilder.StageWithBuilder _stageBuilder;
     private StageGenerator.Stage _stage;
+    private CellularAutomaton _automaton;
     private string JsonScoreFilePath => $"{Application.persistentDataPath}/TraceJson.json";
     void Start()
     {
@@ -33,7 +34,7 @@ public class InitializateStage : MonoBehaviour
                 .Build();
 
         // pedestrianPrefab.transform.localScale = cellsDimension;
-        var automaton = new CellularAutomaton(cellularAutomatonParameters, pedestrianPrefab);
+        _automaton = new CellularAutomaton(cellularAutomatonParameters, pedestrianPrefab);
         
         Func<PedestrianParameters> pedestrianParametersSupplier = () =>
         new PedestrianParameters.Builder()
@@ -43,61 +44,69 @@ public class InitializateStage : MonoBehaviour
             .Build();
         
         var numberOfPedestrians = Random.Range(150, 600);
-        automaton.AddPedestriansUniformly(numberOfPedestrians, pedestrianParametersSupplier);
+        _automaton.AddPedestriansUniformly(numberOfPedestrians, pedestrianParametersSupplier);
         
-        // RunAutomaton(automaton);
-        // while (automaton.simulationShouldContinue())
-        // {
-        //     // automaton.Run();
-        // }
-        // // automaton.Run();
-        // automaton.Run();
-        StartCoroutine(nameof(RunAutomatonCoroutine), automaton);
+        StartCoroutine(nameof(RunAutomatonCoroutine));
         
-        // Statistics statistics = automaton.computeStatistics();
-        // Debug.Log(statistics);
+        // RunAutomaton();
         
-        SaveInJson(automaton);
-    }
-
-    private IEnumerator RunAutomatonCoroutine(CellularAutomaton automaton)
-    {
-        yield return automaton.RunCoroutine();
-        Statistics statistics = automaton.computeStatistics();
-        Debug.Log(statistics);
     }
     
-    private void SaveInJson(CellularAutomaton automaton)
+    private void Update()
+    {
+        // if(!_automaton.SimulationShouldContinue())
+            // CancelInvoke();
+    }
+    
+
+    private IEnumerator RunAutomatonCoroutine()
+    {
+        yield return _automaton.RunCoroutine();
+        Statistics statistics = _automaton.computeStatistics();
+        Debug.Log(statistics);
+        SaveInJson();
+    }
+    
+    private void SaveInJson()
     {
         JsonSnapshotsList list = new JsonSnapshotsList();
         SaveJsonManager.SaveScoreJson(JsonScoreFilePath, list);
     }
 
     //Este método debería de ir en un update
-    private void RunAutomaton(CellularAutomaton automaton)
+
+    private void RunAutomaton()
     {
-        // Debug.Log("TimeSteps = " + timeSteps);
-        // timeSteps = 0;
-        // float timePerTick = automaton.parameters.TimePerTick;
-        // float maximalTimeSteps = automaton.parameters.TimeLimit / timePerTick;
-        // float timer = timePerTick;
-        float timer = 0;
-        
-        while (automaton.SimulationShouldContinue())
+        InitializeFloor();
+        float timer = _automaton.RealTimePerTick;
+        while (_automaton.SimulationShouldContinue())
         {
+            Debug.Log(timer);
             timer -= Time.deltaTime;
             if (timer <= 0)
             {
-                Debug.Log("a");
-                automaton.Run();
-                Debug.Log("b");
-                // timer += timePerTick;
-                timer += automaton.TimePerTick;
+                _automaton.RunStep();
+                timer += _automaton.RealTimePerTick;
             }
-
         }
-        // Debug.Log("dadwadwa" + inScenarioPedestrians.Count + " fwadwadwa " + outOfScenarioPedestrians.Count);
+        
+        // InvokeRepeating(nameof(RunStep), _automaton.RealTimePerTick, _automaton.RealTimePerTick);
 
+        
+        _automaton.Paint();
     }
+
+    private void InitializeFloor()
+    {
+        _automaton.InitializeStaticFloor();
+      
+        Debug.Log("Real time per tick" + _automaton.RealTimePerTick);
     
+        _automaton.Paint();
+    }
+
+    private void RunStep()
+    {
+        _automaton.RunStep();
+    }
 }
