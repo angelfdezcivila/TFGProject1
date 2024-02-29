@@ -1,7 +1,9 @@
 using System;
 using System.Collections;
 using System.IO;
-using Pedestrian;
+using Cellular;
+using DataJson;
+using Pedestrians;
 using StageGenerator;
 using TestingStageWithBuilder;
 using UnityEngine;
@@ -13,13 +15,14 @@ public class InitializateStage : MonoBehaviour
     public GameObject pedestrianPrefab;
     // private StageWithBuilder.StageWithBuilder _stageBuilder;
     private StageGenerator.Stage _stage;
+    private string JsonScoreFilePath => $"{Application.persistentDataPath}/TraceJson.json";
     void Start()
     {
         Vector3 cellsDimension = new Vector3(0.4f, 0.4f, 0.4f);
         // _stageBuilder = RandomStageWithBuilder.getRandomStage(cellsPrefab, transform);
-        _stage = new RandomStage(cellsPrefab, transform);
         // _stage = new RandomStage(cellsPrefab, transform, new Vector3(0.9f, 0.75f, 0.9f), 40, 90);
-        
+        _stage = new RandomStage(cellsPrefab, transform);
+
         var cellularAutomatonParameters =
             new CellularAutomatonParameters.Builder()
                 .Scenario(_stage) // use this scenario
@@ -66,16 +69,8 @@ public class InitializateStage : MonoBehaviour
     
     private void SaveInJson(CellularAutomaton automaton)
     {
-        // write trace to json file
-        // var jsonTrace = automaton.jsonTrace();
-        // String fileName = "data/traces/trace.json";
-        // try (FileWriter fileWriter = new FileWriter(fileName)) {
-        //     fileWriter.write(Jsoner.prettyPrint(jsonTrace.toJson()));
-        //     fileWriter.flush();
-        //     System.out.printf("Trace written to file %s successfully.%n", fileName);
-        // } catch (IOException e) {
-        //     e.printStackTrace();
-        // }
+        JsonSnapshotsList list = new JsonSnapshotsList();
+        SaveJsonManager.SaveScoreJson(JsonScoreFilePath, list);
     }
 
     //Este método debería de ir en un update

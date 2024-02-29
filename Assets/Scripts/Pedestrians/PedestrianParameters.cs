@@ -1,6 +1,6 @@
 using System;
 
-namespace Pedestrian
+namespace Pedestrians
 {
     public record PedestrianParameters(float fieldAttractionBias, float crowdRepulsion, float velocityPercent) {
         public float fieldAttractionBias { get; set; } = fieldAttractionBias;

@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Cellular;
 using StageGenerator;
 
 public class VonNeumannNeighbourhood : Neighbourhood

@@ -33,26 +33,26 @@ namespace StageGenerator
             if (Statistics.bernoulli(0.9f)) {
                 for (int i = 2; i < 7; i++)
                 {
-                    SetCellType(new Vector2(i, _columns-1), NodeBasic.CellTypeEnum.Exit);
+                    SetCellType(new Vector2(i, _columns-1), Cell.CellTypeEnum.Exit);
                 }
                 // scenario.setExit(new Rectangle(2, columns - 1, 5, 1));
             }
             if (Statistics.bernoulli(0.9f)) {
                 for (int i = _rows - 7; i < _rows - 2; i++)
                 {
-                    SetCellType(new Vector2(i, _columns-1), NodeBasic.CellTypeEnum.Exit);
+                    SetCellType(new Vector2(i, _columns-1), Cell.CellTypeEnum.Exit);
                 }
             }
             if (Statistics.bernoulli(0.9f)) {
                 for (int i = 10; i < 15; i++)
                 {
-                    SetCellType(new Vector2(i, 0), NodeBasic.CellTypeEnum.Exit);
+                    SetCellType(new Vector2(i, 0), Cell.CellTypeEnum.Exit);
                 }
             }
             if (Statistics.bernoulli(0.9f)) {
                 for (int i = _rows - 15; i < _rows - 10; i++)
                 {
-                    SetCellType(new Vector2(i, 0), NodeBasic.CellTypeEnum.Exit);
+                    SetCellType(new Vector2(i, 0), Cell.CellTypeEnum.Exit);
                 }
             }
             if (Statistics.bernoulli(0.5f)) {
@@ -65,7 +65,7 @@ namespace StageGenerator
                 {
                     for (int j = startColumn; j < startColumn + 2; j++)
                     {
-                        SetCellType(new Vector2(i, j), NodeBasic.CellTypeEnum.Exit);
+                        SetCellType(new Vector2(i, j), Cell.CellTypeEnum.Exit);
                     }
                 }
             }
@@ -118,7 +118,7 @@ namespace StageGenerator
                 {
                     Vector2 cellPosition = new Vector2(rowCounter, columnCounter);
                     //Si intersecta con otro objeto, no se puede poner el obstáculo
-                    shouldBePlaced = GetCellType(cellPosition) == NodeBasic.CellTypeEnum.Floor;
+                    shouldBePlaced = GetCellType(cellPosition) == Cell.CellTypeEnum.Floor;
 
                     // Comprueba si la posicion es parte del rango o es del propio obstaculo
                     bool isWall = (rowCounter >= row && columnCounter >= column) &&
@@ -140,7 +140,7 @@ namespace StageGenerator
             {
                 foreach (Vector2 candidate in obstacleCandidates)
                 {
-                    SetCellType(candidate, NodeBasic.CellTypeEnum.Obstacle);
+                    SetCellType(candidate, Cell.CellTypeEnum.Obstacle);
                 }
             }
         

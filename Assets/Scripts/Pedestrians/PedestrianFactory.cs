@@ -1,7 +1,8 @@
 using System;
+using Cellular;
 using UnityEngine;
 
-namespace Pedestrian
+namespace Pedestrians
 {
     public class PedestrianFactory
     {

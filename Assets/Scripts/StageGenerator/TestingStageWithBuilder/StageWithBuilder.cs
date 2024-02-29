@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using StageGenerator;
 using UnityEditor;
 using UnityEngine;
 using Random = UnityEngine.Random;
@@ -17,7 +18,7 @@ namespace TestingStageWithBuilder
         protected Vector2 _cellsDimension;
         protected int _rows;
         protected int _columns;
-        private List<List<NodeBasic>> _cellMatrix; // Matriz de casillas
+        private List<List<Cell>> _cellMatrix; // Matriz de casillas
         private Transform _transformParent;
 
         #region Constructors
@@ -52,7 +53,7 @@ namespace TestingStageWithBuilder
 
             _numberOfBlocks = Random.Range(minNumberOfBlocksInclusive, maxNumberOfBlocksExclusive);
             Debug.Log("rows: " + _rows + " ; Columns : " + _columns);
-            _cellMatrix = new List<List<NodeBasic>>();
+            _cellMatrix = new List<List<Cell>>();
             InitializeBoard();
             // CalculateExit();
             CalculateObstacle();
@@ -65,7 +66,7 @@ namespace TestingStageWithBuilder
         {
             for (int i = 0; i < _rows; i++) // Para cada fila
             {
-                _cellMatrix.Add(new List<NodeBasic>()); // Inicializa la lista de casillas de esa fila
+                _cellMatrix.Add(new List<Cell>()); // Inicializa la lista de casillas de esa fila
                 for (int j = 0; j < _columns; j++) // Para cada columna
                 {
                     float rowAxis = i * _cellsDimension.x;
@@ -73,7 +74,7 @@ namespace TestingStageWithBuilder
                     // En cellMatrix se van a ordenar primero por filas y luego por columnas,
                     // por lo que en la escena, las filas son representadas en el eje Z y las columnas en el eje X
                     GameObject cellObj = GameObject.Instantiate(cellPivotPrefab, new Vector3(columnAxis, 0f, rowAxis), Quaternion.identity, _transformParent); // Instancia la casilla en una posición
-                    _cellMatrix[i].Add(cellObj.GetComponent<NodeBasic>()); // Añade la casilla a la lista de la fila (a la matriz) de casillas
+                    _cellMatrix[i].Add(cellObj.GetComponent<Cell>()); // Añade la casilla a la lista de la fila (a la matriz) de casillas
                     // cellObj.name = "Cell " + "(" + i + "," + j + ")"; // Cambia el nombre del objeto
                     cellObj.name = $"Cell ({i},{j})"; // Cambia el nombre del objeto
                 }
@@ -137,13 +138,13 @@ namespace TestingStageWithBuilder
         #region Getters and Setters
 
         // Cambia el tipo de una casilla del tablero en la posición 'pos'
-        private void SetCellType(Vector2 pos, NodeBasic.CellTypeEnum typeEnum)
+        private void SetCellType(Vector2 pos, Cell.CellTypeEnum typeEnum)
         {
             _cellMatrix[(int)pos.x][(int)pos.y].CellType = typeEnum;
         }
 
         // Devuelve el tipo de casilla de una posición
-        public NodeBasic.CellTypeEnum GetCellType(Vector2 pos)
+        public Cell.CellTypeEnum GetCellType(Vector2 pos)
         {
             return _cellMatrix[(int)pos.x][(int)pos.y].CellType;
         }
@@ -175,7 +176,7 @@ namespace TestingStageWithBuilder
                 {
                     Vector2 cellPosition = new Vector2(rowCounter, columnCounter);
                     //Si intersecta con otro objeto, no se puede poner el obstáculo
-                    shouldBePlaced = GetCellType(cellPosition) == NodeBasic.CellTypeEnum.Floor;
+                    shouldBePlaced = GetCellType(cellPosition) == Cell.CellTypeEnum.Floor;
 
                     // Comprueba si la posicion es parte del rango o es del propio obstaculo
                     bool isWall = (rowCounter >= row && columnCounter >= column) &&
@@ -198,7 +199,7 @@ namespace TestingStageWithBuilder
             {
                 foreach (Vector2 candidate in obstacleCandidates)
                 {
-                    SetCellType(candidate, NodeBasic.CellTypeEnum.Obstacle);
+                    SetCellType(candidate, Cell.CellTypeEnum.Obstacle);
                 }
             }
         

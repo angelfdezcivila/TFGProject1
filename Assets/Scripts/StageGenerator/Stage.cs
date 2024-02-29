@@ -1,4 +1,6 @@
 using System.Collections.Generic;
+using Cellular;
+using FloorFields;
 using UnityEngine;
 
 namespace StageGenerator
@@ -10,17 +12,17 @@ namespace StageGenerator
         protected Vector3 _cellsDimension;
         protected int _rows;
         protected int _columns;
-        protected List<List<NodeBasic>> _cellMatrix; // Matriz de casillas
+        protected List<List<Cell>> _cellMatrix; // Matriz de casillas
         protected Transform _transformParent;
-        private List<NodeBasic> _exits;
-        private List<NodeBasic> _obstacles;
+        private List<Cell> _exits;
+        private List<Cell> _obstacles;
         
         private FloorField _staticFloorField;
         public FloorField StaticFloorField => _staticFloorField;
         
 
-        public List<NodeBasic> Exits => _exits;
-        public List<NodeBasic> Obstacles => _obstacles;
+        public List<Cell> Exits => _exits;
+        public List<Cell> Obstacles => _obstacles;
         public int Rows => _rows;
         public int Columns => _columns;
         public Vector2 CellsDimension
@@ -57,9 +59,9 @@ namespace StageGenerator
             _transformParent = transformParent;
             
             _numberOfBlocks = SetNumberOfBlocks();
-            _cellMatrix = new List<List<NodeBasic>>();
-            _exits = new List<NodeBasic>();
-            _obstacles = new List<NodeBasic>();
+            _cellMatrix = new List<List<Cell>>();
+            _exits = new List<Cell>();
+            _obstacles = new List<Cell>();
             
             _staticFloorField = DijkstraStaticFloorFieldWithMooreNeighbourhood.of(this);
             
@@ -104,7 +106,7 @@ namespace StageGenerator
         {
             for (int i = 0; i < _rows; i++) // Para cada fila
             {
-                _cellMatrix.Add(new List<NodeBasic>()); // Inicializa la lista de casillas de esa fila
+                _cellMatrix.Add(new List<Cell>()); // Inicializa la lista de casillas de esa fila
                 for (int j = 0; j < _columns; j++) // Para cada columna
                 {
                     float rowAxis = i * _cellsDimension.x;
@@ -113,9 +115,9 @@ namespace StageGenerator
                     // por lo que en la escena, las filas son representadas en el eje Z y las columnas en el eje X
                     GameObject cellObj = GameObject.Instantiate(_cellPrefab, new Vector3(columnAxis, 0f, rowAxis), Quaternion.identity, this._transformParent); // Instancia la casilla en una posición
                     cellObj.transform.localScale = _cellsDimension;
-                    NodeBasic nodeBasic = cellObj.GetComponent<NodeBasic>();
-                    nodeBasic.SetCellPosition(i, j);
-                    _cellMatrix[i].Add(nodeBasic); // Añade la casilla a la lista de la fila (a la matriz) de casillas
+                    Cell cell = cellObj.GetComponent<Cell>();
+                    cell.SetCellPosition(i, j);
+                    _cellMatrix[i].Add(cell); // Añade la casilla a la lista de la fila (a la matriz) de casillas
                     // cellObj.name = "Cell " + "(" + i + "," + j + ")"; // Cambia el nombre del objeto
                     cellObj.name = $"Cell ({i},{j})"; // Cambia el nombre del objeto
                 }
@@ -137,18 +139,18 @@ namespace StageGenerator
         #region Protected Getters and Setters
 
         // Cambia el tipo de una casilla del tablero en la posición 'pos'
-        protected void SetCellType(Vector2 pos, NodeBasic.CellTypeEnum type)
+        protected void SetCellType(Vector2 pos, Cell.CellTypeEnum type)
         {
             // _cellMatrix[(int)pos.x][(int)pos.y].CellType = type;
             GetRowColumnPosition(pos).CellType = type;
-            if (type == NodeBasic.CellTypeEnum.Exit)
+            if (type == Cell.CellTypeEnum.Exit)
                 _exits.Add(_cellMatrix[(int)pos.x][(int)pos.y]);
-            else if (type == NodeBasic.CellTypeEnum.Obstacle)
+            else if (type == Cell.CellTypeEnum.Obstacle)
                 _obstacles.Add(_cellMatrix[(int)pos.x][(int)pos.y]);
         }
 
         // Devuelve el tipo de casilla de una posición
-        protected NodeBasic.CellTypeEnum GetCellType(Vector2 pos)
+        protected Cell.CellTypeEnum GetCellType(Vector2 pos)
         {
             // return _cellMatrix[(int)pos.x][(int)pos.y].CellType;
             return GetRowColumnPosition(pos).CellType;
@@ -169,13 +171,13 @@ namespace StageGenerator
 
         #region Public Getters and Setters
         
-        public NodeBasic GetRowColumnPosition(Vector2 pos)
+        public Cell GetRowColumnPosition(Vector2 pos)
         {
             return _cellMatrix[(int)pos.x][(int)pos.y];
         }
         
         public bool IsCellBlocked(int row, int column) {
-            return GetCellType(new Vector2(row, column)) == NodeBasic.CellTypeEnum.Obstacle;
+            return GetCellType(new Vector2(row, column)) == Cell.CellTypeEnum.Obstacle;
         }
         
         public bool IsCellBlocked(Location location) {
@@ -184,7 +186,7 @@ namespace StageGenerator
         
         public bool IsCellExit(int row, int column)
         {
-            return GetCellType(new Vector2(row, column)) == NodeBasic.CellTypeEnum.Exit;
+            return GetCellType(new Vector2(row, column)) == Cell.CellTypeEnum.Exit;
         }
         
         public bool IsCellExit(Location location) {

@@ -1,10 +1,11 @@
 using System;
 using System.Collections.Generic;
+using Cellular;
 using JetBrains.Annotations;
 using StageGenerator;
 using UnityEngine;
 
-namespace Pedestrian
+namespace Pedestrians
 {
     public class Pedestrian : MonoBehaviour
     {
