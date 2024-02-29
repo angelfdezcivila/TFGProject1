@@ -22,6 +22,7 @@ public class DijkstraStaticFloorField : StaticFloorField {
     // Compute the shortest distances to any exit from each node
     // var priorityQueue = new PriorityQueue<MyNode>();
     Queue<MyNode> priorityQueue = new Queue<MyNode>();
+    // List<MyNode> priorityQueue = new List<MyNode>();
   
     // Initially distance to any exit is 0 and to any other non-blocked cell is Infinity
     for (int i = 0; i < getRows(); i++) {
@@ -29,6 +30,7 @@ public class DijkstraStaticFloorField : StaticFloorField {
         if (scenario.IsCellExit(i, j)) {
           staticFloorField[i,j] = 0;
           priorityQueue.Enqueue(new MyNode(i, j, staticFloorField[i,j]));
+          // priorityQueue.Add(new MyNode(i, j, staticFloorField[i,j]));  // Using a list instead of a Queue
         } else if (scenario.IsCellBlocked(i, j)) {
           staticFloorField[i,j] = (float)Double.MaxValue;
         } else {
@@ -43,6 +45,8 @@ public class DijkstraStaticFloorField : StaticFloorField {
   
     while (priorityQueue.Count != 0) {
       var node = priorityQueue.Dequeue();
+      // var node = priorityQueue[0];
+      // priorityQueue.RemoveAt(0);   // Using a list instead of a Queue
       float nodeDistance = staticFloorField[node.row,node.column];
       if (node.priority == nodeDistance) {
         // This is first extraction of node from PQ, hence it corresponds to its optimal cost, which is already
@@ -59,6 +63,7 @@ public class DijkstraStaticFloorField : StaticFloorField {
               // Shorter distance to neighbour was found: update
               staticFloorField[neighbour.row, neighbour.column] = newNeighbourDistance;
               priorityQueue.Enqueue(new MyNode(neighbour.row, neighbour.column, newNeighbourDistance));
+              // priorityQueue.Add(new MyNode(neighbour.row, neighbour.column, newNeighbourDistance));  // Using a list instead of a Queue
             }
           }
           priorityQueue.OrderBy(node => node.priority);

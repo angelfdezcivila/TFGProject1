@@ -353,6 +353,8 @@ public class CellularAutomaton{
         pedestriansIterator = (List<Pedestrian.Pedestrian>.Enumerator)ListExtensions.RemoveCurrent(inScenarioPedestrians, pedestriansIterator);
         // inScenarioPedestrians.Remove(pedestriansIterator.Current);
         // pedestriansIterator = inScenarioPedestrians.GetEnumerator();
+        
+        GameObject.Destroy(pedestrian.gameObject);
       }
       else
       {
