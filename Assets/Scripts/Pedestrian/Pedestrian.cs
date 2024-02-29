@@ -231,14 +231,16 @@ namespace Pedestrian
             List<Location> neighbours = automaton.Neighbours(row, column);
 
             // var movements = new List<TentativeMovement>(neighbours.size());
-            var movements = new List<TentativeMovement>();
-            movements.Capacity = neighbours.Count; //No se si funciona correctamente
-            float minDesirability = (float)Double.MaxValue;
+            List<TentativeMovement> movements = new List<TentativeMovement>
+            {
+                Capacity = neighbours.Count
+            };
+            double minDesirability = Double.MaxValue;
             foreach (Location neighbour in neighbours) {
                 if (automaton.IsCellReachable(neighbour))
                 {
                     // count reachable cells around new location
-                    var numberOfReachableCellsAround = 0;
+                    int numberOfReachableCellsAround = 0;
                     foreach (Location around in automaton.Neighbours(neighbour)) {
                         if (automaton.IsCellReachable(around))
                         {
@@ -258,7 +260,7 @@ namespace Pedestrian
             var gradientMovements = new List<TentativeMovement>(neighbours.Count);
             foreach (TentativeMovement m in movements)
                 gradientMovements.Add(new TentativeMovement(m.location,
-                    (float)DESIRABILITY_EPSILON + m.desirability - minDesirability));
+                    (float)DESIRABILITY_EPSILON + m.desirability - (float)minDesirability));
 
             return gradientMovements;
         }
@@ -281,8 +283,9 @@ namespace Pedestrian
                 }
 
                 // choose one movement according to discrete distribution of desirabilities
-                var chosen = Statistics.Discrete(movements, m => m.desirability);
-                return chosen.location;
+                TentativeMovement chosen = Statistics.Discrete(movements, m => m.desirability);
+                // return chosen.location;
+                return chosen.location != null ? chosen.location : null;
             }
             else
             {

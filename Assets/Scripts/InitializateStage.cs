@@ -29,7 +29,7 @@ public class InitializateStage : MonoBehaviour
                 .GUITimeFactor(8) // perform GUI animation x8 times faster than real time
                 .Build();
 
-        pedestrianPrefab.transform.localScale = cellsDimension;
+        // pedestrianPrefab.transform.localScale = cellsDimension;
         var automaton = new CellularAutomaton(cellularAutomatonParameters, pedestrianPrefab);
         
         Func<PedestrianParameters> pedestrianParametersSupplier = () =>

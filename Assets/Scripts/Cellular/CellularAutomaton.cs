@@ -52,7 +52,6 @@ public class CellularAutomaton{
   #endregion
   
   public readonly float TimePerTick;
-  private GameObject _pedestrianPrefab;
 
   #region Properties
 
@@ -85,7 +84,6 @@ public class CellularAutomaton{
     
     this.TimePerTick  = parameters.TimePerTick;
 
-    this._pedestrianPrefab = pedestrianPrefab;
     Reset();
   }
   
@@ -103,12 +101,13 @@ public class CellularAutomaton{
   #endregion
 
   private void ClearCells(bool[,] cells) {
-
+    // Debug.Log("A limpiar: " + cells.GetLength(0) + ", " + cells.GetLength(1));
     for (int i = 0; i < cells.GetLength(0); i++)
     {
       for (int j = 0; j < cells.GetLength(1); j++)
       {
         cells[i, j] = false;
+        // Debug.Log("Celda limpiada: " + cells[i, j]);
       }
     }
   }
@@ -345,7 +344,7 @@ public class CellularAutomaton{
       Pedestrian.Pedestrian pedestrian = pedestriansIterator.Current;
       int row = pedestrian.GetRow();
       int column = pedestrian.GetColumn();
-      Debug.Log(scenario.GetRowColumnPosition(new Vector2(row, column)));
+      // Debug.Log(scenario.GetRowColumnPosition(new Vector2(row, column)));
       if (scenario.IsCellExit(row, column))
       {
         pedestrian.SetExitTimeSteps(timeSteps);
@@ -409,6 +408,7 @@ public class CellularAutomaton{
   
   // private void RunCoroutine() {
   public IEnumerator RunCoroutine() {
+    scenario.StaticFloorField.initialize();
     timeSteps = 0;
     float timePerTick = parameters.TimePerTick / parameters.GUITimeFactor;
     // float timePerTick = 1; // Para poder ver cada tick
@@ -472,11 +472,16 @@ public class CellularAutomaton{
     int numberOfEvacuees = NumberOfEvacuees();
     float[] times = new float[numberOfEvacuees];
 
-    int i = 0;
-    foreach (Pedestrian.Pedestrian evacuee in outOfScenarioPedestrians) {
+    for (int i = 0; i < outOfScenarioPedestrians.Count; i++)
+    {
+      Pedestrian.Pedestrian evacuee = outOfScenarioPedestrians[i];
       times[i] = evacuee.getExitTimeSteps() * parameters.TimePerTick;
-      i += 1;
     }
+    // int i = 0;
+    // foreach (Pedestrian.Pedestrian evacuee in outOfScenarioPedestrians) {
+    //   times[i] = evacuee.getExitTimeSteps() * parameters.TimePerTick;
+    //   i += 1;
+    // }
 
     return times;
   }

@@ -28,31 +28,35 @@ public record Statistics(
             return false;
         }
     }
-    
-    public static T Discrete<T>(IEnumerable<T> collection, Func<T, float> desirability)
+
+    public static T Discrete<T>(List<T> collection, Func<T, float> desirability) 
+    // public static T Discrete<T>(IEnumerable<T> collection, Func<T, float> desirability)
     {
-        float sum = collection.Sum(item => desirability(item));
+        float sum = collection.Sum(desirability.Invoke);
+        // float sum = 0.0f;
+        // foreach (var element in collection) {
+        // sum += desirability.Invoke(element);
+        // }
         if (sum <= 0.0)
         {
             throw new ArgumentException("Discrete: sum of desirabilities must be larger than 0");
         }
-        else
+
+        // float choose = Random.value * sum;
+        float choose = Random.Range(0, sum);
+        sum = 0.0f;
+        foreach (var element in collection)
         {
-            float choose = Random.value * sum;
-            sum = 0.0f;
-            foreach (var element in collection)
+            sum += desirability(element);
+            if (sum > choose)
             {
-                sum += desirability(element);
-                if (sum > choose)
-                {
-                    return element;
-                }
+                return element;
             }
-            Debug.Log(sum);
-            throw new InvalidOperationException("Should not get here if the desirabilities sum to more than 0");
         }
+        Debug.Log("Discrete sum of desirability:" + sum);
+        throw new InvalidOperationException("Should not get here if the desirabilities sum to more than 0");
     }
-    
+
     public static float Mean(int[] data) {
         if (data == null || data.Length == 0) {
             throw new ArgumentException("mean: data cannot be empty");
