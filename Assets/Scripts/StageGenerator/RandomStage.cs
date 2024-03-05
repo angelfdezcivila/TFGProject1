@@ -8,7 +8,7 @@ namespace StageGenerator
     {
         
         public RandomStage(GameObject cellPrefab, Transform transformParent)
-            : base(cellPrefab, transformParent, new Vector3(0.4f, 0.4f, 0.4f), 45, 90)
+            : base(cellPrefab, transformParent, new Vector3(1f, 1f, 1f), 45, 90)
         {
         }
 

@@ -8,14 +8,14 @@ namespace Cellular
     , Neighbourhood Neighbourhood
     , float TimeLimit
     , float TimePerTick
-    , int GUITimeFactor
+    , float MultiplierSpeedFactor
   ) {
   
     public Stage Scenario { get; set; } = Scenario;
     public Neighbourhood Neighbourhood { get; set; } = Neighbourhood;
     public float TimeLimit { get; set; } = TimeLimit;
     public float TimePerTick { get; set; } = TimePerTick;
-    public int GUITimeFactor { get; set; } = GUITimeFactor;
+    public float MultiplierSpeedFactor { get; set; } = MultiplierSpeedFactor;
 
     /**
    * Classes for building cellular automaton parameters by providing each one.
@@ -50,13 +50,13 @@ namespace Cellular
         public float _timeLimit;
         private Neighbourhood _neighbourhood;
         private float _timePerTick;
-        private int _GUITimeFactor;
+        private float _multiplierSpeedFactor;
 
         public BuilderWithScenarioWithTimeLimit(BuilderWithScenario builder) {
           this._stage = builder._stage;
           this._neighbourhood = VonNeumannNeighbourhood.of(_stage); // default neighbourhood
           this._timePerTick = 0.4f; // default is 0.4 secs per tick
-          this._GUITimeFactor = 20; // default GUI time is x20 faster
+          this._multiplierSpeedFactor = 20; // default GUI time is x20 faster
         }
 
         /**
@@ -87,20 +87,23 @@ namespace Cellular
        *                       in accordance with scenario's cell dimensions.
        */
         public BuilderWithScenarioWithTimeLimit PedestrianReferenceVelocity(float pedestrianReferenceVelocity) {
-          this._timePerTick = pedestrianReferenceVelocity * _stage.CellsDimension.x;
+          // TODO: Aquí se está suponiendo que las celdas son cuadradas, pero en caso de poder no serlo se debería de cambiar esta operación
+          // Por ahora no se va a tener en cuenta las dimensiones de las celdas para la velocidad de los agentes ya que los agentes van a tener el tamaño de las celdas
+          // this._timePerTick = pedestrianReferenceVelocity * _stage.CellsDimension.x;
+          this._timePerTick = pedestrianReferenceVelocity;
           return this;
         }
 
         /**
        * @param GUITimeFactor Acceleration for rendering animation wrt real time.
        */
-        public BuilderWithScenarioWithTimeLimit GUITimeFactor(int GUITimeFactor) {
-          this._GUITimeFactor = GUITimeFactor;
+        public BuilderWithScenarioWithTimeLimit MultiplierSpeedFactor(float multiplierSpeedFactor) {
+          this._multiplierSpeedFactor = multiplierSpeedFactor;
           return this;
         }
 
         public CellularAutomatonParameters Build() {
-          return new CellularAutomatonParameters(_stage, _neighbourhood, _timeLimit, _timePerTick, _GUITimeFactor);
+          return new CellularAutomatonParameters(_stage, _neighbourhood, _timeLimit, _timePerTick, _multiplierSpeedFactor);
         }
       }
     

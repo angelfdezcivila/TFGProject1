@@ -39,11 +39,11 @@ namespace Cellular
     /**
    * List of pedestrians currently within the scenario.
    */
-    protected readonly List<Pedestrians.Pedestrian> inScenarioPedestrians;
+    protected readonly List<Pedestrian> inScenarioPedestrians;
     /**
    * List of pedestrians that have evacuated the scenario.
    */
-    protected readonly List<Pedestrians.Pedestrian> outOfScenarioPedestrians;
+    protected readonly List<Pedestrian> outOfScenarioPedestrians;
     /**
    * Number of discrete time steps elapsed since the start of the simulation.
    */
@@ -59,13 +59,11 @@ namespace Cellular
     public int Columns => scenario.Columns;
     
     /// <summary>
-    /// Tiempo visible entre cada movimiento de los agentes como grupo.
+    /// Tiempo de cada tick de la animación entre cada movimiento de los agentes como grupo.
     /// </summary>
-    public float RealTimePerTick => parameters.TimePerTick / parameters.GUITimeFactor;
+    public float RealTimePerTick => parameters.TimePerTick / parameters.MultiplierSpeedFactor;
     // public float RealTimePerTick => 1;  // Para poder ver cada tick
-
-
-
+    
     #endregion
   
     private static Action<PedestrianParameters> GetPedestrianParameters;
@@ -129,7 +127,7 @@ namespace Cellular
       if (row < 0 || row >= Rows) throw new ArgumentOutOfRangeException("AddPedestrian: invalid row");
       if (column < 0 || column >= Columns) throw new ArgumentOutOfRangeException("AddPedestrian: invalid column");
       if (IsCellReachable(row, column)) {
-        Pedestrians.Pedestrian pedestrian = pedestrianFactory.GetInstance(row, column, parameters);
+        Pedestrian pedestrian = pedestrianFactory.GetInstance(row, column, parameters);
         occupied[row, column] = true;
         inScenarioPedestrians.Add(pedestrian);
         return true;
@@ -435,7 +433,7 @@ namespace Cellular
 
     public void Paint()
     {
-      foreach (Pedestrians.Pedestrian pedestrian in inScenarioPedestrians)
+      foreach (Pedestrian pedestrian in inScenarioPedestrians)
       {
         pedestrian.paint();
       }
@@ -446,25 +444,21 @@ namespace Cellular
    *
    * @return number of evacuees.
    */
-    public int NumberOfEvacuees() {
-      return outOfScenarioPedestrians.Count;
-    }
+    private int NumberOfEvacuees => outOfScenarioPedestrians.Count;
 
     /**
    * Returns number of non evacuees (number of pedestrians still inside scenario).
    *
    * @return number of non evacuees.
    */
-    public int NumberOfNonEvacuees() {
-      return inScenarioPedestrians.Count;
-    }
+    private int NumberOfNonEvacuees => inScenarioPedestrians.Count;
 
     /**
    * Returns evacuation times for evacuees.
    * @return evacuation times for evacuees.
    */
-    public float[] EvacuationTimes() {
-      int numberOfEvacuees = NumberOfEvacuees();
+    private float[] EvacuationTimes() {
+      int numberOfEvacuees = NumberOfEvacuees;
       float[] times = new float[numberOfEvacuees];
 
       for (int i = 0; i < outOfScenarioPedestrians.Count; i++)
@@ -487,7 +481,7 @@ namespace Cellular
    * @return distances to closest exit for each non evacuee.
    */
     public float[] distancesToClosestExit() {
-      int numberOfNonEvacuees = NumberOfNonEvacuees();
+      int numberOfNonEvacuees = NumberOfNonEvacuees;
       float[] shortestDistances = new float[numberOfNonEvacuees];
 
       int i = 0;
@@ -498,6 +492,7 @@ namespace Cellular
           if (distance < shortestDistance)
             shortestDistance = distance;
         }
+        // TODO: comprobar si afecta que las celdas sean cuadradas o no
         shortestDistances[i] = (float)(shortestDistance * GetScenario().CellsDimension.x);
         i += 1;
       }
@@ -511,7 +506,7 @@ namespace Cellular
    * @return statistics collected after running simulation.
    */
     public Statistics computeStatistics() {
-      int numberOfEvacuees = NumberOfEvacuees();
+      int numberOfEvacuees = NumberOfEvacuees;
       float[] evacuationTimes = EvacuationTimes();
       int[] steps = new int[numberOfEvacuees];
 
@@ -525,7 +520,7 @@ namespace Cellular
       float meanEvacuationTime = Statistics.Mean(evacuationTimes);
       float medianSteps = Statistics.Median(steps);
       float medianEvacuationTime = Statistics.Median(evacuationTimes);
-      int numberOfNonEvacuees = NumberOfNonEvacuees();
+      int numberOfNonEvacuees = NumberOfNonEvacuees;
 
       return new Statistics(meanSteps, meanEvacuationTime
         , medianSteps, medianEvacuationTime

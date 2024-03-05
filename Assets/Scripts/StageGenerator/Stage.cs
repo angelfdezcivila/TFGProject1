@@ -7,17 +7,17 @@ namespace StageGenerator
 {
     public abstract class Stage
     {
-        protected GameObject _cellPrefab;
-        protected int _numberOfBlocks;
-        protected Vector3 _cellsDimension;
-        protected int _rows;
-        protected int _columns;
-        protected List<List<Cell>> _cellMatrix; // Matriz de casillas
-        protected Transform _transformParent;
-        private List<Cell> _exits;
-        private List<Cell> _obstacles;
+        private protected GameObject _cellPrefab;
+        private protected int _numberOfBlocks;
+        private protected Vector3 _cellsDimension;
+        private protected int _rows;
+        private protected int _columns;
+        private protected List<List<Cell>> _cellMatrix; // Matriz de casillas
+        private protected Transform _transformParent;
+        private protected List<Cell> _exits;
+        private protected List<Cell> _obstacles;
         
-        private FloorField _staticFloorField;
+        private protected FloorField _staticFloorField;
         public FloorField StaticFloorField => _staticFloorField;
         
 
@@ -25,10 +25,7 @@ namespace StageGenerator
         public List<Cell> Obstacles => _obstacles;
         public int Rows => _rows;
         public int Columns => _columns;
-        public Vector2 CellsDimension
-        {
-            get { return new Vector2(_cellsDimension.x, _cellsDimension.z); }
-        }
+        public Vector3 CellsDimension => _cellsDimension;
 
         #region Constructors
 
