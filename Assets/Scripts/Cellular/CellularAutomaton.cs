@@ -513,7 +513,7 @@ namespace Cellular
       int i = 0;
       foreach (Pedestrians.Pedestrian pedestrian in outOfScenarioPedestrians) {
         steps[i] = pedestrian.getNumberOfSteps();
-        Debug.Log("Step: " + steps[i]);
+        // Debug.Log("Step: " + steps[i]);
         i += 1;
       }
       float meanSteps = Statistics.Mean(steps);

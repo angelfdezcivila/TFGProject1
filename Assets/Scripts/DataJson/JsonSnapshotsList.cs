@@ -1,27 +1,28 @@
 using System;
 using System.Collections.Generic;
+using UnityEngine.Serialization;
 
 namespace DataJson
 {
     [Serializable]
     public class JsonSnapshotsList
     {
-        public List<SnapshotsEntryJson> battleActionList;
+        public List<JsonCrowdList> snapshots;
     
         public JsonSnapshotsList()
         {
-            battleActionList = new List<SnapshotsEntryJson>();
-            battleActionList.Add(new SnapshotsEntryJson(3));
+            snapshots = new List<JsonCrowdList>();
+            // snapshots.Add(new JsonCrowdList());
         }
 
-        public JsonSnapshotsList(JsonSnapshotsList battleActionList)
+        public JsonSnapshotsList(JsonSnapshotsList snapshotsList)
         {
-            this.battleActionList = battleActionList.battleActionList;
+            this.snapshots = snapshotsList.snapshots;
         }
 
-        public void AddActionToList(SnapshotsEntryJson action)
+        public void AddActionToList(JsonCrowdList crowdList)
         {
-            battleActionList.Add(action);
+            snapshots.Add(crowdList);
         }
     }
 }
