@@ -63,6 +63,7 @@ namespace Cellular
     /// </summary>
     public float RealTimePerTick => parameters.TimePerTick / parameters.MultiplierSpeedFactor;
     // public float RealTimePerTick => 1;  // Para poder ver cada tick
+    // public float RealTimePerTick => 0.52f/8; // tick visible en la simulacion de pepe
     
     #endregion
   
