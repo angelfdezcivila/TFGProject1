@@ -15,7 +15,7 @@ namespace Cellular
     /**
    * Scenario where simulation takes place.
    */
-    protected Stage scenario;
+    protected Stage stage;
     /**
    * Parameters describing this automaton.
    */
@@ -50,13 +50,17 @@ namespace Cellular
     protected int timeSteps;
   
     #endregion
-  
+    
+    
+    private GameObject _pedestrianContainer;
 
     #region Properties
+    
+    public GameObject PedestrianContainer => _pedestrianContainer;
 
-    public int Rows => scenario.Rows;
+    public int Rows => stage.Rows;
 
-    public int Columns => scenario.Columns;
+    public int Columns => stage.Columns;
     
     /// <summary>
     /// Tiempo de cada tick de la animación entre cada movimiento de los agentes como grupo.
@@ -67,7 +71,8 @@ namespace Cellular
     
     #endregion
   
-    private static Action<PedestrianParameters> GetPedestrianParameters;
+    // private static Action<PedestrianParameters> GetPedestrianParameters;
+    public CellularAutomatonParameters CellularAutomatonParameters => parameters;
 
     #region Constructor
 
@@ -78,10 +83,10 @@ namespace Cellular
    */
     public CellularAutomaton(CellularAutomatonParameters parameters, GameObject pedestrianPrefab) {
       this.parameters = parameters;
-      this.scenario = parameters.Scenario;
+      this.stage = parameters.Scenario;
       this.neighbourhood = parameters.Neighbourhood;
-      this.occupied = new bool[scenario.Rows,scenario.Columns];
-      this.occupiedNextState = new bool[scenario.Rows,scenario.Columns];
+      this.occupied = new bool[stage.Rows,stage.Columns];
+      this.occupiedNextState = new bool[stage.Rows,stage.Columns];
       this.pedestrianFactory = new PedestrianFactory(this, pedestrianPrefab);
 
       // this.inScenarioPedestrians = Collections.synchronizedList(new List<>());
@@ -96,6 +101,8 @@ namespace Cellular
  * and elapsed time steps are set to 0.
  */
     private void Reset() {
+      _pedestrianContainer = GameObject.Instantiate(new GameObject(), Vector3.zero, Quaternion.identity);
+      _pedestrianContainer.name = "Pedestrians";
       ClearCells(occupied);
       inScenarioPedestrians.Clear();
       outOfScenarioPedestrians.Clear();
@@ -244,7 +251,7 @@ namespace Cellular
       if (column < 0 || column >= Columns)
         throw new ArgumentException("isCellReachable: invalid column");
     
-      return !occupied[row,column] && !scenario.IsCellBlocked(row, column);
+      return !occupied[row,column] && !stage.IsCellBlocked(row, column);
     }
 
     /**
@@ -292,7 +299,7 @@ namespace Cellular
    * @return scenario where automaton is running.
    */
     public Stage GetScenario() {
-      return scenario;
+      return stage;
     }
 
     public static class ListExtensions
@@ -349,7 +356,7 @@ namespace Cellular
         int row = pedestrian.GetRow();
         int column = pedestrian.GetColumn();
         // Debug.Log(scenario.GetRowColumnPosition(new Vector2(row, column)));
-        if (scenario.IsCellExit(row, column))
+        if (stage.IsCellExit(row, column))
         {
           pedestrian.SetExitTimeSteps(timeSteps);
           outOfScenarioPedestrians.Add(pedestrian);
@@ -428,7 +435,7 @@ namespace Cellular
 
     public void InitializeStaticFloor()
     {
-      scenario.StaticFloorField.initialize();
+      stage.StaticFloorField.initialize();
       timeSteps = 0;
     }
 
@@ -591,5 +598,14 @@ namespace Cellular
     //
     //   return result;
     // }
+    public void DestroyAutomatons()
+    {
+        GameObject.Destroy(_pedestrianContainer);
+        // foreach (Pedestrian pedestrian in inScenarioPedestrians)
+        // {
+        //     GameObject.Destroy(pedestrian);
+        //     // inScenarioPedestrians.Remove(pedestrian);
+        // }
+    }
   }
 }

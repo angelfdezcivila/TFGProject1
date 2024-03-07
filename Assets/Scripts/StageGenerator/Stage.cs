@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using Cellular;
+using Events;
 using FloorFields;
 using UnityEngine;
 
@@ -16,11 +17,9 @@ namespace StageGenerator
         private protected Transform _transformParent;
         private protected List<Cell> _exits;
         private protected List<Cell> _obstacles;
-        
         private protected FloorField _staticFloorField;
+        private GameObject _cellsContainer;
         public FloorField StaticFloorField => _staticFloorField;
-        
-
         public List<Cell> Exits => _exits;
         public List<Cell> Obstacles => _obstacles;
         public int Rows => _rows;
@@ -84,7 +83,8 @@ namespace StageGenerator
         private void Start()
         {
             // InitializeConstants(cellPivotPrefab, new Vector2(1f, 1f), 10, 10);
-            
+            _cellsContainer = GameObject.Instantiate(new GameObject(), Vector3.zero, Quaternion.identity, _transformParent);
+            _cellsContainer.name = "Cells";
             InitializeBoard();
             CalculateExit();
             CalculateObstacle();
@@ -110,7 +110,8 @@ namespace StageGenerator
                     float columnAxis = j * _cellsDimension.z;
                     // En cellMatrix se van a ordenar primero por filas y luego por columnas,
                     // por lo que en la escena, las filas son representadas en el eje Z y las columnas en el eje X
-                    GameObject cellObj = GameObject.Instantiate(_cellPrefab, new Vector3(columnAxis, 0f, rowAxis), Quaternion.identity, this._transformParent); // Instancia la casilla en una posición
+                    // GameObject cellObj = GameObject.Instantiate(_cellPrefab, new Vector3(columnAxis, 0f, rowAxis), Quaternion.identity, this._transformParent); // Instancia la casilla en una posición
+                    GameObject cellObj = GameObject.Instantiate(_cellPrefab, new Vector3(columnAxis, 0f, rowAxis), Quaternion.identity, _cellsContainer.transform); // Instancia la casilla en una posición
                     cellObj.transform.localScale = _cellsDimension;
                     Cell cell = cellObj.GetComponent<Cell>();
                     cell.SetCellPosition(i, j);
@@ -166,7 +167,13 @@ namespace StageGenerator
 
         #endregion
 
-        #region Public Getters and Setters
+        #region Public methods
+
+        public void DestroyStage()
+        {
+            // GameObject.DestroyImmediate(_cellsContainer);
+            GameObject.Destroy(_cellsContainer);
+        }
         
         public Cell GetRowColumnPosition(Vector2 pos)
         {

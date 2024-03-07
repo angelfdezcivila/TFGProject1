@@ -37,7 +37,7 @@ public class InitializateStage : MonoBehaviour
         _pedestriansVelocity = 1.3f;
         _multiplierSpeed = 8;
         
-        ParametersEvents.OnUpdateStageParameters += UpdateParameters; 
+        ParametersEvents.OnUpdateStageParameters += UpdateParameters;
         ParametersEvents.OnPlaySimulation += StartSimulation;
     }
     
@@ -49,6 +49,14 @@ public class InitializateStage : MonoBehaviour
     
     private void StartSimulation()
     {
+        if (_stage != null)
+        {
+            Debug.Log("Destruiiiir");
+            StopAllCoroutines();
+            _stage.DestroyStage();
+            _automaton.DestroyAutomatons();
+        }
+        
         Debug.Log(_pedestriansVelocity);
         // _stageBuilder = RandomStageWithBuilder.getRandomStage(cellsPrefab, transform);
         // _stage = new RandomStage(cellsPrefab, transform, new Vector3(0.9f, 0.75f, 0.9f), 40, 90);
@@ -141,7 +149,25 @@ public class InitializateStage : MonoBehaviour
 
     private void UpdateParameters(float pedestriansVelocity, float multiplierSpeed)
     {
+        // UpdateTimeLimit(timeLimit);
+        UpdatePedestriansVelocity(pedestriansVelocity);
+        UpdateMultiplierSpeed(multiplierSpeed);
         _pedestriansVelocity = pedestriansVelocity;
+        _multiplierSpeed = multiplierSpeed;
+    }
+    
+    private void UpdateTimeLimit(float timeLimit)
+    {
+        _timeLimit = timeLimit;
+    }
+    
+    private void UpdatePedestriansVelocity(float pedestriansVelocity)
+    {
+        _pedestriansVelocity = pedestriansVelocity;
+    }
+    
+    private void UpdateMultiplierSpeed(float multiplierSpeed)
+    {
         _multiplierSpeed = multiplierSpeed;
     }
 
