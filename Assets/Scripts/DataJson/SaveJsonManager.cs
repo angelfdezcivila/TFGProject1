@@ -5,9 +5,9 @@ namespace DataJson
 {
     public static class SaveJsonManager
     {
-        public static void SaveScoreJson(string path, JsonSnapshotsList battleActionList)
+        public static void SaveScoreJson(string path, JsonSnapshotsList snapshotsList)
         {
-            JsonSnapshotsList battleActionsList = new JsonSnapshotsList(battleActionList);
+            JsonSnapshotsList battleActionsList = new JsonSnapshotsList(snapshotsList);
             string json = JsonUtility.ToJson(battleActionsList);
 
             using (StreamWriter streamWriter = new StreamWriter(path))

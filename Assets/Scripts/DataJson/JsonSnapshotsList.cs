@@ -20,7 +20,7 @@ namespace DataJson
             this.snapshots = snapshotsList.snapshots;
         }
 
-        public void AddActionToList(JsonCrowdList crowdList)
+        public void AddCrowdsToList(JsonCrowdList crowdList)
         {
             snapshots.Add(crowdList);
         }

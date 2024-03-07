@@ -56,14 +56,14 @@ namespace FloorFields
           // update if they improve current ones
           foreach (var neighbour in neighbourhood.Neighbours(node.row, node.column)) {
             if (!scenario.IsCellBlocked(neighbour)) {
-              int rowdiff = neighbour.row - node.row;
-              int coldiff = neighbour.column - node.column;
+              int rowdiff = neighbour.Row - node.row;
+              int coldiff = neighbour.Column - node.column;
               float delta = Mathf.Sqrt(rowdiff*rowdiff + coldiff*coldiff);
               float newNeighbourDistance = nodeDistance + delta;
-              if (newNeighbourDistance < staticFloorField[neighbour.row, neighbour.column]) {
+              if (newNeighbourDistance < staticFloorField[neighbour.Row, neighbour.Column]) {
                 // Shorter distance to neighbour was found: update
-                staticFloorField[neighbour.row, neighbour.column] = newNeighbourDistance;
-                priorityQueue.Enqueue(new MyNode(neighbour.row, neighbour.column, newNeighbourDistance));
+                staticFloorField[neighbour.Row, neighbour.Column] = newNeighbourDistance;
+                priorityQueue.Enqueue(new MyNode(neighbour.Row, neighbour.Column, newNeighbourDistance));
                 // priorityQueue.Add(new MyNode(neighbour.row, neighbour.column, newNeighbourDistance));  // Using a list instead of a Queue
               }
             }

@@ -106,10 +106,7 @@ namespace Pedestrians
          *
          * @return unique identifier corresponding to this pedestrian.
          */
-        public int getIdentifier()
-        {
-            return identifier;
-        }
+        public int Identifier => identifier;
 
         /**
          * Row in scenario where this pedestrian is currently located.
@@ -172,7 +169,7 @@ namespace Pedestrians
          */
         public void moveTo(Location location)
         {
-            moveTo(location.row, location.column);
+            moveTo(location.Row, location.Column);
         }
 
         /**

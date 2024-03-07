@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using DataJson;
 using Pedestrians;
 using StageGenerator;
 using UnityEngine;
@@ -67,6 +68,7 @@ namespace Cellular
     /// </summary>
     public float RealTimePerTick => parameters.TimePerTick / parameters.MultiplierSpeedFactor;
     // public float RealTimePerTick => 1;  // Para poder ver cada tick
+    // parameters.TimePerTick = 1.3 * 0.4 = 0.52;
     // public float RealTimePerTick => 0.52f/8; // tick visible en la simulacion de pepe
     
     #endregion
@@ -152,7 +154,7 @@ namespace Cellular
    * @return {@code true} if pedestrian could be created (location was neither blocked nor taken by another pedestrian).
    */
     public bool AddPedestrian(Location location, PedestrianParameters parameters) {
-      return AddPedestrian(location.row, location.column, parameters);
+      return AddPedestrian(location.Row, location.Column, parameters);
     }
 
     /**
@@ -208,7 +210,7 @@ namespace Cellular
    * @return neighbours a cell.
    */
     public List<Location> Neighbours(Location location) {
-      return Neighbours(location.row, location.column);
+      return Neighbours(location.Row, location.Column);
     }
 
     /**
@@ -234,7 +236,7 @@ namespace Cellular
    * @return {@code true} if cell is occupied by some pedestrian.
    */
     public bool IsCellOccupied(Location location) {
-      return IsCellOccupied(location.row, location.column);
+      return IsCellOccupied(location.Row, location.Column);
     }
 
     /**
@@ -262,7 +264,7 @@ namespace Cellular
    * @return {@code true} if cell can be reached by some pedestrian.
    */
     public bool IsCellReachable(Location location) {
-      return IsCellReachable(location.row, location.column);
+      return IsCellReachable(location.Row, location.Column);
     }
 
     /**
@@ -290,7 +292,7 @@ namespace Cellular
    * simulation.
    */
     public bool WillBeOccupied(Location location) {
-      return WillBeOccupied(location.row, location.column);
+      return WillBeOccupied(location.Row, location.Column);
     }
 
     /**
@@ -347,21 +349,22 @@ namespace Cellular
       // inScenarioPedestrians.ForEach(pedestrian => Debug.Log(pedestrian));
       // Debug.Log("SHUFFLED");
 
-      List<Pedestrians.Pedestrian>.Enumerator pedestriansIterator = inScenarioPedestrians.GetEnumerator();
+      List<Pedestrian>.Enumerator pedestriansIterator = inScenarioPedestrians.GetEnumerator();
       // List<Pedestrian.Pedestrian> pedestriansIterator = inScenarioPedestrians;
     
       while (pedestriansIterator.MoveNext())
       {
-        Pedestrians.Pedestrian pedestrian = pedestriansIterator.Current;
+        Pedestrian pedestrian = pedestriansIterator.Current;
         int row = pedestrian.GetRow();
         int column = pedestrian.GetColumn();
         // Debug.Log(scenario.GetRowColumnPosition(new Vector2(row, column)));
         if (stage.IsCellExit(row, column))
         {
+          // Debug.Log("Exit : " + row + ", " + column);
           pedestrian.SetExitTimeSteps(timeSteps);
           outOfScenarioPedestrians.Add(pedestrian);
           // Remove current pedestrian from the list
-          pedestriansIterator = (List<Pedestrians.Pedestrian>.Enumerator)ListExtensions.RemoveCurrent(inScenarioPedestrians, pedestriansIterator);
+          pedestriansIterator = (List<Pedestrian>.Enumerator)ListExtensions.RemoveCurrent(inScenarioPedestrians, pedestriansIterator);
           // inScenarioPedestrians.Remove(pedestriansIterator.Current);
           // pedestriansIterator = inScenarioPedestrians.GetEnumerator();
         
@@ -378,7 +381,7 @@ namespace Cellular
               pedestrian.doNotMove();
             } else {
               // move to new location
-              occupiedNextState[location.row,location.column] = true;
+              occupiedNextState[location.Row,location.Column] = true;
               pedestrian.moveTo(location);
             }
           }
@@ -408,7 +411,7 @@ namespace Cellular
     public bool SimulationShouldContinue()
     {
       float maximalTimeSteps = parameters.TimeLimit / parameters.TimePerTick;
-      Debug.Log(parameters.TimeLimit + "/" + parameters.TimePerTick + " = " + maximalTimeSteps);
+      // Debug.Log(parameters.TimeLimit + "/" + parameters.TimePerTick + " = " + maximalTimeSteps);
       return SimulationShouldContinue(maximalTimeSteps);
     }
   
@@ -536,68 +539,49 @@ namespace Cellular
     }
 
 
-    // private static JsonObject jsonPedestrian(int id, int domain, int row, int column) {
-    //   JsonObject pedestrian = new JsonObject();
-    //   pedestrian.put("id", id);
-    //
-    //   JsonObject location = new JsonObject();
-    //   location.put("domain", domain);
-    //
-    //   JsonObject coordinates = new JsonObject();
-    //   coordinates.put("X", column);
-    //   coordinates.put("Y", row);
-    //
-    //   location.put("coordinates", coordinates);
-    //   pedestrian.put("location", location);
-    //
-    //   return pedestrian;
-    // }
-    //
-    // private static JsonObject jsonSnapshot(double timestamp, JsonArray crowd) {
-    //   JsonObject snapshot = new JsonObject();
-    //   snapshot.put("timestamp", timestamp);
-    //   snapshot.put("crowd", crowd);
-    //   return snapshot;
-    // }
-    //
-    // /**
-    //  * Json representing traces of all pedestrians through the scenario.
-    //  *
-    //  * @return Json representing traces of all pedestrians through the scenario.
-    //  */
-    // public JsonObject jsonTrace() {
-    //   var domain = 0; // todo currently there is only a single domain
-    //
-    //   // Create an empty JsonArray for the snapshots
-    //   JsonArray snapshots = new JsonArray();
-    //
-    //   List<Pedestrian> allPedestrians = new ArrayList<>();
-    //   allPedestrians.addAll(inScenarioPedestrians);
-    //   allPedestrians.addAll(outOfScenarioPedestrians);
-    //   allPedestrians.sort(Comparator.comparing(Pedestrian::getIdentifier));
-    //
-    //   // Create snapshots
-    //   for (int t = 0; t < timeSteps; t++) {
-    //     JsonArray crowd = new JsonArray();
-    //     for (var pedestrian : allPedestrians) {
-    //       var path = pedestrian.getPath();
-    //       if (path.size() > t) {
-    //         var location = path.get(t);
-    //         crowd.add(jsonPedestrian(pedestrian.getIdentifier()
-    //             , domain
-    //             , location.row()
-    //             , location.column()));
-    //       }
-    //     }
-    //     snapshots.add(jsonSnapshot(t, crowd));
-    //   }
-    //
-    //   // Create the final JsonObject with the snapshots array
-    //   JsonObject result = new JsonObject();
-    //   result.put("snapshots", snapshots);
-    //
-    //   return result;
-    // }
+    private static CrowdEntryJson JsonPedestrian(int id, int domain, int row, int column)
+    {
+      LocationJson locationJson = new LocationJson(domain, new Vector2(row, column));
+      CrowdEntryJson crowdJson = new CrowdEntryJson(locationJson, id);
+    
+      return crowdJson;
+    }
+    
+    /**
+    /**
+     * Json representing traces of all pedestrians through the scenario.
+     *
+     * @return Json representing traces of all pedestrians through the scenario.
+     */
+    public JsonSnapshotsList JsonTrace() {
+      int domain = 0; // todo currently there is only a single domain
+    
+      // Create an empty JsonArray for the snapshots
+      JsonSnapshotsList snapshots = new JsonSnapshotsList();
+    
+      List<Pedestrian> allPedestrians = new List<Pedestrian>();
+      inScenarioPedestrians.ForEach(pedestrian => allPedestrians.Add(pedestrian));
+      outOfScenarioPedestrians.ForEach(pedestrian => allPedestrians.Add(pedestrian));
+      allPedestrians.Sort((p1, p2) => p1.Identifier.CompareTo(p2.Identifier));
+      // allPedestrians.sort(Comparator.comparing(Pedestrian::getIdentifier));
+    
+      // Create snapshots
+      for (int t = 0; t < timeSteps; t++) {
+        JsonCrowdList crowd = new JsonCrowdList();
+        foreach (Pedestrian pedestrian in allPedestrians) {
+          List<Location> path = pedestrian.getPath();
+          if (path.Count > t)
+          {
+            Location location = path[t];
+            crowd.AddCrowdToList(JsonPedestrian(pedestrian.Identifier, domain, location.Row, location.Column));
+            crowd.timestamp = t;
+          }
+        }
+        snapshots.AddCrowdsToList(crowd);
+      }
+
+      return snapshots;
+    }
     public void DestroyAutomatons()
     {
         GameObject.Destroy(_pedestrianContainer);

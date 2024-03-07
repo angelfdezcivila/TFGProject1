@@ -57,7 +57,7 @@ namespace StageGenerator
         }
         
         public float DistanceTo(Location location) {
-            return DistanceTo(location.row, location.column);
+            return DistanceTo(location.Row, location.Column);
         }
         
         public int distanceSqr(int row, int column) {

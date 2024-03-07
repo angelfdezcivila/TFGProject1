@@ -17,7 +17,7 @@ namespace DataJson
         }
     
     
-        public LocationJson(Vector2 coordinates, int domain)
+        public LocationJson(int domain, Vector2 coordinates)
         {
             this.domain = domain;
             this.coordinates = coordinates;

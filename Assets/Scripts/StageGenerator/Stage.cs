@@ -185,7 +185,7 @@ namespace StageGenerator
         }
         
         public bool IsCellBlocked(Location location) {
-            return IsCellBlocked(location.row, location.column);
+            return IsCellBlocked(location.Row, location.Column);
         }
         
         public bool IsCellExit(int row, int column)
@@ -194,7 +194,7 @@ namespace StageGenerator
         }
         
         public bool IsCellExit(Location location) {
-            return IsCellExit(location.row, location.column);
+            return IsCellExit(location.Row, location.Column);
         }
     
         #endregion

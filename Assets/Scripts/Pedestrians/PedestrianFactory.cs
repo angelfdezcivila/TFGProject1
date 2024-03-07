@@ -25,7 +25,7 @@ namespace Pedestrians
         }
 
         public Pedestrian GetInstance(Location location, PedestrianParameters parameters) {
-            return GetInstance(location.row, location.column, parameters);
+            return GetInstance(location.Row, location.Column, parameters);
         }
     }
 }

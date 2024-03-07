@@ -18,6 +18,6 @@ public interface Neighbourhood {
      * @return locations of all cells in neighborhood of cell.
      */
     List<Location> Neighbours(Location location) {
-        return Neighbours(location.row, location.column);
+        return Neighbours(location.Row, location.Column);
     }
 }

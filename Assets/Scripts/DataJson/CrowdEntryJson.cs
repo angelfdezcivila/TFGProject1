@@ -13,8 +13,7 @@ namespace DataJson
             location = new LocationJson();
             id = 0;
         }
-    
-    
+        
         public CrowdEntryJson(LocationJson location, int id)
         {
             this.location = location;

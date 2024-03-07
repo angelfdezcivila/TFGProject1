@@ -100,11 +100,12 @@ public class InitializateStage : MonoBehaviour
     
     private void SaveInJson()
     {
-        JsonSnapshotsList list = new JsonSnapshotsList();
+        JsonSnapshotsList list = _automaton.JsonTrace();
+        // JsonSnapshotsList list = new JsonSnapshotsList();
         SaveJsonManager.SaveScoreJson(JsonScoreFilePath, list);
     }
 
-    #region RunAutomatonWithoutcoroutines
+    #region RunAutomatonWithoutCoroutines
 
     //Este método debería de ir en un update
 

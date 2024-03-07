@@ -1,8 +1,8 @@
 namespace Cellular
 {
-    public record Location(int row, int column)
+    public record Location(int Row, int Column)
     {
-        public int row { get; set; } = row;
-        public int column { get; set; } = column;
+        public int Row { get; set; } = Row;
+        public int Column { get; set; } = Column;
     }
 }

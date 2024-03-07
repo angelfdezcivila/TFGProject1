@@ -32,7 +32,7 @@ namespace FloorFields
         }
 
         public float getField(Location location) {
-            return getField(location.row, location.column);
+            return getField(location.Row, location.Column);
         }
     }
 }
