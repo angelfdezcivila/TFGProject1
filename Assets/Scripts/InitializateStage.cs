@@ -1,5 +1,7 @@
 using System;
 using System.Collections;
+using System.ComponentModel;
+using System.Diagnostics;
 using System.IO;
 using Cellular;
 using DataJson;
@@ -7,7 +9,9 @@ using Events;
 using Pedestrians;
 using StageGenerator;
 using TestingStageWithBuilder;
+using UnityEditor;
 using UnityEngine;
+using Debug = UnityEngine.Debug;
 using Random = UnityEngine.Random;
 
 public class InitializateStage : MonoBehaviour
@@ -40,8 +44,27 @@ public class InitializateStage : MonoBehaviour
         
         ParametersEvents.OnUpdateStageParameters += UpdateParameters;
         ParametersEvents.OnPlaySimulation += StartSimulation;
+        
+        // OpenFileExplorer();
     }
-    
+
+    private static void OpenFileExplorer()
+    {
+        try
+        {
+            // Process.Start(@"c:\users\");"explorer.exe /select,"
+            string argument = "/select, \"" + @"c:\Users\Usuario\Desktop\TraceJson.json\";
+
+            Process.Start("explorer.exe", argument);
+        }
+        catch (Win32Exception win32Exception)
+        {
+            //The system cannot find the file specified...
+            Console.WriteLine(win32Exception.Message);
+        }
+        
+    }
+
     void OnDestroy()
     {
         ParametersEvents.OnUpdateStageParameters -= UpdateParameters;
@@ -58,7 +81,6 @@ public class InitializateStage : MonoBehaviour
             _automaton.DestroyAutomatons();
         }
         
-        Debug.Log(_pedestriansVelocity);
         // _stageBuilder = RandomStageWithBuilder.getRandomStage(cellsPrefab, transform);
         // _stage = new RandomStage(cellsPrefab, transform, new Vector3(0.9f, 0.75f, 0.9f), 40, 90);
         // _stage = new RandomStage(cellsPrefab, transform);
