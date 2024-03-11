@@ -28,14 +28,15 @@ public class InitializateStage : MonoBehaviour
     // private StageWithBuilder.StageWithBuilder _stageBuilder;
     private StageGenerator.Stage _stage;
     private CellularAutomaton _automaton;
-    private string JsonScoreFilePath => $"{Application.persistentDataPath}/" + _fileName;
-    private string _fileName = "TraceJson.json";
-    private string _pathToReadJson;
-    // private string _pathToReadJson = JsonScoreFilePath;
+    public static string JsonSaveFilePath => $"{Application.persistentDataPath}/" + _fileName;
+    private static string _fileName = "TraceJson.json"; // Es posible que se quiera cambiar, por lo que por ahora lo he dejado como variable
+    // private string JsonScoreFilePath => $"{Application.persistentDataPath}/" + _fileName;
+    // private string _fileName = "TraceJson.json";
+    private static string _pathToReadJson;
 
     void Start()
     {
-        _pathToReadJson = JsonScoreFilePath;
+        _pathToReadJson = JsonSaveFilePath;
         _cellsDimension = new Vector3(0.4f, 0.4f, 0.4f);
         _timeLimit = 10 * 60;
         _pedestriansVelocity = 1.3f;
@@ -54,8 +55,8 @@ public class InitializateStage : MonoBehaviour
         SimulationEvents.OnUpdateStageParameters -= UpdateParameters;
         SimulationEvents.OnPlaySimulation -= StartSimulation;
     }
-    
-    private void StartSimulation()
+
+    private void StartAndSaveSimulation()
     {
         if (_stage != null)
         {
@@ -99,12 +100,6 @@ public class InitializateStage : MonoBehaviour
 
     private IEnumerator RunAutomatonCoroutine()
     {
-        // Si se detecta un json desde la ruta almacenada en la variable _pathToReadJson,
-        // el escenario también se ha precargado y coinciden el escenario cargado y el que se quiere simular
-        // (ponerle un id de escenario tanto al json del escenario como al del snapshot???) simular la traza.
-        JsonSnapshotsList a = SaveJsonManager.LoadScoreJson(_pathToReadJson);
-        a.snapshots.ForEach(list => Debug.Log("Tete" + list.timestamp));
-        
         yield return _automaton.RunCoroutine();
         Statistics statistics = _automaton.computeStatistics();
         Debug.Log(statistics);
@@ -160,6 +155,23 @@ public class InitializateStage : MonoBehaviour
     #endregion
 
     #region Callbacks
+    
+    private void StartSimulation(bool savingTrace)
+    {
+        Debug.Log(savingTrace);
+        if (!savingTrace)
+        {
+            // Si se detecta un json desde la ruta almacenada en la variable _pathToReadJson,
+            // el escenario también se ha precargado y coinciden el escenario cargado y el que se quiere simular
+            // (ponerle un id de escenario tanto al json del escenario como al del snapshot???) simular la traza.
+            JsonSnapshotsList a = SaveJsonManager.LoadScoreJson(_pathToReadJson);
+            a.snapshots.ForEach(list => Debug.Log("Tete" + list.timestamp));
+        }
+        else
+        {
+            StartAndSaveSimulation();
+        }
+    }
     
     private void OpenFileExplorer(bool savingTrace)
     {

@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace UI
 {
-    public class SaveJsonPathText : MonoBehaviour
+    public class JsonPathTextUI : MonoBehaviour
     {
         private TextMeshProUGUI _folderTMP;
 

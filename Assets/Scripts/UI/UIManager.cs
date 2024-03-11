@@ -25,10 +25,17 @@ namespace UI
         private void Awake()
         {
             _saveFolderButton.onClick.AddListener(OpenFileExplorer);
-            _saveOrLoadToggle.onValueChanged.AddListener(saving => FileExplorerEvents.OnSelectedPathForJson?.Invoke(""));
+            _saveOrLoadToggle.onValueChanged.AddListener(TogglingSaveAndUpdate);
             _startButton.onClick.AddListener(StartOnClick);
         }
-        
+
+        private void TogglingSaveAndUpdate(bool savingTrace)
+        {
+            _saveFolderButton.GetComponentInChildren<TextMeshProUGUI>().text = savingTrace ? "Guardar traza en" : "Cargar traza";
+            string path = savingTrace ? InitializateStage.JsonSaveFilePath : "";
+            FileExplorerEvents.OnSelectedPathForJson?.Invoke(path);
+        }
+
         private void OpenFileExplorer()
         {
             FileExplorerEvents.OnOpenFileExplorer?.Invoke(_saveOrLoadToggle.isOn);
@@ -43,7 +50,7 @@ namespace UI
             if (parametersValid)
             {
                 SimulationEvents.OnUpdateStageParameters?.Invoke((float) Double.Parse(_pedestrianVelocityInputField.text), _multiplierSpeedSlider.value);
-                SimulationEvents.OnPlaySimulation?.Invoke();
+                SimulationEvents.OnPlaySimulation?.Invoke(_saveOrLoadToggle.isOn);
             }
         }
         
