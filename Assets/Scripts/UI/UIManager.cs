@@ -1,5 +1,6 @@
 using System;
 using Events;
+using SimpleFileBrowser;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -13,25 +14,36 @@ namespace UI
         [SerializeField] 
         private TMP_InputField _pedestrianVelocityInputField;
         [SerializeField] 
-        private Button _startButton;
+        private Button _saveFolderButton;
+        [SerializeField] 
+        private Toggle _saveOrLoadToggle;
         [SerializeField] 
         private Slider _multiplierSpeedSlider; // Intentar hacer mientras se ejecuta se pueda tocar la velocidad de la simulación y que se pueda ir marcha atras
+        [SerializeField] 
+        private Button _startButton;
 
         private void Awake()
         {
-            _startButton.onClick.AddListener(startOnClick);
+            _saveFolderButton.onClick.AddListener(OpenFileExplorer);
+            _saveOrLoadToggle.onValueChanged.AddListener(saving => FileExplorerEvents.OnSelectedPathForJson?.Invoke(""));
+            _startButton.onClick.AddListener(StartOnClick);
+        }
+        
+        private void OpenFileExplorer()
+        {
+            FileExplorerEvents.OnOpenFileExplorer?.Invoke(_saveOrLoadToggle.isOn);
         }
 
         // Con eventos. Uso esta implementación debido a que desde el principio vamos a tener rellenados los datos en la UI
         // Este método va a controlar si están rellenos y lo lanzará en caso de que estén correctos los datos introducidos.
-        private void startOnClick()
+        private void StartOnClick()
         {
             bool parametersValid = _pedestrianVelocityInputField.text.Length > 0;
             // if(_pedestrianVelocityInputField.contentType == TMP_InputField.ContentType.DecimalNumber)
             if (parametersValid)
             {
-                ParametersEvents.OnUpdateStageParameters?.Invoke((float) Double.Parse(_pedestrianVelocityInputField.text), _multiplierSpeedSlider.value);
-                ParametersEvents.OnPlaySimulation?.Invoke();
+                SimulationEvents.OnUpdateStageParameters?.Invoke((float) Double.Parse(_pedestrianVelocityInputField.text), _multiplierSpeedSlider.value);
+                SimulationEvents.OnPlaySimulation?.Invoke();
             }
         }
         

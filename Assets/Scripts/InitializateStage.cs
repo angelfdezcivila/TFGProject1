@@ -29,34 +29,30 @@ public class InitializateStage : MonoBehaviour
     private StageGenerator.Stage _stage;
     private CellularAutomaton _automaton;
     private string JsonScoreFilePath => $"{Application.persistentDataPath}/" + _fileName;
-    // private string _pathToReadJson = "C:/Users/Usuario/Desktop/TraceJson.json";
-    private string _pathToReadJson;
     private string _fileName = "TraceJson.json";
-    
+    private string _pathToReadJson;
+    // private string _pathToReadJson = JsonScoreFilePath;
+
     void Start()
     {
+        _pathToReadJson = JsonScoreFilePath;
         _cellsDimension = new Vector3(0.4f, 0.4f, 0.4f);
         _timeLimit = 10 * 60;
         _pedestriansVelocity = 1.3f;
         _multiplierSpeed = 8;
-        
-        ParametersEvents.OnUpdateStageParameters += UpdateParameters;
-        ParametersEvents.OnPlaySimulation += StartSimulation;
-        
-        OpenFileExplorer();
-    }
 
-    private void OpenFileExplorer()
-    {
-        FileBrowser.ShowLoadDialog( ( paths ) => _pathToReadJson = paths[0] + "\\" + _fileName,
-        						   () => { Debug.Log( "Canceled" ); },
-        						   FileBrowser.PickMode.Folders, false, null, null, "Select Folder", "Select" );
+        FileExplorerEvents.OnOpenFileExplorer += OpenFileExplorer;
+        SimulationEvents.OnUpdateStageParameters += UpdateParameters;
+        SimulationEvents.OnPlaySimulation += StartSimulation;
+        
+        FileExplorerEvents.OnSelectedPathForJson?.Invoke(_pathToReadJson);
     }
     
     void OnDestroy()
     {
-        ParametersEvents.OnUpdateStageParameters -= UpdateParameters;
-        ParametersEvents.OnPlaySimulation -= StartSimulation;
+        FileExplorerEvents.OnOpenFileExplorer -= OpenFileExplorer;
+        SimulationEvents.OnUpdateStageParameters -= UpdateParameters;
+        SimulationEvents.OnPlaySimulation -= StartSimulation;
     }
     
     private void StartSimulation()
@@ -164,6 +160,31 @@ public class InitializateStage : MonoBehaviour
     #endregion
 
     #region Callbacks
+    
+    private void OpenFileExplorer(bool savingTrace)
+    {
+        if (savingTrace)
+        {
+            FileBrowser.ShowLoadDialog( ( paths ) =>
+                {
+                    _pathToReadJson = paths[0] + "/" + _fileName;
+                    FileExplorerEvents.OnSelectedPathForJson?.Invoke(_pathToReadJson);
+                },
+                () => { Debug.Log( "Canceled" ); },
+                FileBrowser.PickMode.Folders, false, _pathToReadJson, null, "Select Folder", "Select" );
+        }
+        else
+        {
+            FileBrowser.ShowLoadDialog( ( paths ) =>
+                {
+                    _pathToReadJson = paths[0];
+                    FileExplorerEvents.OnSelectedPathForJson?.Invoke(_pathToReadJson);
+                },
+                () => { Debug.Log( "Canceled" ); },
+                FileBrowser.PickMode.Files, false, _pathToReadJson, null, "Select File", "Select" );
+        }
+
+    }
 
     private void UpdateParameters(float pedestriansVelocity, float multiplierSpeed)
     {
