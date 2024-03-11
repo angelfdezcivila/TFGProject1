@@ -29,6 +29,10 @@ namespace DataJson
                     result = JsonUtility.FromJson<JsonSnapshotsList>(json);
                 }
             }
+            else
+            {
+                Debug.Log("File doesn't exist");
+            }
         
             return result;
         }

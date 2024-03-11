@@ -1,18 +1,14 @@
 using System;
 using System.Collections;
-using System.ComponentModel;
-using System.Diagnostics;
-using System.IO;
 using Cellular;
 using DataJson;
 using Events;
 using Pedestrians;
 using StageGenerator;
-using TestingStageWithBuilder;
-using UnityEditor;
 using UnityEngine;
 using Debug = UnityEngine.Debug;
 using Random = UnityEngine.Random;
+using SimpleFileBrowser;
 
 public class InitializateStage : MonoBehaviour
 {
@@ -32,8 +28,10 @@ public class InitializateStage : MonoBehaviour
     // private StageWithBuilder.StageWithBuilder _stageBuilder;
     private StageGenerator.Stage _stage;
     private CellularAutomaton _automaton;
-    private string JsonScoreFilePath => $"{Application.persistentDataPath}/TraceJson.json";
-    private string _pathToReadJson = "C:/Users/Usuario/Desktop/TraceJson.json";
+    private string JsonScoreFilePath => $"{Application.persistentDataPath}/" + _fileName;
+    // private string _pathToReadJson = "C:/Users/Usuario/Desktop/TraceJson.json";
+    private string _pathToReadJson;
+    private string _fileName = "TraceJson.json";
     
     void Start()
     {
@@ -45,26 +43,16 @@ public class InitializateStage : MonoBehaviour
         ParametersEvents.OnUpdateStageParameters += UpdateParameters;
         ParametersEvents.OnPlaySimulation += StartSimulation;
         
-        // OpenFileExplorer();
+        OpenFileExplorer();
     }
 
-    private static void OpenFileExplorer()
+    private void OpenFileExplorer()
     {
-        try
-        {
-            // Process.Start(@"c:\users\");"explorer.exe /select,"
-            string argument = "/select, \"" + @"c:\Users\Usuario\Desktop\TraceJson.json\";
-
-            Process.Start("explorer.exe", argument);
-        }
-        catch (Win32Exception win32Exception)
-        {
-            //The system cannot find the file specified...
-            Console.WriteLine(win32Exception.Message);
-        }
-        
+        FileBrowser.ShowLoadDialog( ( paths ) => _pathToReadJson = paths[0] + "\\" + _fileName,
+        						   () => { Debug.Log( "Canceled" ); },
+        						   FileBrowser.PickMode.Folders, false, null, null, "Select Folder", "Select" );
     }
-
+    
     void OnDestroy()
     {
         ParametersEvents.OnUpdateStageParameters -= UpdateParameters;
@@ -130,8 +118,8 @@ public class InitializateStage : MonoBehaviour
     private void SaveInJson()
     {
         JsonSnapshotsList list = _automaton.JsonTrace();
-        // JsonSnapshotsList list = new JsonSnapshotsList();
-        SaveJsonManager.SaveScoreJson(JsonScoreFilePath, list);
+        // SaveJsonManager.SaveScoreJson(JsonScoreFilePath, list);
+        SaveJsonManager.SaveScoreJson(_pathToReadJson, list);
     }
 
     #region RunAutomatonWithoutCoroutines
