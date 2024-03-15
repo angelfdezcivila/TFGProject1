@@ -83,7 +83,10 @@ namespace StageGenerator
         private void Start()
         {
             // InitializeConstants(cellPivotPrefab, new Vector2(1f, 1f), 10, 10);
-            _cellsContainer = GameObject.Instantiate(new GameObject(), Vector3.zero, Quaternion.identity, _transformParent);
+            // Si se hace de esta manera, se crea un objecto vacío al hacer new GameObject además del _cellsContainer
+            // _cellsContainer = GameObject.Instantiate(new GameObject(), Vector3.zero, Quaternion.identity, _transformParent);
+            _cellsContainer = new GameObject();
+            _cellsContainer.transform.SetParent(_transformParent);
             _cellsContainer.name = "Cells";
             InitializeBoard();
             CalculateExit();

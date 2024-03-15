@@ -67,6 +67,7 @@ namespace Cellular
     /// Tiempo de cada tick de la animación entre cada movimiento de los agentes como grupo.
     /// </summary>
     public float RealTimePerTick => parameters.TimePerTick / parameters.MultiplierSpeedFactor;
+    // public float RealTimePerTick => parameters.TimePerTick;
     // public float RealTimePerTick => 1;  // Para poder ver cada tick
     // parameters.TimePerTick = 1.3 * 0.4 = 0.52;
     // public float RealTimePerTick => 0.52f/8; // tick visible en la simulacion de pepe
@@ -103,7 +104,8 @@ namespace Cellular
  * and elapsed time steps are set to 0.
  */
     private void Reset() {
-      _pedestrianContainer = GameObject.Instantiate(new GameObject(), Vector3.zero, Quaternion.identity);
+      // _pedestrianContainer = GameObject.Instantiate(new GameObject(), Vector3.zero, Quaternion.identity);
+      _pedestrianContainer = new GameObject();
       _pedestrianContainer.name = "Pedestrians";
       ClearCells(occupied);
       inScenarioPedestrians.Clear();
@@ -114,13 +116,11 @@ namespace Cellular
     #endregion
 
     private void ClearCells(bool[,] cells) {
-      // Debug.Log("A limpiar: " + cells.GetLength(0) + ", " + cells.GetLength(1));
       for (int i = 0; i < cells.GetLength(0); i++)
       {
         for (int j = 0; j < cells.GetLength(1); j++)
         {
           cells[i, j] = false;
-          // Debug.Log("Celda limpiada: " + cells[i, j]);
         }
       }
     }
@@ -163,8 +163,8 @@ namespace Cellular
    * @param numberOfPedestrians number of new pedestrian to add.
    * @param parameters          parameters describing new pedestrians.
    */
-    public void AddPedestriansUniformly(int numberOfPedestrians, PedestrianParameters parameters) {
-      AddPedestriansUniformly(numberOfPedestrians, () => parameters);
+    public void AddPedestriansUniformly(int numberOfPedestrians, PedestrianParameters pedestrianParameters) {
+      AddPedestriansUniformly(numberOfPedestrians, () => pedestrianParameters);
     }
 
     /**
@@ -308,24 +308,26 @@ namespace Cellular
     {
       private static System.Random rng = new System.Random();
 
-      public static void Shuffle<T>(IList<T> list)
+      public static List<T> Shuffle<T>(IList<T> list)
       {
-        int n = list.Count;
+        List<T> listAux = new List<T>(list);
+        int n = listAux.Count;
         while (n > 1)
         {
           n--;
           int k = rng.Next(n - 1);
-          T value = list[k];
-          list[k] = list[n];
-          list[n] = value;
+          T value = listAux[k];
+          listAux[k] = listAux[n];
+          listAux[n] = value;
         }
+
+        return listAux;
       }
 
       // Extension method to remove the current item from a list while iterating
-      public static IEnumerator<T> RemoveCurrent<T>(IList<T> list, IEnumerator<T> enumerator)
+      public static IEnumerator<T> RemoveCurrent<T>(IList<T> list, T current)
       {
-        var current = enumerator.Current;
-        bool a = list.Remove(current);
+        list.Remove(current);
         return list.GetEnumerator();
       }
     }
@@ -339,17 +341,19 @@ namespace Cellular
    * Runs one discrete time step for this automaton.
    */
     public void TimeStep() {
-      // Debug.Log(TimePerTick);
       // clear new state
       ClearCells(occupiedNextState);
 
-      // inScenarioPedestrians.ForEach(pedestrian => Debug.Log(pedestrian));
-      ListExtensions.Shuffle(inScenarioPedestrians);
-      // Debug.Log("SHUFFLE:");
-      // inScenarioPedestrians.ForEach(pedestrian => Debug.Log(pedestrian));
-      // Debug.Log("SHUFFLED");
+      //Para comprobar que no se repitan los agentes
+      // var trueForAll = inScenarioPedestrians.TrueForAll(pedestrian =>
+      // {
+      //   return inScenarioPedestrians.FindAll(pedestrian1 => pedestrian1.Identifier == pedestrian.Identifier).Count == 1;
+      // });
+      // Debug.Log(trueForAll);
 
-      List<Pedestrian>.Enumerator pedestriansIterator = inScenarioPedestrians.GetEnumerator();
+      List<Pedestrian> inStageAux = ListExtensions.Shuffle(inScenarioPedestrians);
+
+      List<Pedestrian>.Enumerator pedestriansIterator = inStageAux.GetEnumerator();
       // List<Pedestrian.Pedestrian> pedestriansIterator = inScenarioPedestrians;
     
       while (pedestriansIterator.MoveNext())
@@ -357,15 +361,14 @@ namespace Cellular
         Pedestrian pedestrian = pedestriansIterator.Current;
         int row = pedestrian.GetRow();
         int column = pedestrian.GetColumn();
-        // Debug.Log(scenario.GetRowColumnPosition(new Vector2(row, column)));
         if (stage.IsCellExit(row, column))
         {
-          // Debug.Log("Exit : " + row + ", " + column);
           pedestrian.SetExitTimeSteps(timeSteps);
           outOfScenarioPedestrians.Add(pedestrian);
           // Remove current pedestrian from the list
-          pedestriansIterator = (List<Pedestrian>.Enumerator)ListExtensions.RemoveCurrent(inScenarioPedestrians, pedestriansIterator);
-          // inScenarioPedestrians.Remove(pedestriansIterator.Current);
+          // pedestriansIterator = (List<Pedestrian>.Enumerator)ListExtensions.RemoveCurrent(inScenarioPedestrians, pedestrian);
+          // ListExtensions.RemoveCurrent(inScenarioPedestrians, pedestrian);
+          inScenarioPedestrians.Remove(pedestrian);
           // pedestriansIterator = inScenarioPedestrians.GetEnumerator();
         
           GameObject.Destroy(pedestrian.gameObject);
@@ -396,8 +399,9 @@ namespace Cellular
       var temp = occupied;
       occupied = occupiedNextState;
       occupiedNextState = temp;
-      timeSteps++;
       Debug.Log("TIMESTEP: " + timeSteps);
+      // inScenarioPedestrians.ForEach(pedestrian => Debug.Log(pedestrian + ", timestamp: " + timeSteps));
+      timeSteps++;
     }
   
     /**
@@ -411,19 +415,18 @@ namespace Cellular
     public bool SimulationShouldContinue()
     {
       float maximalTimeSteps = parameters.TimeLimit / parameters.TimePerTick;
-      // Debug.Log(parameters.TimeLimit + "/" + parameters.TimePerTick + " = " + maximalTimeSteps);
       return SimulationShouldContinue(maximalTimeSteps);
     }
   
     private bool SimulationShouldContinue(float maximalTimeSteps)
     {
       return inScenarioPedestrians.Count > 0 && timeSteps < maximalTimeSteps;
+      // return inScenarioPedestrians.Count > 0 && timeSteps < 5;
     }
   
     public IEnumerator RunCoroutine() {
       InitializeStaticFloor();
       
-      float timer = RealTimePerTick;
       Debug.Log("Real time per tick" + RealTimePerTick);
     
       Paint();
@@ -431,6 +434,7 @@ namespace Cellular
       {
         RunStep();
         yield return new WaitForSeconds(RealTimePerTick);
+        // yield return new WaitUntil(() => Input.GetKeyDown(KeyCode.Space));
 
       }
       Paint();
@@ -524,7 +528,6 @@ namespace Cellular
       int i = 0;
       foreach (Pedestrians.Pedestrian pedestrian in outOfScenarioPedestrians) {
         steps[i] = pedestrian.getNumberOfSteps();
-        // Debug.Log("Step: " + steps[i]);
         i += 1;
       }
       float meanSteps = Statistics.Mean(steps);
@@ -539,10 +542,11 @@ namespace Cellular
     }
 
 
-    private static CrowdEntryJson JsonPedestrian(int id, int domain, int row, int column)
+    private static CrowdEntryJson JsonPedestrian(int numberOfSteps, int id, int domain, int row, int column)
     {
       LocationJson locationJson = new LocationJson(domain, new Vector2(row, column));
-      CrowdEntryJson crowdJson = new CrowdEntryJson(locationJson, id);
+      // CrowdEntryJson crowdJson = new CrowdEntryJson(locationJson, id);
+      CrowdEntryJson crowdJson = new CrowdEntryJson(numberOfSteps, locationJson, id);
     
       return crowdJson;
     }
@@ -563,20 +567,22 @@ namespace Cellular
       inScenarioPedestrians.ForEach(pedestrian => allPedestrians.Add(pedestrian));
       outOfScenarioPedestrians.ForEach(pedestrian => allPedestrians.Add(pedestrian));
       allPedestrians.Sort((p1, p2) => p1.Identifier.CompareTo(p2.Identifier));
+      allPedestrians.ForEach(pedestrian => Debug.Log("FINISHED " + pedestrian + ", timestamp: " + pedestrian.GetPath().Count +  ", Steps: " + pedestrian.getNumberOfSteps()));
       // allPedestrians.sort(Comparator.comparing(Pedestrian::getIdentifier));
-    
+
       // Create snapshots
       for (int t = 0; t < timeSteps; t++) {
         JsonCrowdList crowd = new JsonCrowdList();
         foreach (Pedestrian pedestrian in allPedestrians) {
-          List<Location> path = pedestrian.getPath();
+          List<Location> path = pedestrian.GetPath();
           if (path.Count > t)
           {
             Location location = path[t];
-            crowd.AddCrowdToList(JsonPedestrian(pedestrian.Identifier, domain, location.Row, location.Column));
-            crowd.timestamp = t;
+            // crowd.AddCrowdToList(JsonPedestrian(pedestrian.Identifier, domain, location.Row, location.Column));
+            crowd.AddCrowdToList(JsonPedestrian(pedestrian.getNumberOfSteps(),pedestrian.Identifier, domain, location.Row, location.Column));
           }
         }
+        crowd.timestamp = t;
         snapshots.AddCrowdsToList(crowd);
       }
 

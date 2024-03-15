@@ -5,10 +5,10 @@ using StageGenerator;
 namespace FloorFields
 {
     public abstract class StaticFloorField : FloorField {
-        protected readonly float[,] staticFloorField;
+        protected readonly double[,] staticFloorField;
         protected readonly Stage scenario;
 
-        protected StaticFloorField(float[,] staticFloorField, Stage scenario) {
+        protected StaticFloorField(double[,] staticFloorField, Stage scenario) {
             this.staticFloorField = staticFloorField;
             this.scenario = scenario;
         }
@@ -23,7 +23,7 @@ namespace FloorFields
             return scenario.Columns;
         }
 
-        public float getField(int row, int column) {
+        public double getField(int row, int column) {
             if (row < 0 || row >= getRows())
                 throw new ArgumentException("getField: invalid row");
             if (column < 0 || column >= getColumns())
@@ -31,7 +31,7 @@ namespace FloorFields
             return staticFloorField[row,column];
         }
 
-        public float getField(Location location) {
+        public double getField(Location location) {
             return getField(location.Row, location.Column);
         }
     }

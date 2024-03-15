@@ -10,12 +10,12 @@ namespace FloorFields
     protected readonly Neighbourhood neighbourhood;
 
     public DijkstraStaticFloorField(Stage scenario, Func<Stage, Neighbourhood> buildNeighbourhood)
-      : base(new float[scenario.Rows,scenario.Columns], scenario)
+      : base(new double[scenario.Rows,scenario.Columns], scenario)
     {
       this.neighbourhood = buildNeighbourhood.Invoke(scenario);
     }
 
-    public static DijkstraStaticFloorField of(Stage scenario, Func<Stage, Neighbourhood> buildNeighbourhood) {
+    public static DijkstraStaticFloorField Of(Stage scenario, Func<Stage, Neighbourhood> buildNeighbourhood) {
       return new DijkstraStaticFloorField(scenario, buildNeighbourhood);
     }
   
@@ -42,13 +42,13 @@ namespace FloorFields
     
       priorityQueue.OrderBy(node => node.priority);
   
-      float maxDistance = 0; // will store distance for non-blocked cell that is furthest away from an exit
+      double maxDistance = 0; // will store distance for non-blocked cell that is furthest away from an exit
   
       while (priorityQueue.Count != 0) {
         var node = priorityQueue.Dequeue();
         // var node = priorityQueue[0];
         // priorityQueue.RemoveAt(0);   // Using a list instead of a Queue
-        float nodeDistance = staticFloorField[node.row,node.column];
+        double nodeDistance = staticFloorField[node.row,node.column];
         if (node.priority == nodeDistance) {
           // This is first extraction of node from PQ, hence it corresponds to its optimal cost, which is already
           // recorded in staticFloorField.
@@ -59,7 +59,7 @@ namespace FloorFields
               int rowdiff = neighbour.Row - node.row;
               int coldiff = neighbour.Column - node.column;
               float delta = Mathf.Sqrt(rowdiff*rowdiff + coldiff*coldiff);
-              float newNeighbourDistance = nodeDistance + delta;
+              double newNeighbourDistance = nodeDistance + delta;
               if (newNeighbourDistance < staticFloorField[neighbour.Row, neighbour.Column]) {
                 // Shorter distance to neighbour was found: update
                 staticFloorField[neighbour.Row, neighbour.Column] = newNeighbourDistance;

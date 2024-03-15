@@ -12,48 +12,49 @@ namespace Pedestrians
         /**
          * Class counter to generate unique identifiers for pedestrians.
          */
-        protected static int nextIdentifier = 0;
+        private static int _nextIdentifier = 0;
 
         /**
          * Each pedestrian has a unique identifier.
          */
-        protected int identifier;
+        private int _identifier;
 
         /**
          * Row in scenario where pedestrian is currently located.
          */
-        protected int row;
+        private int _row;
 
         /**
          * Column in scenario where pedestrian is currently located.
          */
-        protected int column;
+        private int _column;
 
         /**
          * Number of steps currently taken by pedestrian.
          */
-        protected int numberOfSteps;
+        private int _numberOfSteps;
 
         /**
          * Number of discrete time steps elapsed when pedestrian exited the scenario.
          */
-        protected int exitTimeSteps;
+        private int _exitTimeSteps;
 
         /**
          * Parameters describing this pedestrian.
          */
-        protected PedestrianParameters parameters;
+        private PedestrianParameters _parameters;
 
         /**
          * Automaton where this pedestrian is running.
          */
-        protected CellularAutomaton automaton;
+        private CellularAutomaton _automaton;
 
         /**
          * Path followed by pedestrian in scenario during simulation.
          */
-        protected List<Location> path;
-
+        // private List<Location> _path;
+        public List<Location> _path;
+        
         /**
          * A tentative movement consists of a location (where we should move) and a desirability (the higher the
          * desirability the higher the willingness to move to such location). We do not use the term probability because
@@ -63,7 +64,7 @@ namespace Pedestrians
          * @param desirability willing to move to such location
          */
         
-        protected record TentativeMovement(Location location, float desirability) : IComparable<TentativeMovement>
+        protected record TentativeMovement(Location location, double desirability) : IComparable<TentativeMovement>
         {
 
             public int CompareTo(TentativeMovement other)
@@ -72,8 +73,12 @@ namespace Pedestrians
             }
 
             public Location location { get; } = location;
-            public float desirability { get; } = desirability;
+            public double desirability { get; } = desirability;
 
+            public override string ToString()
+            {
+                return location.ToString() + ", desirability: " + desirability;
+            }
         }
 
         /**
@@ -91,14 +96,14 @@ namespace Pedestrians
 
         public void Initialize(int row, int column, PedestrianParameters parameters, CellularAutomaton automaton)
         {
-            this.identifier = nextIdentifier++;
-            this.row = row;
-            this.column = column;
-            this.parameters = parameters;
-            this.automaton = automaton;
-            this.numberOfSteps = 0;
-            this.path = new List<Location>();
-            this.path.Add(new Location(row, column));
+            this._identifier = _nextIdentifier++;
+            this._row = row;
+            this._column = column;
+            this._parameters = parameters;
+            this._automaton = automaton;
+            this._numberOfSteps = 0;
+            this._path = new List<Location>();
+            this._path.Add(new Location(row, column));
         }
 
         /**
@@ -106,7 +111,7 @@ namespace Pedestrians
          *
          * @return unique identifier corresponding to this pedestrian.
          */
-        public int Identifier => identifier;
+        public int Identifier => _identifier;
 
         /**
          * Row in scenario where this pedestrian is currently located.
@@ -115,7 +120,7 @@ namespace Pedestrians
          */
         public int GetRow()
         {
-            return row;
+            return _row;
         }
 
         /**
@@ -125,7 +130,7 @@ namespace Pedestrians
          */
         public int GetColumn()
         {
-            return column;
+            return _column;
         }
 
         /**
@@ -135,7 +140,7 @@ namespace Pedestrians
          */
         public Location getLocation()
         {
-            return new Location(row, column);
+            return new Location(_row, _column);
         }
 
         /**
@@ -143,9 +148,9 @@ namespace Pedestrians
          *
          * @return path followed by pedestrian in scenario during simulation.
          */
-        public List<Location> getPath()
+        public List<Location> GetPath()
         {
-            return path;
+            return _path;
         }
 
         /**
@@ -156,10 +161,10 @@ namespace Pedestrians
          */
         public void moveTo(int row, int column)
         {
-            this.row = row;
-            this.column = column;
-            this.numberOfSteps++;
-            this.path.Add(new Location(row, column));
+            this._row = row;
+            this._column = column;
+            this._numberOfSteps++;
+            this._path.Add(new Location(row, column));
         }
 
         /**
@@ -177,7 +182,7 @@ namespace Pedestrians
          */
         public void doNotMove()
         {
-            this.path.Add(new Location(row, column));
+            this._path.Add(new Location(_row, _column));
         }
 
         /**
@@ -187,7 +192,7 @@ namespace Pedestrians
          */
         public int getNumberOfSteps()
         {
-            return numberOfSteps;
+            return _numberOfSteps;
         }
 
         /**
@@ -197,7 +202,7 @@ namespace Pedestrians
          */
         public void SetExitTimeSteps(int timeSteps)
         {
-            this.exitTimeSteps = timeSteps;
+            this._exitTimeSteps = timeSteps;
         }
 
         /**
@@ -207,7 +212,7 @@ namespace Pedestrians
          */
         public int getExitTimeSteps()
         {
-            return exitTimeSteps;
+            return _exitTimeSteps;
         }
 
 
@@ -225,31 +230,31 @@ namespace Pedestrians
          */
         private List<TentativeMovement> computeTransitionDesirabilities()
         {
-            Stage scenario = automaton.GetScenario();
-            List<Location> neighbours = automaton.Neighbours(row, column);
+            Stage scenario = _automaton.GetScenario();
+            List<Location> neighbours = _automaton.Neighbours(_row, _column);
 
             // var movements = new List<TentativeMovement>(neighbours.size());
             List<TentativeMovement> movements = new List<TentativeMovement>
             {
-                Capacity = neighbours.Count
+                Capacity = neighbours.Count // esto es para capar la capacidad, aunque no es necesario ya que el add solo está dentro de un for que itera la lista neighbours
             };
             double minDesirability = Double.MaxValue;
             foreach (Location neighbour in neighbours) {
-                if (automaton.IsCellReachable(neighbour))
+                if (_automaton.IsCellReachable(neighbour))
                 {
                     // count reachable cells around new location
                     int numberOfReachableCellsAround = 0;
-                    foreach (Location around in automaton.Neighbours(neighbour)) {
-                        if (automaton.IsCellReachable(around))
+                    foreach (Location around in _automaton.Neighbours(neighbour)) {
+                        if (_automaton.IsCellReachable(around))
                         {
                             numberOfReachableCellsAround++;
                         }
                     }
 
-                    float attraction = parameters.fieldAttractionBias * scenario.StaticFloorField.getField(neighbour);
+                    double attraction = _parameters.fieldAttractionBias * scenario.StaticFloorField.getField(neighbour);
                     // float attraction = parameters.fieldAttractionBias;
-                    float repulsion = parameters.crowdRepulsion / (1 + numberOfReachableCellsAround);
-                    float desirability = (float)Math.Exp(attraction - repulsion);
+                    double repulsion = _parameters.crowdRepulsion / (1 + numberOfReachableCellsAround);
+                    double desirability = Math.Exp(attraction - repulsion);
                     movements.Add(new TentativeMovement(neighbour, desirability));
                     if (desirability < minDesirability)
                         minDesirability = desirability;
@@ -258,7 +263,7 @@ namespace Pedestrians
             var gradientMovements = new List<TentativeMovement>(neighbours.Count);
             foreach (TentativeMovement m in movements)
                 gradientMovements.Add(new TentativeMovement(m.location,
-                    (float)DESIRABILITY_EPSILON + m.desirability - (float)minDesirability));
+                    DESIRABILITY_EPSILON + m.desirability - minDesirability));
 
             return gradientMovements;
         }
@@ -270,32 +275,32 @@ namespace Pedestrians
          */
         public Location ChooseMovement()
         {
-            if (Statistics.bernoulli(parameters.velocityPercent))
+            if (Statistics.bernoulli(_parameters.velocityPercent))
             {
                 // try to move at this step to respect pedestrian speed
                 List<TentativeMovement> movements = computeTransitionDesirabilities();
-                if (movements.Count <= 0)
-                {
-                    // cannot make a movement
-                    return null;
-                }
+                // Debug.Log("id: " + _identifier + ", Position: " + _row + ", " + _column);
+                // movements.ForEach(movement => Debug.Log(movement));
 
-                // choose one movement according to discrete distribution of desirabilities
-                TentativeMovement chosen = Statistics.Discrete(movements, m => m.desirability);
-                // return chosen.location;
-                return chosen.location != null ? chosen.location : null;
+                // if (movements.Count <= 0)
+                if (movements.Count > 0)
+                {
+                    // choose one movement according to discrete distribution of desirabilities
+                    TentativeMovement chosen = Statistics.Discrete(movements, m => m.desirability);
+                    return chosen.location;
+                    // return chosen.location != null ? chosen.location : null;
+                }
             }
-            else
-            {
-                // do not move at this step to respect pedestrian speed
-                return null;
-            }
+
+            // do not move at this step to respect pedestrian speed
+            return null;
         }
 
         public void paint()
         {
-            Vector3 position = automaton.GetScenario().GetRowColumnPosition(new Vector2(row, column)).transform.position;
-            transform.position = new Vector3(position.x, position.y + transform.localScale.y/2, position.z);
+            Vector3 position = _automaton.GetScenario().GetRowColumnPosition(new Vector2(_row, _column)).transform.position;
+            transform.position = position + Vector3.up * transform.localScale.y / 2;
+            // transform.position = new Vector3(position.x, position.y + transform.localScale.y/2, position.z);
         }
 
         /**
@@ -306,7 +311,7 @@ namespace Pedestrians
         public override int GetHashCode()
         {
             // return Integer.hashCode(identifier);
-            return HashCode.Combine(identifier);
+            return HashCode.Combine(_identifier);
         }
 
         /**
@@ -321,7 +326,7 @@ namespace Pedestrians
             if (other == null)
                 return false;
 
-            if (identifier == other.identifier)
+            if (_identifier == other._identifier)
                 return true;
 
             return false;
@@ -334,7 +339,9 @@ namespace Pedestrians
          */
         public override string ToString()
         {
-            return "Pedestrian" + "(" + getLocation().ToString() + ", " + identifier + ")";
+            return "Pedestrian" + "(" + getLocation().ToString() + ", id: " + _identifier + ")";
+            // return "Pedestrian" + "(" + getLocation().ToString() + ", " + _identifier + ")";
+
         }
     }
 

@@ -29,7 +29,7 @@ namespace FloorFields
      * @param column horizontal coordinate of cell.
      * @return field of cell located at {@code row} and {@code column}.
      */
-  float getField(int row, int column);
+  double getField(int row, int column);
 
   /**
      * Gets field of cell located at given location.
@@ -37,7 +37,7 @@ namespace FloorFields
      * @param location location of cell.
      * @return field of cell located at {@code location}.
      */
-  float getField(Location location);
+  double getField(Location location);
     
  }
 }

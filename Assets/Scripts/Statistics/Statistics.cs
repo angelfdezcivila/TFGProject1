@@ -29,21 +29,22 @@ public record Statistics(
         }
     }
 
-    public static T Discrete<T>(List<T> collection, Func<T, float> desirability) 
+    public static T Discrete<T>(List<T> collection, Func<T, double> desirability) 
     // public static T Discrete<T>(IEnumerable<T> collection, Func<T, float> desirability)
     {
-        float sum = collection.Sum(desirability.Invoke);
+        double sum = collection.Sum(desirability.Invoke);
         // float sum = 0.0f;
         // foreach (var element in collection) {
         // sum += desirability.Invoke(element);
         // }
-        if (sum <= 0.0)
+        if (sum <= 0)
         {
             throw new ArgumentException("Discrete: sum of desirabilities must be larger than 0");
         }
 
         // float choose = Random.value * sum;
-        float choose = Random.Range(0, sum);
+        double choose = Random.value * sum;
+        // float choose = Random.Range(0, (float)sum);
         sum = 0.0f;
         foreach (var element in collection)
         {

@@ -29,10 +29,10 @@ public class InitializateStage : MonoBehaviour
     private StageGenerator.Stage _stage;
     private CellularAutomaton _automaton;
     public static string JsonSaveFilePath => $"{Application.persistentDataPath}/" + _fileName;
-    private static string _fileName = "TraceJson.json"; // Es posible que se quiera cambiar, por lo que por ahora lo he dejado como variable
+    private static string _fileName = "TraceJson.json"; // Es posible que se quiera cambiarla, por lo que por ahora lo he dejado como variable
     // private string JsonScoreFilePath => $"{Application.persistentDataPath}/" + _fileName;
     // private string _fileName = "TraceJson.json";
-    private static string _pathToReadJson;
+    private string _pathToReadJson;
 
     void Start()
     {
@@ -60,7 +60,7 @@ public class InitializateStage : MonoBehaviour
     {
         if (_stage != null)
         {
-            Debug.Log("Destruiiiir");
+            Debug.Log("Stage destruido");
             StopAllCoroutines();
             _stage.DestroyStage();
             _automaton.DestroyAutomatons();
@@ -90,7 +90,7 @@ public class InitializateStage : MonoBehaviour
                 .VelocityPercent(Random.Range(0.3f, 1.0f))
                 .Build();
         
-        var numberOfPedestrians = Random.Range(150, 600);
+        int numberOfPedestrians = Random.Range(150, 600);
         _automaton.AddPedestriansUniformly(numberOfPedestrians, pedestrianParametersSupplier);
         
         StartCoroutine(nameof(RunAutomatonCoroutine));
@@ -203,8 +203,6 @@ public class InitializateStage : MonoBehaviour
         // UpdateTimeLimit(timeLimit);
         UpdatePedestriansVelocity(pedestriansVelocity);
         UpdateMultiplierSpeed(multiplierSpeed);
-        _pedestriansVelocity = pedestriansVelocity;
-        _multiplierSpeed = multiplierSpeed;
     }
     
     private void UpdateTimeLimit(float timeLimit)

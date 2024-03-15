@@ -21,12 +21,25 @@ namespace UI
         private Slider _multiplierSpeedSlider; // Intentar hacer mientras se ejecuta se pueda tocar la velocidad de la simulación y que se pueda ir marcha atras
         [SerializeField] 
         private Button _startButton;
+        
+        private float fixedDeltaTime;
 
         private void Awake()
         {
             _saveFolderButton.onClick.AddListener(OpenFileExplorer);
             _saveOrLoadToggle.onValueChanged.AddListener(TogglingSaveAndUpdate);
             _startButton.onClick.AddListener(StartOnClick);
+            
+            // _multiplierSpeedSlider.onValueChanged.AddListener(UpdateTimeScale);
+        }
+
+        private void UpdateTimeScale(float multiplierSpeed)
+        {
+            if (multiplierSpeed >= 0)
+            {
+                Time.timeScale = multiplierSpeed;
+                // Time.fixedDeltaTime = this.fixedDeltaTime * Time.timeScale;
+            }
         }
 
         private void TogglingSaveAndUpdate(bool savingTrace)
