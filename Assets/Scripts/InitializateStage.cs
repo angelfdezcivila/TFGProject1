@@ -58,6 +58,55 @@ public class InitializateStage : MonoBehaviour
 
     private void StartAndSaveSimulation()
     {
+        DestroySimulation();
+        
+        // _stageBuilder = RandomStageWithBuilder.getRandomStage(cellsPrefab, transform);
+        // _stage = new RandomStage(cellsPrefab, transform, new Vector3(0.9f, 0.75f, 0.9f), 40, 90);
+        // _stage = new RandomStage(cellsPrefab, transform);
+        _stage = new RandomStage(cellsPrefab, transform, _cellsDimension);
+
+        InitializeAutomaton();
+
+        Func<PedestrianParameters> pedestrianParametersSupplier = () =>
+            new PedestrianParameters.Builder()
+                .FieldAttractionBias(Random.Range(0.0f, 10.0f))
+                .CrowdRepulsion(Random.Range(0.1f, 0.5f))
+                .VelocityPercent(Random.Range(0.3f, 1.0f))
+                .Build();
+        
+        int numberOfPedestrians = Random.Range(150, 600);
+        _automaton.AddPedestriansUniformly(numberOfPedestrians, pedestrianParametersSupplier);
+        
+        StartCoroutine(nameof(RunAutomatonCoroutine), true);
+        
+        // RunAutomaton();
+    }
+    
+    private void LoadSimulation(JsonSnapshotsList traceJson)
+    {
+        DestroySimulation();
+        
+        _stage = new RandomStage(cellsPrefab, transform, _cellsDimension);
+
+        InitializeAutomaton();
+
+        // Esto no hace falta ya que se usa para calcular los movimientos
+        Func<PedestrianParameters> pedestrianParametersSupplier = () =>
+            new PedestrianParameters.Builder()
+                .FieldAttractionBias(Random.Range(0.0f, 10.0f))
+                .CrowdRepulsion(Random.Range(0.1f, 0.5f))
+                .VelocityPercent(Random.Range(0.3f, 1.0f))
+                .Build();
+
+        int numberOfPedestrians = traceJson.snapshots[0].crowd.Count;
+        _automaton.AddPedestriansUniformly(numberOfPedestrians, pedestrianParametersSupplier);
+        
+        StartCoroutine(nameof(RunAutomatonCoroutine), false);
+        
+    }
+
+    private void DestroySimulation()
+    {
         if (_stage != null)
         {
             Debug.Log("Stage destruido");
@@ -65,12 +114,10 @@ public class InitializateStage : MonoBehaviour
             _stage.DestroyStage();
             _automaton.DestroyAutomatons();
         }
-        
-        // _stageBuilder = RandomStageWithBuilder.getRandomStage(cellsPrefab, transform);
-        // _stage = new RandomStage(cellsPrefab, transform, new Vector3(0.9f, 0.75f, 0.9f), 40, 90);
-        // _stage = new RandomStage(cellsPrefab, transform);
-        _stage = new RandomStage(cellsPrefab, transform, _cellsDimension);
+    }
 
+    private void InitializeAutomaton()
+    {
         var cellularAutomatonParameters =
             new CellularAutomatonParameters.Builder()
                 .Scenario(_stage) // use this scenario
@@ -82,25 +129,14 @@ public class InitializateStage : MonoBehaviour
 
         // pedestrianPrefab.transform.localScale = cellsDimension;
         _automaton = new CellularAutomaton(cellularAutomatonParameters, pedestrianPrefab);
-        
-        Func<PedestrianParameters> pedestrianParametersSupplier = () =>
-            new PedestrianParameters.Builder()
-                .FieldAttractionBias(Random.Range(0.0f, 10.0f))
-                .CrowdRepulsion(Random.Range(0.1f, 0.5f))
-                .VelocityPercent(Random.Range(0.3f, 1.0f))
-                .Build();
-        
-        int numberOfPedestrians = Random.Range(150, 600);
-        _automaton.AddPedestriansUniformly(numberOfPedestrians, pedestrianParametersSupplier);
-        
-        StartCoroutine(nameof(RunAutomatonCoroutine));
-        
-        // RunAutomaton();
     }
 
-    private IEnumerator RunAutomatonCoroutine()
+    private IEnumerator RunAutomatonCoroutine(bool savingTrace)
     {
-        yield return _automaton.RunCoroutine();
+        if(savingTrace)
+            yield return _automaton.RunAutomatonSimulationCoroutine();
+        else
+            yield return _automaton.LoadingSimulationCoroutine();
         Statistics statistics = _automaton.computeStatistics();
         Debug.Log(statistics);
         SaveInJson();
@@ -164,8 +200,9 @@ public class InitializateStage : MonoBehaviour
             // Si se detecta un json desde la ruta almacenada en la variable _pathToReadJson,
             // el escenario también se ha precargado y coinciden el escenario cargado y el que se quiere simular
             // (ponerle un id de escenario tanto al json del escenario como al del snapshot???) simular la traza.
-            JsonSnapshotsList a = SaveJsonManager.LoadScoreJson(_pathToReadJson);
-            a.snapshots.ForEach(list => Debug.Log("Tete" + list.timestamp));
+            JsonSnapshotsList traceJson = SaveJsonManager.LoadScoreJson(_pathToReadJson);
+            traceJson.snapshots.ForEach(list => Debug.Log("Tete" + list.timestamp));
+            LoadSimulation(traceJson);
         }
         else
         {

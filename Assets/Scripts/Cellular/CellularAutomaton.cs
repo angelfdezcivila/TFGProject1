@@ -332,15 +332,15 @@ namespace Cellular
       }
     }
   
-
-  
     // Como el proyecto original estaba realizado en Java, era necesario hilos que esperasen a la GUI para que se sincronizase.
     // Sin embargo, como nosotros estamos en Unity, no es necesario hacerlo usando hilos, sino con Corrutinas o Invoke, u otra alternativa
   
     /**
    * Runs one discrete time step for this automaton.
    */
-    public void TimeStep() {
+    private void TimeStepAutomaton() {
+      timeSteps++;
+      
       // clear new state
       ClearCells(occupiedNextState);
 
@@ -401,14 +401,33 @@ namespace Cellular
       occupiedNextState = temp;
       Debug.Log("TIMESTEP: " + timeSteps);
       // inScenarioPedestrians.ForEach(pedestrian => Debug.Log(pedestrian + ", timestamp: " + timeSteps));
-      timeSteps++;
+      // timeSteps++;
+    }
+
+    private void TimeStepLoadedSimulation()
+    {
+        List<Pedestrian> pedestriansToMove = null; //Obtener del json la lista en el timeStep correspondiente
+        foreach (var pedestrian in pedestriansToMove)
+        {
+          Location location = pedestrian.GetPath()[timeSteps];
+          
+        }
     }
   
     /**
-   * Runs this automaton until end conditions are met.
+   * Runs a step of this automaton.
    */
-    public void RunStep() {
-      TimeStep();
+    public void RunAutomatonStep() {
+      TimeStepAutomaton();
+      Paint();
+    }
+    
+    
+     /**
+    * Runs a step of the simulation loaded.
+    */
+    public void LoadSimulationStep() {
+      TimeStepLoadedSimulation();
       Paint();
     }
 
@@ -420,19 +439,39 @@ namespace Cellular
   
     private bool SimulationShouldContinue(float maximalTimeSteps)
     {
-      return inScenarioPedestrians.Count > 0 && timeSteps < maximalTimeSteps;
-      // return inScenarioPedestrians.Count > 0 && timeSteps < 5;
+      // return inScenarioPedestrians.Count > 0 && timeSteps < maximalTimeSteps;
+      return inScenarioPedestrians.Count > 0 && timeSteps < 500;
     }
   
-    public IEnumerator RunCoroutine() {
+    public IEnumerator RunAutomatonSimulationCoroutine() {
       InitializeStaticFloor();
       
       Debug.Log("Real time per tick" + RealTimePerTick);
     
-      Paint();
+      Paint();        
+      yield return new WaitForSeconds(1.5f); //Para ver las posiciones iniciales de cada agente
+
       while (SimulationShouldContinue())
       {
-        RunStep();
+        RunAutomatonStep();
+        yield return new WaitForSeconds(RealTimePerTick);
+        // yield return new WaitUntil(() => Input.GetKeyDown(KeyCode.Space));
+
+      }
+
+      timeSteps++;
+      Paint();
+    }
+    
+    public IEnumerator LoadingSimulationCoroutine() {
+      Debug.Log("Real time per tick" + RealTimePerTick);
+    
+      Paint();
+      yield return new WaitForSeconds(1.5f); //Para ver las posiciones iniciales de cada agente
+
+      while (SimulationShouldContinue())
+      {
+        LoadSimulationStep();
         yield return new WaitForSeconds(RealTimePerTick);
         // yield return new WaitUntil(() => Input.GetKeyDown(KeyCode.Space));
 
