@@ -6,7 +6,8 @@ namespace DataJson
 {
     // Parece ser que el problema para redondear las coordenadas se debe a que el Jsonutility no se lleva bien con los valores decimales,
     // por lo que a la hora de pasar el float al json, le añade un montón de decimales.
-    // Para arreglar esto, mirar UnityNewtonsoftJsonSerializer
+    // Para arreglar esto, mirar UnityNewtonsoftJsonSerializer ,Newtonsoft y SimpleJson 
+    // https://forum.unity.com/threads/jsonutility-serializes-floats-with-way-too-many-digits.541045/#post-5485749
     public static class SaveJsonManager
     {
         public static void SaveScoreJson(string path, JsonSnapshotsList snapshotsList)

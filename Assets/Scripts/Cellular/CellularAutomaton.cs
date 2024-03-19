@@ -551,13 +551,13 @@ namespace Cellular
       return crowdJson;
     }
 
-    private CoordinatesJson GetLocationPosition(int row, int column)
-    // private Vector2 GetLocationPosition(int row, int column)
+    // private CoordinatesJson GetLocationPosition(int row, int column)
+    private Vector2 GetLocationPosition(int row, int column)
     {
-      Vector3 pos3D = parameters.Scenario.GetRowColumnPosition(new Vector2(row, column)).transform.position;
-      CoordinatesJson position = new CoordinatesJson(pos3D.x, pos3D.y);
+      // Vector3 pos3D = parameters.Scenario.GetRowColumnPosition(new Vector2(row, column)).transform.position;
       // Vector2 position = new Vector2(pos3D.x, pos3D.z);
-      // Vector2 position = new Vector2(row, column);
+      // CoordinatesJson position = new CoordinatesJson(pos3D.x, pos3D.y);
+      Vector2 position = new Vector2(row, column);
       
       return position;
     }
