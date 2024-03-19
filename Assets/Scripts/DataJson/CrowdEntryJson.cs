@@ -11,6 +11,7 @@ namespace DataJson
 
         public CrowdEntryJson()
         {
+            numberOfSteps = 0;
             location = new LocationJson();
             id = 0;
         }
