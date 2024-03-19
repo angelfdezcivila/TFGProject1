@@ -8,7 +8,8 @@ namespace DataJson
     public class LocationJson
     {
         public int domain;
-        public Vector2 coordinates; // Esto funciona, pero si quisiésemos indicarlo en el json con numeros enteros, tendríamos que hacer otra clas con dos integer X e Y
+        public Vector2 coordinates; // Esto funciona, pero si quisiésemos indicarlo en el json con numeros enteros, tendríamos que hacer otra clase con dos integer X e Y.
+        //Otro punto por el que no se utiliza Vector2 es que a la hora de guardar el Json, se añaden decimales de más
 
         public LocationJson()
         {
@@ -21,6 +22,7 @@ namespace DataJson
         {
             this.domain = domain;
             this.coordinates = coordinates;
+            // this.coordinates = new Vector2((float)Math.Round(coordinates.x, 2), (float)Math.Round(coordinates.y, 2));
         }
     }
 }

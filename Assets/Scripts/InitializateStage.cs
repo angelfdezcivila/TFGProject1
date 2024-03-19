@@ -26,7 +26,7 @@ public class InitializateStage : MonoBehaviour
     #endregion
     
     // private StageWithBuilder.StageWithBuilder _stageBuilder;
-    private StageGenerator.Stage _stage;
+    private Stage _stage;
     private CellularAutomaton _automaton;
     public static string JsonSaveFilePath => $"{Application.persistentDataPath}/" + _fileName;
     private static string _fileName = "TraceJson.json"; // Es posible que se quiera cambiarla, por lo que por ahora lo he dejado como variable

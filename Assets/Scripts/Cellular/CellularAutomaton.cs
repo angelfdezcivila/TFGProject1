@@ -542,15 +542,25 @@ namespace Cellular
     }
 
 
-    private static CrowdEntryJson JsonPedestrian(int numberOfSteps, int id, int domain, int row, int column)
+    private CrowdEntryJson JsonPedestrian(int numberOfSteps, int id, int domain, int row, int column)
     {
-      LocationJson locationJson = new LocationJson(domain, new Vector2(row, column));
-      // CrowdEntryJson crowdJson = new CrowdEntryJson(locationJson, id);
+      LocationJson locationJson = new LocationJson(domain, GetLocationPosition(row, column));
       CrowdEntryJson crowdJson = new CrowdEntryJson(numberOfSteps, locationJson, id);
-    
+      // CrowdEntryJson crowdJson = new CrowdEntryJson(locationJson, id);
+
       return crowdJson;
     }
-    
+
+    private Vector2 GetLocationPosition(int row, int column)
+    {
+      Vector3 pos3D = parameters.Scenario.GetRowColumnPosition(new Vector2(row, column)).transform.position;
+      Vector2 position = new Vector2(pos3D.x, pos3D.z);
+      Debug.Log(pos3D + " : " + position);
+      // Vector2 position = new Vector2(row, column);
+      
+      return position;
+    }
+
     /**
     /**
      * Json representing traces of all pedestrians through the scenario.
@@ -567,8 +577,8 @@ namespace Cellular
       inScenarioPedestrians.ForEach(pedestrian => allPedestrians.Add(pedestrian));
       outOfScenarioPedestrians.ForEach(pedestrian => allPedestrians.Add(pedestrian));
       allPedestrians.Sort((p1, p2) => p1.Identifier.CompareTo(p2.Identifier));
-      allPedestrians.ForEach(pedestrian => Debug.Log("FINISHED " + pedestrian + ", timestamp: " + pedestrian.GetPath().Count +  ", Steps: " + pedestrian.getNumberOfSteps()));
       // allPedestrians.sort(Comparator.comparing(Pedestrian::getIdentifier));
+      // allPedestrians.ForEach(pedestrian => Debug.Log("FINISHED " + pedestrian + ", timestamp: " + pedestrian.GetPath().Count +  ", Steps: " + pedestrian.getNumberOfSteps()));
 
       // Create snapshots
       for (int t = 0; t < timeSteps; t++) {
