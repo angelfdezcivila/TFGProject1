@@ -146,7 +146,7 @@ public class InitializateStage : MonoBehaviour
     {
         JsonSnapshotsList list = _automaton.JsonTrace();
         // SaveJsonManager.SaveScoreJson(JsonScoreFilePath, list);
-        SaveJsonManager.SaveScoreJson(_pathToReadJson, list);
+        SaveJsonManager.SaveScoreJson(_pathToReadJson, list, _cellsDimension.x);
     }
 
     #region RunAutomatonWithoutCoroutines

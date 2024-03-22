@@ -143,7 +143,7 @@ namespace StageGenerator
         protected void SetCellType(Vector2 pos, Cell.CellTypeEnum type)
         {
             // _cellMatrix[(int)pos.x][(int)pos.y].CellType = type;
-            GetRowColumnPosition(pos).CellType = type;
+            GetRowColumnCell(pos).CellType = type;
             if (type == Cell.CellTypeEnum.Exit)
                 _exits.Add(_cellMatrix[(int)pos.x][(int)pos.y]);
             else if (type == Cell.CellTypeEnum.Obstacle)
@@ -154,7 +154,7 @@ namespace StageGenerator
         protected Cell.CellTypeEnum GetCellType(Vector2 pos)
         {
             // return _cellMatrix[(int)pos.x][(int)pos.y].CellType;
-            return GetRowColumnPosition(pos).CellType;
+            return GetRowColumnCell(pos).CellType;
         }
         
         // Coge las casillas alrededor de otra
@@ -178,7 +178,12 @@ namespace StageGenerator
             GameObject.Destroy(_cellsContainer);
         }
         
-        public Cell GetRowColumnPosition(Vector2 pos)
+        /// <summary>
+        /// Consulta en la matriz de celdas la celda correspondiente a los indices de filas y columna
+        /// </summary>
+        /// <param name="pos">Vector2 con los índices de la fila y columna. Estos índices no tienen en cuenta las dimensiones de las celdas</param>
+        /// <returns>El objeto tipo Cell que hay en la fila y columna indicada</returns>
+        public Cell GetRowColumnCell(Vector2 pos)
         {
             return _cellMatrix[(int)pos.x][(int)pos.y];
         }

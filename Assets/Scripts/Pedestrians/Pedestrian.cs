@@ -164,6 +164,7 @@ namespace Pedestrians
             this._row = row;
             this._column = column;
             this._numberOfSteps++;
+            // this._path.Add(new Location(row, column));
             this._path.Add(new Location(row, column));
         }
 
@@ -230,7 +231,7 @@ namespace Pedestrians
          */
         private List<TentativeMovement> computeTransitionDesirabilities()
         {
-            Stage scenario = _automaton.GetScenario();
+            Stage scenario = _automaton.Stage;
             List<Location> neighbours = _automaton.Neighbours(_row, _column);
 
             // var movements = new List<TentativeMovement>(neighbours.size());
@@ -298,7 +299,7 @@ namespace Pedestrians
 
         public void paint()
         {
-            Vector3 position = _automaton.GetScenario().GetRowColumnPosition(new Vector2(_row, _column)).transform.position;
+            Vector3 position = _automaton.Stage.GetRowColumnCell(new Vector2(_row, _column)).transform.position;
             transform.position = position + Vector3.up * transform.localScale.y / 2;
             // transform.position = new Vector3(position.x, position.y + transform.localScale.y/2, position.z);
         }

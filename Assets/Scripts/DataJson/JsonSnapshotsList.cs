@@ -8,6 +8,7 @@ namespace DataJson
     public class JsonSnapshotsList
     {
         public List<JsonCrowdList> snapshots;
+        public float cellDimension;
     
         public JsonSnapshotsList()
         {
@@ -15,9 +16,10 @@ namespace DataJson
             // snapshots.Add(new JsonCrowdList());
         }
 
-        public JsonSnapshotsList(JsonSnapshotsList snapshotsList)
+        public JsonSnapshotsList(JsonSnapshotsList snapshotsList, float cellDimension)
         {
             this.snapshots = snapshotsList.snapshots;
+            this.cellDimension = cellDimension;
         }
 
         public void AddCrowdsToList(JsonCrowdList crowdList)

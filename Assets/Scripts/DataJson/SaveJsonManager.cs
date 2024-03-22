@@ -10,9 +10,9 @@ namespace DataJson
     // https://forum.unity.com/threads/jsonutility-serializes-floats-with-way-too-many-digits.541045/#post-5485749
     public static class SaveJsonManager
     {
-        public static void SaveScoreJson(string path, JsonSnapshotsList snapshotsList)
+        public static void SaveScoreJson(string path, JsonSnapshotsList snapshotsList, float cellDimension)
         {
-            JsonSnapshotsList battleActionsList = new JsonSnapshotsList(snapshotsList);
+            JsonSnapshotsList battleActionsList = new JsonSnapshotsList(snapshotsList, cellDimension);
             string json = JsonUtility.ToJson(battleActionsList);
 
             using (StreamWriter streamWriter = new StreamWriter(path))
