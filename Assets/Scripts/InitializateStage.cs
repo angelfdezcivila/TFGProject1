@@ -93,17 +93,6 @@ public class InitializateStage : MonoBehaviour
         _stage = new RandomStage(cellsPrefab, transform, _cellsDimension);
 
         InitializeAutomaton();
-
-        // Esto no hace falta ya que se usa para calcular los movimientos
-        Func<PedestrianParameters> pedestrianParametersSupplier = () =>
-            new PedestrianParameters.Builder()
-                .FieldAttractionBias(Random.Range(0.0f, 10.0f))
-                .CrowdRepulsion(Random.Range(0.1f, 0.5f))
-                .VelocityPercent(Random.Range(0.3f, 1.0f))
-                .Build();
-
-        int numberOfPedestrians = traceJson.snapshots[0].crowd.Count;
-        _automaton.AddPedestriansUniformly(numberOfPedestrians, pedestrianParametersSupplier);
         
         StartCoroutine(nameof(LoadingSimulationCoroutine), traceJson);
         
@@ -210,7 +199,7 @@ public class InitializateStage : MonoBehaviour
             // el escenario también se ha precargado y coinciden el escenario cargado y el que se quiere simular
             // (ponerle un id de escenario tanto al json del escenario como al del snapshot???) simular la traza.
             JsonSnapshotsList traceJson = SaveJsonManager.LoadScoreJson(_pathToJson);
-            traceJson.snapshots.ForEach(list => Debug.Log("Tete" + list.timestamp));
+            // traceJson.snapshots.ForEach(list => Debug.Log("Loading timestep: " + list.timestamp));
             LoadSimulation(traceJson);
         }
         else

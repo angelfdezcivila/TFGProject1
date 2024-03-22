@@ -181,6 +181,18 @@ namespace Cellular
         }
       }
     }
+
+    public void AddPedestriansFromJson(JsonSnapshotsList traceJson)
+    {
+      
+      int numberOfPedestrians = traceJson.snapshots[0].crowd.Count;
+      for (int i = 0; i < numberOfPedestrians; i++)
+      {
+        CrowdEntryJson pedestrian = traceJson.snapshots[0].crowd[i];
+        CoordinatesJson coordinates = pedestrian.location.coordinates;
+        AddPedestrian((int)(coordinates.X / CellsDimension), (int)(coordinates.Y / CellsDimension), null);
+      }
+    }
     
     /// <summary>
     /// Returns neighbours of a cell in this automaton (will depend on neighbourhood relationship).
@@ -409,10 +421,18 @@ namespace Cellular
       // timeSteps++;
     }
 
-    private void TimeStepLoadedSimulation()
+    // TODO: Hay que comprobar que funcione
+    private void TimeStepLoadedSimulation(JsonSnapshotsList traceJson)
     {
-        List<Pedestrian> pedestriansToMove = null; //Obtener del json la lista en el timeStep correspondiente
-        foreach (var pedestrian in pedestriansToMove)
+      _timeSteps++;
+      //Se obtiene del json la lista en el timeStep correspondiente.
+      //Como al inicio hemos añadido todos los agentes del json a la lista _inScenarioPedestrians, podemos iterar sobre esta
+        // List<Pedestrian> pedestriansToMove = _inScenarioPedestrians;
+        List<Pedestrian> pedestriansToMove = new List<Pedestrian>(); //Esto contiene los agentes de ese timestep
+        traceJson.snapshots[_timeSteps].crowd.ForEach(crowdEntryJson => 
+          pedestriansToMove.Add(_inScenarioPedestrians.Find(pedestrian => pedestrian.Identifier == crowdEntryJson.id)));
+        
+        foreach (Pedestrian pedestrian in pedestriansToMove)
         {
           Location location = pedestrian.GetPath()[_timeSteps];
           
@@ -431,8 +451,8 @@ namespace Cellular
      /**
     * Runs a step of the simulation loaded.
     */
-    public void LoadSimulationStep() {
-      TimeStepLoadedSimulation();
+    public void LoadSimulationStep(JsonSnapshotsList traceJson) {
+      TimeStepLoadedSimulation(traceJson);
       Paint();
     }
 
@@ -445,7 +465,7 @@ namespace Cellular
     private bool SimulationShouldContinue(float maximalTimeSteps)
     {
       return _inScenarioPedestrians.Count > 0 && _timeSteps < maximalTimeSteps;
-      // return _inScenarioPedestrians.Count > 0 && _timeSteps < 500;
+      // return _inScenarioPedestrians.Count > 0 && _timeSteps < 500; //Para testear
     }
   
     public IEnumerator RunAutomatonSimulationCoroutine() {
@@ -468,15 +488,18 @@ namespace Cellular
       Paint();
     }
     
-    public IEnumerator LoadingSimulationCoroutine(JsonSnapshotsList json) {
+    public IEnumerator LoadingSimulationCoroutine(JsonSnapshotsList traceJson) {
       Debug.Log("Real time per tick" + RealTimePerTick);
-
+      
+      // Crear y añadir a escena los agentes en su posición inicial
+      AddPedestriansFromJson(traceJson);
+      
       Paint();
       yield return new WaitForSeconds(1.5f); //Para ver las posiciones iniciales de cada agente
 
       while (SimulationShouldContinue())
       {
-        LoadSimulationStep();
+        LoadSimulationStep(traceJson);
         yield return new WaitForSeconds(RealTimePerTick);
         // yield return new WaitUntil(() => Input.GetKeyDown(KeyCode.Space));
 
