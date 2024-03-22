@@ -139,7 +139,10 @@ public class InitializateStage : MonoBehaviour
             SaveInJson();
         }
         else
-            yield return _automaton.LoadingSimulationCoroutine();
+        {
+            JsonSnapshotsList json = SaveNewtonsoftJsonManager.LoadScoreJson(_pathToReadJson);
+            yield return _automaton.LoadingSimulationCoroutine(json);
+        }
         Statistics statistics = _automaton.computeStatistics();
         Debug.Log(statistics);
         // SaveInJson();

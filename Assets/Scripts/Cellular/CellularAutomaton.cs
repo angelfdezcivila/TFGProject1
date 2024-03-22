@@ -444,8 +444,8 @@ namespace Cellular
   
     private bool SimulationShouldContinue(float maximalTimeSteps)
     {
-      // return inScenarioPedestrians.Count > 0 && timeSteps < maximalTimeSteps;
-      return _inScenarioPedestrians.Count > 0 && _timeSteps < 500;
+      return _inScenarioPedestrians.Count > 0 && _timeSteps < maximalTimeSteps;
+      // return _inScenarioPedestrians.Count > 0 && _timeSteps < 500;
     }
   
     public IEnumerator RunAutomatonSimulationCoroutine() {
@@ -468,9 +468,10 @@ namespace Cellular
       Paint();
     }
     
-    public IEnumerator LoadingSimulationCoroutine() {
+    public IEnumerator LoadingSimulationCoroutine(JsonSnapshotsList json) {
       Debug.Log("Real time per tick" + RealTimePerTick);
-    
+
+      json.snapshots.ForEach(list => Debug.Log("Loading: " + list.timestamp));
       Paint();
       yield return new WaitForSeconds(1.5f); //Para ver las posiciones iniciales de cada agente
 
@@ -620,7 +621,7 @@ namespace Cellular
      * @return Json representing traces of all pedestrians through the scenario.
      */
     public JsonSnapshotsList JsonTrace() {
-      int domain = 0; // todo currently there is only a single domain
+      int domain = 1; // TODO: currently there is only a single domain
     
       // Create an empty JsonArray for the snapshots
       JsonSnapshotsList snapshots = new JsonSnapshotsList();
@@ -645,8 +646,13 @@ namespace Cellular
               location.Row*CellsDimension, location.Column*CellsDimension));
           }
         }
-        crowd.timestamp = t;
-        snapshots.AddCrowdsToList(crowd);
+
+        if (crowd.crowd.Count > 0) // En caso de que no haya ningún agente, es decir, que haya terminado la simulación, no hay que añadirlo al json
+        {
+          crowd.timestamp = t;
+          snapshots.AddCrowdsToList(crowd);
+        }
+
       }
 
       return snapshots;
