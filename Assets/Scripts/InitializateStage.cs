@@ -133,20 +133,24 @@ public class InitializateStage : MonoBehaviour
 
     private IEnumerator RunAutomatonCoroutine(bool savingTrace)
     {
-        if(savingTrace)
+        if (savingTrace)
+        {
             yield return _automaton.RunAutomatonSimulationCoroutine();
+            SaveInJson();
+        }
         else
             yield return _automaton.LoadingSimulationCoroutine();
         Statistics statistics = _automaton.computeStatistics();
         Debug.Log(statistics);
-        SaveInJson();
+        // SaveInJson();
     }
     
     private void SaveInJson()
     {
         JsonSnapshotsList list = _automaton.JsonTrace();
         // SaveJsonManager.SaveScoreJson(JsonScoreFilePath, list);
-        SaveJsonManager.SaveScoreJson(_pathToReadJson, list, _cellsDimension.x);
+        // SaveJsonManager.SaveScoreJson(_pathToReadJson, list, _cellsDimension.x);
+        SaveNewtonsoftJsonManager.SaveScoreJson(_pathToReadJson, list, _cellsDimension.x);
     }
 
     #region RunAutomatonWithoutCoroutines

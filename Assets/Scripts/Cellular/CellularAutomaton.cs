@@ -588,7 +588,8 @@ namespace Cellular
 
     private CrowdEntryJson JsonPedestrian(int numberOfSteps, int id, int domain, float row, float column)
     {
-      LocationJson locationJson = new LocationJson(domain, GetVector2Position(row, column));
+      // LocationJson locationJson = new LocationJson(domain, GetVectorToPosition(row, column));
+      LocationJson locationJson = new LocationJson(domain, GetCoordinatesToPosition(row, column));
       CrowdEntryJson crowdJson = new CrowdEntryJson(numberOfSteps, locationJson, id);
       // CrowdEntryJson crowdJson = new CrowdEntryJson(locationJson, id);
 
@@ -596,7 +597,7 @@ namespace Cellular
     }
 
     // private CoordinatesJson GetVector2Position(int row, int column)
-    private Vector2 GetVector2Position(float row, float column)
+    private Vector2 GetVectorToPosition(float row, float column)
     {
       // Vector3 pos3D = parameters.Scenario.GetRowColumnPosition(new Vector2(row, column)).transform.position;
       // Vector2 position = new Vector2(pos3D.x, pos3D.z);
@@ -604,6 +605,13 @@ namespace Cellular
       Vector2 position = new Vector2(row, column);
       
       return position;
+    }
+    
+    private CoordinatesJson GetCoordinatesToPosition(float row, float column)
+    {
+      CoordinatesJson coordinates = new CoordinatesJson(row, column);
+      
+      return coordinates;
     }
 
     /**
