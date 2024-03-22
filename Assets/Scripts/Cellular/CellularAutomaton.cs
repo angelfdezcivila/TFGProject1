@@ -590,8 +590,7 @@ namespace Cellular
     {
       // LocationJson locationJson = new LocationJson(domain, GetVectorToPosition(row, column));
       LocationJson locationJson = new LocationJson(domain, GetCoordinatesToPosition(row, column));
-      CrowdEntryJson crowdJson = new CrowdEntryJson(numberOfSteps, locationJson, id);
-      // CrowdEntryJson crowdJson = new CrowdEntryJson(locationJson, id);
+      CrowdEntryJson crowdJson = new CrowdEntryJson(locationJson, id);
 
       return crowdJson;
     }

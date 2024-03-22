@@ -11,7 +11,8 @@ namespace DataJson
         public static void SaveScoreJson(string path, JsonSnapshotsList snapshotsList, float cellDimension)
         {
             JsonSnapshotsList battleActionsList = new JsonSnapshotsList(snapshotsList, cellDimension);
-            string json = JsonConvert.SerializeObject(battleActionsList);
+            // string json = JsonConvert.SerializeObject(battleActionsList);
+            string json = JsonConvert.SerializeObject(battleActionsList, Formatting.Indented);
 
             using (StreamWriter streamWriter = new StreamWriter(path))
             {
