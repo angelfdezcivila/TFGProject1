@@ -3,6 +3,7 @@ using Events;
 using SimpleFileBrowser;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 namespace UI
@@ -14,7 +15,7 @@ namespace UI
         [SerializeField] 
         private TMP_InputField _pedestrianVelocityInputField;
         [SerializeField] 
-        private Button _saveFolderButton;
+        private Button _saveOrLoadFolderButton;
         [SerializeField] 
         private Toggle _saveOrLoadToggle;
         [SerializeField] 
@@ -26,7 +27,7 @@ namespace UI
 
         private void Awake()
         {
-            _saveFolderButton.onClick.AddListener(OpenFileExplorer);
+            _saveOrLoadFolderButton.onClick.AddListener(OpenFileExplorer);
             _saveOrLoadToggle.onValueChanged.AddListener(TogglingSaveAndUpdate);
             _startButton.onClick.AddListener(StartOnClick);
             
@@ -44,8 +45,9 @@ namespace UI
 
         private void TogglingSaveAndUpdate(bool savingTrace)
         {
-            _saveFolderButton.GetComponentInChildren<TextMeshProUGUI>().text = savingTrace ? "Guardar traza en" : "Cargar traza";
-            string path = savingTrace ? InitializateStage.JsonSaveFilePath : "";
+            _saveOrLoadFolderButton.GetComponentInChildren<TextMeshProUGUI>().text = savingTrace ? "Guardar traza en" : "Cargar traza";
+            // string path = savingTrace ? InitializateStage.JsonSaveFilePath : "";
+            string path = InitializateStage.JsonInitialFilePath;
             FileExplorerEvents.OnSelectedPathForJson?.Invoke(path);
         }
 

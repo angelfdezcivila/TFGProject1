@@ -471,7 +471,6 @@ namespace Cellular
     public IEnumerator LoadingSimulationCoroutine(JsonSnapshotsList json) {
       Debug.Log("Real time per tick" + RealTimePerTick);
 
-      json.snapshots.ForEach(list => Debug.Log("Loading: " + list.timestamp));
       Paint();
       yield return new WaitForSeconds(1.5f); //Para ver las posiciones iniciales de cada agente
 

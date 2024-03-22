@@ -1454,7 +1454,7 @@ GameObject:
   - component: {fileID: 556998879}
   - component: {fileID: 556998878}
   m_Layer: 5
-  m_Name: SaveSimulationFolder_Btn
+  m_Name: SaveOrLoadFolder_Btn
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1592,7 +1592,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _pedestrianVelocityInputField: {fileID: 384604653}
-  _saveFolderButton: {fileID: 556998878}
+  _saveOrLoadFolderButton: {fileID: 556998878}
   _saveOrLoadToggle: {fileID: 1658425422}
   _multiplierSpeedSlider: {fileID: 1298185878}
   _startButton: {fileID: 167213597}

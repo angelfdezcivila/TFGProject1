@@ -28,15 +28,15 @@ public class InitializateStage : MonoBehaviour
     // private StageWithBuilder.StageWithBuilder _stageBuilder;
     private Stage _stage;
     private CellularAutomaton _automaton;
-    public static string JsonSaveFilePath => $"{Application.persistentDataPath}/" + _fileName;
+    public static string JsonInitialFilePath => $"{Application.persistentDataPath}/" + _fileName;
     private static string _fileName = "TraceJson.json"; // Es posible que se quiera cambiarla, por lo que por ahora lo he dejado como variable
     // private string JsonScoreFilePath => $"{Application.persistentDataPath}/" + _fileName;
     // private string _fileName = "TraceJson.json";
-    private string _pathToReadJson;
+    private string _pathToJson;
 
     void Start()
     {
-        _pathToReadJson = JsonSaveFilePath;
+        _pathToJson = JsonInitialFilePath;
         _cellsDimension = new Vector3(0.4f, 0.4f, 0.4f);
         _timeLimit = 10 * 60;
         _pedestriansVelocity = 1.3f;
@@ -45,15 +45,19 @@ public class InitializateStage : MonoBehaviour
         FileExplorerEvents.OnOpenFileExplorer += OpenFileExplorer;
         SimulationEvents.OnUpdateStageParameters += UpdateParameters;
         SimulationEvents.OnPlaySimulation += StartSimulation;
+        FileExplorerEvents.OnSelectedPathForJson += UpdatePathJson;
+
         
-        FileExplorerEvents.OnSelectedPathForJson?.Invoke(_pathToReadJson);
+        FileExplorerEvents.OnSelectedPathForJson?.Invoke(_pathToJson);
     }
-    
+
     void OnDestroy()
     {
         FileExplorerEvents.OnOpenFileExplorer -= OpenFileExplorer;
         SimulationEvents.OnUpdateStageParameters -= UpdateParameters;
         SimulationEvents.OnPlaySimulation -= StartSimulation;
+        FileExplorerEvents.OnSelectedPathForJson -= UpdatePathJson;
+
     }
 
     private void StartAndSaveSimulation()
@@ -77,7 +81,7 @@ public class InitializateStage : MonoBehaviour
         int numberOfPedestrians = Random.Range(150, 600);
         _automaton.AddPedestriansUniformly(numberOfPedestrians, pedestrianParametersSupplier);
         
-        StartCoroutine(nameof(RunAutomatonCoroutine), true);
+        StartCoroutine(nameof(RunAutomatonSimulationCoroutine));
         
         // RunAutomaton();
     }
@@ -101,7 +105,7 @@ public class InitializateStage : MonoBehaviour
         int numberOfPedestrians = traceJson.snapshots[0].crowd.Count;
         _automaton.AddPedestriansUniformly(numberOfPedestrians, pedestrianParametersSupplier);
         
-        StartCoroutine(nameof(RunAutomatonCoroutine), false);
+        StartCoroutine(nameof(LoadingSimulationCoroutine), traceJson);
         
     }
 
@@ -131,21 +135,19 @@ public class InitializateStage : MonoBehaviour
         _automaton = new CellularAutomaton(cellularAutomatonParameters, pedestrianPrefab);
     }
 
-    private IEnumerator RunAutomatonCoroutine(bool savingTrace)
+    private IEnumerator RunAutomatonSimulationCoroutine()
     {
-        if (savingTrace)
-        {
-            yield return _automaton.RunAutomatonSimulationCoroutine();
-            SaveInJson();
-        }
-        else
-        {
-            JsonSnapshotsList json = SaveNewtonsoftJsonManager.LoadScoreJson(_pathToReadJson);
-            yield return _automaton.LoadingSimulationCoroutine(json);
-        }
+        yield return _automaton.RunAutomatonSimulationCoroutine();
         Statistics statistics = _automaton.computeStatistics();
         Debug.Log(statistics);
-        // SaveInJson();
+        SaveInJson();
+    }
+    
+    private IEnumerator LoadingSimulationCoroutine(JsonSnapshotsList traceJson)
+    {
+        yield return _automaton.LoadingSimulationCoroutine(traceJson);
+        Statistics statistics = _automaton.computeStatistics();
+        Debug.Log(statistics);
     }
     
     private void SaveInJson()
@@ -153,7 +155,7 @@ public class InitializateStage : MonoBehaviour
         JsonSnapshotsList list = _automaton.JsonTrace();
         // SaveJsonManager.SaveScoreJson(JsonScoreFilePath, list);
         // SaveJsonManager.SaveScoreJson(_pathToReadJson, list, _cellsDimension.x);
-        SaveNewtonsoftJsonManager.SaveScoreJson(_pathToReadJson, list, _cellsDimension.x);
+        SaveNewtonsoftJsonManager.SaveScoreJson(_pathToJson, list, _cellsDimension.x);
     }
 
     #region RunAutomatonWithoutCoroutines
@@ -207,7 +209,7 @@ public class InitializateStage : MonoBehaviour
             // Si se detecta un json desde la ruta almacenada en la variable _pathToReadJson,
             // el escenario también se ha precargado y coinciden el escenario cargado y el que se quiere simular
             // (ponerle un id de escenario tanto al json del escenario como al del snapshot???) simular la traza.
-            JsonSnapshotsList traceJson = SaveJsonManager.LoadScoreJson(_pathToReadJson);
+            JsonSnapshotsList traceJson = SaveJsonManager.LoadScoreJson(_pathToJson);
             traceJson.snapshots.ForEach(list => Debug.Log("Tete" + list.timestamp));
             LoadSimulation(traceJson);
         }
@@ -223,23 +225,28 @@ public class InitializateStage : MonoBehaviour
         {
             FileBrowser.ShowLoadDialog( ( paths ) =>
                 {
-                    _pathToReadJson = paths[0] + "/" + _fileName;
-                    FileExplorerEvents.OnSelectedPathForJson?.Invoke(_pathToReadJson);
+                    _pathToJson = paths[0] + "/" + _fileName;
+                    FileExplorerEvents.OnSelectedPathForJson?.Invoke(_pathToJson);
                 },
                 () => { Debug.Log( "Canceled" ); },
-                FileBrowser.PickMode.Folders, false, _pathToReadJson, null, "Select Folder", "Select" );
+                FileBrowser.PickMode.Folders, false, _pathToJson, null, "Select Folder", "Select" );
         }
         else
         {
             FileBrowser.ShowLoadDialog( ( paths ) =>
                 {
-                    _pathToReadJson = paths[0];
-                    FileExplorerEvents.OnSelectedPathForJson?.Invoke(_pathToReadJson);
+                    _pathToJson = paths[0];
+                    FileExplorerEvents.OnSelectedPathForJson?.Invoke(_pathToJson);
                 },
                 () => { Debug.Log( "Canceled" ); },
-                FileBrowser.PickMode.Files, false, _pathToReadJson, null, "Select File", "Select" );
+                FileBrowser.PickMode.Files, false, _pathToJson, null, "Select File", "Select" );
         }
 
+    }
+    
+    private void UpdatePathJson(string path)
+    {
+        _pathToJson = path;
     }
 
     private void UpdateParameters(float pedestriansVelocity, float multiplierSpeed)
