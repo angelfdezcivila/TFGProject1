@@ -17,14 +17,15 @@ namespace JsonDataManager.Trace
             // crowd.Add(new CrowdEntryJson());
         }
 
-        public JsonCrowdList(JsonCrowdList crowdList, float timestamp)
+        public JsonCrowdList(List<CrowdEntryJson> crowdList, float timestamp)
         {
-            this.crowd = crowdList.crowd;
+            this.crowd = crowdList;
+            this.timestamp = timestamp;
         }
 
-        public void AddCrowdToList(CrowdEntryJson action)
+        public void AddCrowdToList(CrowdEntryJson crowdEntry)
         {
-            crowd.Add(action);
+            this.crowd.Add(crowdEntry);
         }
     }
 }

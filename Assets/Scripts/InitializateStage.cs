@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using Cellular;
 using DataJson;
 using Events;
@@ -142,9 +143,10 @@ public class InitializateStage : MonoBehaviour
     
     private void SaveInJson()
     {
-        JsonSnapshotsList list = _automaton.JsonTrace();
-        // SaveJsonManager.SaveScoreJson(JsonScoreFilePath, list);
-        SaveJsonManager.SaveScoreJson(_pathToJson, list, _cellsDimension.x);
+        // JsonSnapshotsList list = _automaton.JsonTrace();
+        // SaveJsonManager.SaveScoreJson(_pathToJson, list);
+        List<JsonCrowdList> list = _automaton.JsonTrace();
+        SaveJsonManager.SaveTraceJson(_pathToJson, list, _cellsDimension.x);
     }
 
     #region RunAutomatonWithoutCoroutines
@@ -198,7 +200,7 @@ public class InitializateStage : MonoBehaviour
             // Si se detecta un json desde la ruta almacenada en la variable _pathToReadJson,
             // el escenario también se ha precargado y coinciden el escenario cargado y el que se quiere simular
             // (ponerle un id de escenario tanto al json del escenario como al del snapshot???) simular la traza.
-            JsonSnapshotsList traceJson = SaveJsonManager.LoadScoreJson(_pathToJson);
+            JsonSnapshotsList traceJson = SaveJsonManager.LoadTraceJson(_pathToJson);
             // traceJson.snapshots.ForEach(list => Debug.Log("Loading timestep: " + list.timestamp));
             LoadSimulation(traceJson);
         }

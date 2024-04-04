@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.IO;
 using JsonDataManager.Trace;
 using Newtonsoft.Json;
@@ -11,7 +12,7 @@ namespace DataJson
     // https://forum.unity.com/threads/jsonutility-serializes-floats-with-way-too-many-digits.541045/#post-5485749
     public static class SaveJsonManager
     {
-        public static void SaveScoreJson(string path, JsonSnapshotsList snapshotsList, float cellDimension)
+        public static void SaveTraceJson(string path, List<JsonCrowdList> snapshotsList, float cellDimension)
         {
             JsonSnapshotsList battleActionsList = new JsonSnapshotsList(snapshotsList, cellDimension);
             // string json = JsonUtility.ToJson(battleActionsList);
@@ -25,7 +26,7 @@ namespace DataJson
             }
         }
     
-        public static JsonSnapshotsList LoadScoreJson(string path)
+        public static JsonSnapshotsList LoadTraceJson(string path)
         {
             JsonSnapshotsList result = new JsonSnapshotsList();
 

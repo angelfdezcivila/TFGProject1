@@ -221,7 +221,7 @@ namespace Cellular
     // Load the current timeStep for a pedestrian loaded from a json
     private void PedestrianTimeStepLoaded(JsonSnapshotsList traceJson, Pedestrian pedestrian)
     {
-      JsonCrowdList snapshot = traceJson.snapshots[_timeSteps];
+      JsonCrowdList snapshot = traceJson.snapshots[_timeSteps]; // snaphot.timestamp == _timeSteps
           
       CrowdEntryJson crowdEntryJson = snapshot.crowd.Find(pedestrianToFind => pedestrianToFind.id == pedestrian.Identifier);
       if (crowdEntryJson != null)
@@ -670,7 +670,7 @@ namespace Cellular
     }
 
 
-    private CrowdEntryJson JsonPedestrian(int numberOfSteps, int id, int domain, float row, float column)
+    private CrowdEntryJson JsonPedestrian(int id, int domain, float row, float column)
     {
       // LocationJson locationJson = new LocationJson(domain, GetVectorToPosition(row, column));
       LocationJson locationJson = new LocationJson(domain, GetCoordinatesToPosition(row, column));
@@ -703,11 +703,14 @@ namespace Cellular
      *
      * @return Json representing traces of all pedestrians through the scenario.
      */
-    public JsonSnapshotsList JsonTrace() {
+    // public JsonSnapshotsList JsonTrace() {
+    public List<JsonCrowdList> JsonTrace() {
       int domain = 1; // TODO: currently there is only a single domain
     
       // Create an empty JsonArray for the snapshots
-      JsonSnapshotsList snapshots = new JsonSnapshotsList();
+      // JsonSnapshotsList snapshots = new JsonSnapshotsList();
+      List<JsonCrowdList> snapshots = new List<JsonCrowdList>();
+
     
       List<Pedestrian> allPedestrians = new List<Pedestrian>();
       _inScenarioPedestrians.ForEach(pedestrian => allPedestrians.Add(pedestrian));
@@ -725,7 +728,7 @@ namespace Cellular
           {
             Location location = path[t];
             // crowd.AddCrowdToList(JsonPedestrian(pedestrian.Identifier, domain, location.Row, location.Column));
-            crowd.AddCrowdToList(JsonPedestrian(pedestrian.getNumberOfSteps(),pedestrian.Identifier, domain, 
+            crowd.AddCrowdToList(JsonPedestrian(pedestrian.Identifier, domain, 
               location.Row*CellsDimension, location.Column*CellsDimension));
           }
         }
@@ -733,7 +736,8 @@ namespace Cellular
         if (crowd.crowd.Count > 0) // En caso de que no haya ningún agente, es decir, que haya terminado la simulación, no hay que añadirlo al json
         {
           crowd.timestamp = t;
-          snapshots.AddCrowdsToList(crowd);
+          // snapshots.AddCrowdsToList(crowd);
+          snapshots.Add(crowd);
         }
 
       }

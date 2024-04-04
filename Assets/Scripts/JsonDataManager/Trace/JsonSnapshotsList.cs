@@ -16,9 +16,9 @@ namespace JsonDataManager.Trace
             // snapshots.Add(new JsonCrowdList());
         }
 
-        public JsonSnapshotsList(JsonSnapshotsList snapshotsList, float cellDimension)
+        public JsonSnapshotsList(List<JsonCrowdList> snapshotsList, float cellDimension)
         {
-            this.snapshots = snapshotsList.snapshots;
+            this.snapshots = snapshotsList;
             this.cellDimension = cellDimension;
         }
 
