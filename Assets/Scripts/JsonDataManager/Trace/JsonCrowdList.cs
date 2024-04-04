@@ -1,8 +1,7 @@
 using System;
 using System.Collections.Generic;
-using UnityEngine.Serialization;
 
-namespace DataJson
+namespace JsonDataManager.Trace
 {
     [Serializable]
     //Representación de un tick de tiempo en el json

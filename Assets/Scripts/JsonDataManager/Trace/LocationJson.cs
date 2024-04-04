@@ -1,8 +1,6 @@
 using System;
-using UnityEngine;
-using UnityEngine.Serialization;
 
-namespace DataJson
+namespace JsonDataManager.Trace
 {
     [Serializable]
     // Representación de la localización de un agente en el json

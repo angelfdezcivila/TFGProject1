@@ -3,6 +3,7 @@ using System.Collections;
 using Cellular;
 using DataJson;
 using Events;
+using JsonDataManager.Trace;
 using Pedestrians;
 using StageGenerator;
 using UnityEngine;
@@ -143,8 +144,7 @@ public class InitializateStage : MonoBehaviour
     {
         JsonSnapshotsList list = _automaton.JsonTrace();
         // SaveJsonManager.SaveScoreJson(JsonScoreFilePath, list);
-        // SaveJsonManager.SaveScoreJson(_pathToReadJson, list, _cellsDimension.x);
-        SaveNewtonsoftJsonManager.SaveScoreJson(_pathToJson, list, _cellsDimension.x);
+        SaveJsonManager.SaveScoreJson(_pathToJson, list, _cellsDimension.x);
     }
 
     #region RunAutomatonWithoutCoroutines

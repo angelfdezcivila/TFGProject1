@@ -1,7 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using DataJson;
+using JsonDataManager.Trace;
 using Pedestrians;
 using StageGenerator;
 using UnityEngine;

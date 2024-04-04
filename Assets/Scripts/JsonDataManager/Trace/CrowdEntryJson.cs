@@ -1,6 +1,6 @@
 using System;
 
-namespace DataJson
+namespace JsonDataManager.Trace
 {
     [Serializable]
     // Representación de un agente en el json
