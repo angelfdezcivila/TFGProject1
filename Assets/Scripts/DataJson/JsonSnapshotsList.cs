@@ -5,6 +5,7 @@ using UnityEngine.Serialization;
 namespace DataJson
 {
     [Serializable]
+    //Representación de la traza entera en el json
     public class JsonSnapshotsList
     {
         public List<JsonCrowdList> snapshots;

@@ -3,6 +3,7 @@ using System;
 namespace DataJson
 {
     [Serializable]
+    // Representación de un agente en el json
     public class CrowdEntryJson
     {
         public LocationJson location;

@@ -5,6 +5,8 @@ using UnityEngine.Serialization;
 namespace DataJson
 {
     [Serializable]
+    // Representación de las coordenadas de un agente en el json
+
     public class CoordinatesJson
     {
         public float X;

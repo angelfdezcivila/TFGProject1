@@ -5,6 +5,7 @@ using UnityEngine.Serialization;
 namespace DataJson
 {
     [Serializable]
+    //Representación de un tick de tiempo en el json
     public class JsonCrowdList
     {
         // public List<SnapshotsEntryJson> battleActionList;
