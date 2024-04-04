@@ -53,7 +53,7 @@ namespace Pedestrians
          * Path followed by pedestrian in scenario during simulation.
          */
         // private List<Location> _path;
-        public List<Location> _path;
+        private List<Location> _path;
         
         /**
          * A tentative movement consists of a location (where we should move) and a desirability (the higher the

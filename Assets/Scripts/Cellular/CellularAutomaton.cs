@@ -190,10 +190,65 @@ namespace Cellular
       {
         CrowdEntryJson pedestrian = traceJson.snapshots[0].crowd[i];
         CoordinatesJson coordinates = pedestrian.location.coordinates;
-        AddPedestrian((int)(coordinates.X / CellsDimension), (int)(coordinates.Y / CellsDimension), null);
+        AddPedestrianFromJson((int)(coordinates.X / CellsDimension), (int)(coordinates.Y / CellsDimension), traceJson);
       }
     }
     
+    /// <summary>
+    /// Adds a new pedestrian from a json.
+    /// </summary>
+    /// <param name="row">row index of scenario where new pedestrian should be placed.</param>
+    /// <param name="column">column index of scenario where new pedestrian should be placed.</param>
+    /// <param name="parameters">parameters describing new pedestrian.</param>
+    /// <returns>if pedestrian could be created (location was neither blocked nor taken by another pedestrian).</returns>
+    /// <exception cref="ArgumentOutOfRangeException"></exception>
+    public bool AddPedestrianFromJson(int row, int column, JsonSnapshotsList traceJson) {
+      if (row < 0 || row >= Rows) throw new ArgumentOutOfRangeException("AddPedestrian: invalid row");
+      if (column < 0 || column >= Columns) throw new ArgumentOutOfRangeException("AddPedestrian: invalid column");
+      if (IsCellReachable(row, column)) {
+        Pedestrian pedestrianLoaded = _pedestrianFactory.GetInstance(row, column, null);
+        
+        // AddPathToPedestrian(traceJson, pedestrianLoaded);
+        
+        _occupied[row, column] = true;
+        _inScenarioPedestrians.Add(pedestrianLoaded);
+        return true;
+      } else {
+        return false;
+      }
+    }
+
+    // Load the current timeStep for a pedestrian loaded from a json
+    private void PedestrianTimeStepLoaded(JsonSnapshotsList traceJson, Pedestrian pedestrian)
+    {
+      JsonCrowdList snapshot = traceJson.snapshots[_timeSteps];
+          
+      CrowdEntryJson crowdEntryJson = snapshot.crowd.Find(pedestrianToFind => pedestrianToFind.id == pedestrian.Identifier);
+      if (crowdEntryJson != null)
+      {
+        CoordinatesJson locationCoordinates = crowdEntryJson.location.coordinates;
+        int row = (int)(locationCoordinates.X / CellsDimension);
+        int column = (int)(locationCoordinates.Y / CellsDimension);
+        if (_stage.IsCellExit(row, column))
+        {
+          pedestrian.SetExitTimeSteps(_timeSteps);
+          _outOfScenarioPedestrians.Add(pedestrian);
+          // Remove current pedestrian from the list
+          // pedestriansIterator = (List<Pedestrian>.Enumerator)ListExtensions.RemoveCurrent(inScenarioPedestrians, pedestrian);
+          // ListExtensions.RemoveCurrent(inScenarioPedestrians, pedestrian);
+          _inScenarioPedestrians.Remove(pedestrian);
+          // pedestriansIterator = inScenarioPedestrians.GetEnumerator();
+        
+          GameObject.Destroy(pedestrian.gameObject);
+        }
+        else
+        {
+          pedestrian.moveTo(row, column);
+        }
+      }
+      
+    }
+
     /// <summary>
     /// Returns neighbours of a cell in this automaton (will depend on neighbourhood relationship).
     /// </summary>
@@ -421,22 +476,25 @@ namespace Cellular
       // timeSteps++;
     }
 
-    // TODO: Hay que comprobar que funcione
+    // TODO: los agentes no se destruye ni se detecta si han salido o no correctamente debido a que hay que cargar el escenario correspondiente
     private void TimeStepLoadedSimulation(JsonSnapshotsList traceJson)
     {
       _timeSteps++;
       //Se obtiene del json la lista en el timeStep correspondiente.
       //Como al inicio hemos añadido todos los agentes del json a la lista _inScenarioPedestrians, podemos iterar sobre esta
-        // List<Pedestrian> pedestriansToMove = _inScenarioPedestrians;
-        List<Pedestrian> pedestriansToMove = new List<Pedestrian>(); //Esto contiene los agentes de ese timestep
-        traceJson.snapshots[_timeSteps].crowd.ForEach(crowdEntryJson => 
-          pedestriansToMove.Add(_inScenarioPedestrians.Find(pedestrian => pedestrian.Identifier == crowdEntryJson.id)));
+        List<Pedestrian> pedestriansToMove = new List<Pedestrian>(_inScenarioPedestrians);
+        // List<Pedestrian> pedestriansToMove = new List<Pedestrian>(); //Esto contiene los agentes de ese timestep
+        // traceJson.snapshots[_timeSteps].crowd.ForEach(crowdEntryJson => 
+        //   pedestriansToMove.Add(_inScenarioPedestrians.Find(pedestrian => pedestrian.Identifier == crowdEntryJson.id)));
         
         foreach (Pedestrian pedestrian in pedestriansToMove)
         {
-          Location location = pedestrian.GetPath()[_timeSteps];
-          
+          // AddPathToPedestrian(traceJson, pedestrian);
+          PedestrianTimeStepLoaded(traceJson, pedestrian);
+          // Location location = pedestrian.GetPath()[_timeSteps];
         }
+        
+        Debug.Log("TIMESTEP: " + _timeSteps + "Count: " + _inScenarioPedestrians.Count);
     }
   
     /**
@@ -497,6 +555,7 @@ namespace Cellular
       Paint();
       yield return new WaitForSeconds(1.5f); //Para ver las posiciones iniciales de cada agente
 
+      // while (_timeSteps < traceJson.snapshots.Count)
       while (SimulationShouldContinue())
       {
         LoadSimulationStep(traceJson);
@@ -504,6 +563,8 @@ namespace Cellular
         // yield return new WaitUntil(() => Input.GetKeyDown(KeyCode.Space));
 
       }
+      
+      _timeSteps++;
       Paint();
     }
 
