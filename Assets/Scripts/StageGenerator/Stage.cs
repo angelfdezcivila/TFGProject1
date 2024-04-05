@@ -33,6 +33,11 @@ namespace StageGenerator
             InitializeConstants(cellPrefab, transformParent,new Vector3(1f, 1f, 1f), 10, 10);
         }
         
+        protected Stage(GameObject cellPrefab, Transform transformParent, Vector3 cellsDimension)
+        {
+            InitializeConstants(cellPrefab, transformParent, cellsDimension, 10, 10);
+        }
+        
         protected Stage(GameObject cellPrefab, Transform transformParent, Vector3 cellsDimension, int rows, int columns)
         {
             InitializeConstants(cellPrefab, transformParent, cellsDimension, rows, columns);

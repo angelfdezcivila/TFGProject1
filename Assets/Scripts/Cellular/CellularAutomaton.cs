@@ -744,7 +744,13 @@ namespace Cellular
 
       return snapshots;
     }
-    public void DestroyAutomatons()
+
+    public void JsonStage()
+    {
+      
+    }
+    
+    public void DestroyAllAutomatons()
     {
         GameObject.Destroy(_pedestrianContainer);
         // foreach (Pedestrian pedestrian in inScenarioPedestrians)

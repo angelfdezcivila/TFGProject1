@@ -9,14 +9,14 @@ namespace JsonDataManager.Stage
     public class JsonStage
     {
         public List<GatewayEntryJson> gateways;
-        public List<JsonObstaclesList> domains;
+        public List<DomainEntryJson> domains;
     
         public JsonStage()
         {
-            domains = new List<JsonObstaclesList>();
+            domains = new List<DomainEntryJson>();
         }   
 
-        public JsonStage(List<GatewayEntryJson> gateways, List<JsonObstaclesList> domains)
+        public JsonStage(List<GatewayEntryJson> gateways, List<DomainEntryJson> domains)
         {
             this.gateways = gateways;
             this.domains = domains;
