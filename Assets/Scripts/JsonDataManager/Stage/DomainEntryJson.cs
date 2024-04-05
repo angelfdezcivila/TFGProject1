@@ -16,6 +16,9 @@ namespace JsonDataManager.Stage
     
         public DomainEntryJson()
         {
+            this.id = 0;
+            this.height = 10;
+            this.width = 10;
             obstacles = new List<ObstacleEntryJson>();
             accesses = new List<ObstacleEntryJson>();
         }

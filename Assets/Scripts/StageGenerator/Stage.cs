@@ -59,14 +59,15 @@ namespace StageGenerator
             _cellPrefab = cellPrefab;
             _transformParent = transformParent;
             
-            _numberOfBlocks = SetNumberOfBlocks();
+            // La variable _numberOfBlocks se asigna en el InstantiateStage() ya que al ser un método sobreescribible, evitamos errores asignándolo ahí
+            // _numberOfBlocks = SetNumberOfBlocks();
             _cellMatrix = new List<List<Cell>>();
             _exits = new List<Cell>();
             _obstacles = new List<Cell>();
             
             _staticFloorField = DijkstraStaticFloorFieldWithMooreNeighbourhood.of(this);
             
-            Start();
+            // InstantiateStage();  //Se va a instanciar desde fuera
         }
 
         #endregion
@@ -85,8 +86,9 @@ namespace StageGenerator
     
         #region Private Methods
 
-        private void Start()
+        public void InstantiateStage()
         {
+            _numberOfBlocks = SetNumberOfBlocks();
             // InitializeConstants(cellPivotPrefab, new Vector2(1f, 1f), 10, 10);
             // Si se hace de esta manera, se crea un objecto vacío al hacer new GameObject además del _cellsContainer
             // _cellsContainer = GameObject.Instantiate(new GameObject(), Vector3.zero, Quaternion.identity, _transformParent);

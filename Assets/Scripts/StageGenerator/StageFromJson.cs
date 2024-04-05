@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using JsonDataManager.Stage;
+using JsonDataManager.Stage.ShapeType;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
@@ -7,8 +8,8 @@ namespace StageGenerator
 {
     public sealed class StagefromJson : Stage
     {
-        private readonly JsonStage _jsonStage;
-        private readonly DomainEntryJson _domain;
+        private JsonStage _jsonStage;
+        private DomainEntryJson _domain;
         
         public StagefromJson(GameObject cellPrefab, Transform transformParent, Vector3 cellsDimension, JsonStage stageJson)
             : base(cellPrefab, transformParent, cellsDimension)
@@ -46,45 +47,22 @@ namespace StageGenerator
 
         protected override void CalculateExit()
         {
-            if (Statistics.bernoulli(0.9f)) {
-                for (int i = 2; i < 7; i++)
+            foreach (ObstacleEntryJson access in _domain.accesses)
+            {
+                if (access.shape.type == ShapeJson.ShapeTypeEnum.Rectangle)
+                // if (access.shape.type is RectangleJson)
                 {
-                    SetCellType(new Vector2(i, _columns-1), Cell.CellTypeEnum.Exit);
-                }
-                // scenario.setExit(new Rectangle(2, columns - 1, 5, 1));
-            }
-            if (Statistics.bernoulli(0.9f)) {
-                for (int i = _rows - 7; i < _rows - 2; i++)
-                {
-                    SetCellType(new Vector2(i, _columns-1), Cell.CellTypeEnum.Exit);
-                }
-            }
-            if (Statistics.bernoulli(0.9f)) {
-                for (int i = 10; i < 15; i++)
-                {
-                    SetCellType(new Vector2(i, 0), Cell.CellTypeEnum.Exit);
-                }
-            }
-            if (Statistics.bernoulli(0.9f)) {
-                for (int i = _rows - 15; i < _rows - 10; i++)
-                {
-                    SetCellType(new Vector2(i, 0), Cell.CellTypeEnum.Exit);
-                }
-            }
-            if (Statistics.bernoulli(0.5f)) {
-                // En el caso de que el numero de filas y/o columnas sea impar,
-                // la salida central estará desplazada una casilla hacia la derecha y/o hacia arriba respectivamente
-                // Otra solución sería hacer la salida de 1x1 o 3x3
-                int startRow = _rows / 2;
-                int startColumn = _columns / 2;
-                for (int i = startRow; i < startRow + 2; i++)
-                {
-                    for (int j = startColumn; j < startColumn + 2; j++)
+                    for (int i = 0; i < access.shape.height; i++)
                     {
-                        SetCellType(new Vector2(i, j), Cell.CellTypeEnum.Exit);
+                        for (int j = 0; j < access.shape.width; j++)
+                        {
+                            // en el json, la x en access.shape.bottomLeft es la columna y la y es la fila, por lo que hay que invertirlo
+                            SetCellType( new Vector2(i + access.shape.bottomLeft.y, j + access.shape.bottomLeft.x), Cell.CellTypeEnum.Exit);
+                        }
                     }
                 }
             }
+            
         }
 
         protected override void CalculateObstacle()

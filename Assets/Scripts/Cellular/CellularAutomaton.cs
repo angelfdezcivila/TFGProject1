@@ -184,13 +184,16 @@ namespace Cellular
 
     public void AddPedestriansFromJson(JsonSnapshotsList traceJson)
     {
-      
+      // Debug.Log($"Rows: {Rows} ; Columns: {Columns}");
       int numberOfPedestrians = traceJson.snapshots[0].crowd.Count;
       for (int i = 0; i < numberOfPedestrians; i++)
       {
         CrowdEntryJson pedestrian = traceJson.snapshots[0].crowd[i];
         CoordinatesJson coordinates = pedestrian.location.coordinates;
-        AddPedestrianFromJson((int)(coordinates.X / CellsDimension), (int)(coordinates.Y / CellsDimension), traceJson);
+        Debug.Log($"Rows: {coordinates.X} ; Columns: {coordinates.Y}");
+
+        // AddPedestrianFromJson((int)(coordinates.X / CellsDimension), (int)(coordinates.Y / CellsDimension), traceJson);
+        AddPedestrianFromJson((int)(coordinates.X / CellsDimension), (int)(coordinates.Y / CellsDimension));
       }
     }
     
@@ -202,7 +205,8 @@ namespace Cellular
     /// <param name="parameters">parameters describing new pedestrian.</param>
     /// <returns>if pedestrian could be created (location was neither blocked nor taken by another pedestrian).</returns>
     /// <exception cref="ArgumentOutOfRangeException"></exception>
-    public bool AddPedestrianFromJson(int row, int column, JsonSnapshotsList traceJson) {
+    // public bool AddPedestrianFromJson(int row, int column, JsonSnapshotsList traceJson) {
+    public bool AddPedestrianFromJson(int row, int column) {
       if (row < 0 || row >= Rows) throw new ArgumentOutOfRangeException("AddPedestrian: invalid row");
       if (column < 0 || column >= Columns) throw new ArgumentOutOfRangeException("AddPedestrian: invalid column");
       if (IsCellReachable(row, column)) {

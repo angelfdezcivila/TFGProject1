@@ -71,9 +71,8 @@ public class InitializateStage : MonoBehaviour
         DestroySimulation();
         
         // _stageBuilder = RandomStageWithBuilder.getRandomStage(cellsPrefab, transform);
-        // _stage = new RandomStage(cellsPrefab, transform, new Vector3(0.9f, 0.75f, 0.9f), 40, 90);
-        // _stage = new RandomStage(cellsPrefab, transform);
         _stage = new RandomStage(cellsPrefab, transform, _cellsDimension);
+        // _stage = new RandomStage(cellsPrefab, transform, _cellsDimension, 45, 55);
 
         InitializeAutomaton();
 
@@ -98,6 +97,8 @@ public class InitializateStage : MonoBehaviour
 
         Vector3 cellsDimension = new Vector3(traceJson.cellDimension, traceJson.cellDimension, traceJson.cellDimension);
         DomainEntryJson domain = stageJson.domains.Find(domain => domain.id == 1);
+        
+        Debug.Log(domain.obstacles.Count);
 
         _stage = new StagefromJson(cellsPrefab, transform, cellsDimension, stageJson, domain);
         // _stage = new RandomStage(cellsPrefab, transform, _cellsDimension);
@@ -121,6 +122,8 @@ public class InitializateStage : MonoBehaviour
 
     private void InitializeAutomaton()
     {
+        _stage.InstantiateStage();
+        
         var cellularAutomatonParameters =
             new CellularAutomatonParameters.Builder()
                 .Scenario(_stage) // use this scenario
@@ -155,7 +158,7 @@ public class InitializateStage : MonoBehaviour
         // SaveJsonManager.SaveScoreJson(_pathToJson, list);
         List<JsonCrowdList> list = _automaton.JsonTrace();
         SaveJsonManager.SaveTraceJson(_pathToTraceJson, list, _cellsDimension.x);
-        SaveJsonManager.SaveStageJson(_pathToTraceJson, new List<GatewayEntryJson>(), new List<DomainEntryJson>());
+        SaveJsonManager.SaveStageJson(_pathToStageJson, new List<GatewayEntryJson>(), new List<DomainEntryJson>());
     }
 
     #region RunAutomatonWithoutCoroutines

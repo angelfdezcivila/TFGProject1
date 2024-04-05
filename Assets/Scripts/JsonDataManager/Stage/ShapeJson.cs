@@ -8,19 +8,44 @@ namespace JsonDataManager.Stage
     // Representación de la localización de un agente en el json
     public class ShapeJson
     {
-        public ShapeType.ShapeType type;
+        public enum ShapeTypeEnum
+        {
+            Rectangle
+        }
+        
+        // public ShapeType.ShapeType type;
+        public ShapeTypeEnum type;
         public Vector2 bottomLeft;
+        
+        public int width;
+        public int height;
+        public float radius;
 
         public ShapeJson()
         {
-            type = new RectangleJson();
+            // RectangleJson rectangleJson = new RectangleJson();
+            // type = rectangleJson;
+            // width = rectangleJson.width;
+            // height = rectangleJson.height;
+
+            type = ShapeTypeEnum.Rectangle;
+            width = 5;
+            height = 5;
             bottomLeft = new Vector2(3, 3);
         }
 
-        public ShapeJson(ShapeType.ShapeType shapeType, Vector2 bottomLeft)
+        // public ShapeJson(ShapeType.ShapeType shapeType, Vector2 bottomLeft)
+        public ShapeJson(ShapeTypeEnum shapeType, Vector2 bottomLeft)
         {
             this.type = shapeType;
             this.bottomLeft = bottomLeft;
+            
+            // if (type is RectangleJson)
+            // {
+            //     RectangleJson json = type as RectangleJson;
+            //     width = json.width;
+            //     height = json.height;
+            // }
         }
     }
 }
