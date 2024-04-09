@@ -185,12 +185,14 @@ namespace Cellular
     public void AddPedestriansFromJson(JsonSnapshotsList traceJson)
     {
       // Debug.Log($"Rows: {Rows} ; Columns: {Columns}");
-      int numberOfPedestrians = traceJson.snapshots[0].crowd.Count;
+      JsonCrowdList initialCrowd = traceJson.snapshots[0];
+      int numberOfPedestrians = initialCrowd.crowd.Count;
       for (int i = 0; i < numberOfPedestrians; i++)
       {
-        CrowdEntryJson pedestrian = traceJson.snapshots[0].crowd[i];
+        CrowdEntryJson pedestrian = initialCrowd.crowd[i];
         CoordinatesJson coordinates = pedestrian.location.coordinates;
         Debug.Log($"Rows: {coordinates.X} ; Columns: {coordinates.Y}");
+        
 
         // AddPedestrianFromJson((int)(coordinates.X / CellsDimension), (int)(coordinates.Y / CellsDimension), traceJson);
         AddPedestrianFromJson((int)(coordinates.X / CellsDimension), (int)(coordinates.Y / CellsDimension));

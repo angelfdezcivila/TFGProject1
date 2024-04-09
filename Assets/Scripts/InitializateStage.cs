@@ -70,10 +70,14 @@ public class InitializateStage : MonoBehaviour
     {
         DestroySimulation();
         
+        // Para que las posiciones reales empiezen en esta posición 
+        
         // _stageBuilder = RandomStageWithBuilder.getRandomStage(cellsPrefab, transform);
+        _cellsDimension = new Vector3(0.5f, 0.5f, 0.5f);
+
         _stage = new RandomStage(cellsPrefab, transform, _cellsDimension);
         // _stage = new RandomStage(cellsPrefab, transform, _cellsDimension, 45, 55);
-
+        
         InitializeAutomaton();
 
         Func<PedestrianParameters> pedestrianParametersSupplier = () =>
@@ -98,8 +102,6 @@ public class InitializateStage : MonoBehaviour
         Vector3 cellsDimension = new Vector3(traceJson.cellDimension, traceJson.cellDimension, traceJson.cellDimension);
         DomainEntryJson domain = stageJson.domains.Find(domain => domain.id == 1);
         
-        Debug.Log(domain.obstacles.Count);
-
         _stage = new StagefromJson(cellsPrefab, transform, cellsDimension, stageJson, domain);
         // _stage = new RandomStage(cellsPrefab, transform, _cellsDimension);
 
@@ -123,6 +125,9 @@ public class InitializateStage : MonoBehaviour
     private void InitializeAutomaton()
     {
         _stage.InstantiateStage();
+        
+        // Para que las posiciones reales empiezen en esta posición 
+        transform.position = new Vector3(_stage.CellsDimension.x, 0, _stage.CellsDimension.z) / 2;
         
         var cellularAutomatonParameters =
             new CellularAutomatonParameters.Builder()

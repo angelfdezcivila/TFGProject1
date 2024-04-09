@@ -22,7 +22,9 @@ namespace StageGenerator
         public FloorField StaticFloorField => _staticFloorField;
         public List<Cell> Exits => _exits;
         public List<Cell> Obstacles => _obstacles;
+        /// Número de filas
         public int Rows => _rows;
+        /// Número de columnas
         public int Columns => _columns;
         public Vector3 CellsDimension => _cellsDimension;
 
@@ -54,7 +56,7 @@ namespace StageGenerator
             // if (cellsDimension.x < 1 || cellsDimension.y < 1 || cellsDimension.z < 1)
             //     _cellsDimension = cellPrefab.transform.localScale;
             // else
-                _cellsDimension = cellsDimension;
+            _cellsDimension = cellsDimension;
             
             _cellPrefab = cellPrefab;
             _transformParent = transformParent;
@@ -157,7 +159,7 @@ namespace StageGenerator
                 _obstacles.Add(_cellMatrix[(int)pos.x][(int)pos.y]);
         }
 
-        // Devuelve el tipo de casilla de una posición
+        // Devuelve el tipo de casilla de una casilla en los índices pasados como argumento
         protected Cell.CellTypeEnum GetCellType(Vector2 pos)
         {
             // return _cellMatrix[(int)pos.x][(int)pos.y].CellType;
