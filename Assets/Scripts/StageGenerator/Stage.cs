@@ -49,16 +49,16 @@ namespace StageGenerator
         private void InitializeConstants(GameObject cellPrefab, Transform transformParent, Vector3 cellsDimension,
             int rows, int columns)
         {
-            // Los rangos (clamp) son sobretodo para controlar que haya un mínimo de filas y columnas y no de error
-            // El redondeo (ceiling) es para que siempre coja el valor siguiente en caso de que el resultado sea decimal (PE si 7.4 -> Se escoge 8)
-            _rows = (int)Math.Ceiling(Mathf.Clamp(rows/cellsDimension.x, 15, 500));
-            _columns = (int)Math.Ceiling(Mathf.Clamp(columns/cellsDimension.x, 15, 500));
-            
             //Esto está para que el mapa no pueda ser más pequeño de lo que está pensado originalmente
             // if (cellsDimension.x < 1 || cellsDimension.y < 1 || cellsDimension.z < 1)
             //     _cellsDimension = cellPrefab.transform.localScale;
             // else
             _cellsDimension = cellsDimension;
+            
+            // Los rangos (clamp) son sobretodo para controlar que haya un mínimo de filas y columnas y no de error
+            // El redondeo (ceiling) es para que siempre coja el valor siguiente en caso de que el resultado sea decimal (PE si 7.4 -> Se escoge 8)
+            _rows = NumberIndexesInAxis(rows);
+            _columns = NumberIndexesInAxis(columns);
             
             _cellPrefab = cellPrefab;
             _transformParent = transformParent;
@@ -73,6 +73,7 @@ namespace StageGenerator
             
             // InstantiateStage();  //Se va a instanciar desde fuera
         }
+        
 
         #endregion
         
@@ -115,6 +116,7 @@ namespace StageGenerator
 
         private void InitializeBoard()
         {
+            Debug.Log("Rows : " + _rows + ":::: Columns : " + _columns );
             for (int i = 0; i < _rows; i++) // Para cada fila
             {
                 _cellMatrix.Add(new List<Cell>()); // Inicializa la lista de casillas de esa fila
@@ -149,8 +151,15 @@ namespace StageGenerator
         #endregion
         
         #region Protected Getters and Setters
+        
+        // Obtiene el número de índices (de filas o columnas) basado en las dimensiones de las celdas y la distancia real en ese eje
+        protected int NumberIndexesInAxis(float realPositionInAxis)
+        {
+            // return (int)Math.Ceiling(Mathf.Clamp(realPositionInAxis/_cellsDimension.x, 15, 500));
+            return (int)Math.Ceiling(realPositionInAxis/_cellsDimension.x);
+        }
 
-        // Cambia el tipo de una casilla del tablero en la posición 'pos'
+        /// Cambia el tipo de una casilla del tablero en los índices 'pos'
         protected void SetCellType(Vector2 pos, Cell.CellTypeEnum type)
         {
             // _cellMatrix[(int)pos.x][(int)pos.y].CellType = type;

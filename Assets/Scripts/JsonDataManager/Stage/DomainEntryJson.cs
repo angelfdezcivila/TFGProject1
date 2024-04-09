@@ -12,7 +12,7 @@ namespace JsonDataManager.Stage
         public int height;
         public int width;
         public List<ObstacleEntryJson> obstacles;
-        public List<ObstacleEntryJson> accesses;
+        public List<AccessEntryJson> accesses;
     
         public DomainEntryJson()
         {
@@ -20,10 +20,10 @@ namespace JsonDataManager.Stage
             this.height = 10;
             this.width = 10;
             obstacles = new List<ObstacleEntryJson>();
-            accesses = new List<ObstacleEntryJson>();
+            accesses = new List<AccessEntryJson>();
         }
 
-        public DomainEntryJson(int id, int height, int width, List<ObstacleEntryJson> obstacles, List<ObstacleEntryJson> accesses)
+        public DomainEntryJson(int id, int height, int width, List<ObstacleEntryJson> obstacles, List<AccessEntryJson> accesses)
         {
             this.id = id;
             this.height = height;
@@ -37,7 +37,7 @@ namespace JsonDataManager.Stage
             obstacles.Add(obstacle);
         }
         
-        public void AddAccessToList(ObstacleEntryJson access)
+        public void AddAccessToList(AccessEntryJson access)
         {
             accesses.Add(access);
         }

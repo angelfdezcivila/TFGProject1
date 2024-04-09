@@ -8,6 +8,7 @@ namespace JsonDataManager.Stage
     // Representación de la localización de un agente en el json
     public class ShapeJson
     {
+        [Serializable]
         public enum ShapeTypeEnum
         {
             Rectangle
@@ -17,8 +18,8 @@ namespace JsonDataManager.Stage
         public ShapeTypeEnum type;
         public Vector2 bottomLeft;
         
-        public int width;
-        public int height;
+        public float width;
+        public float height;
         public float radius;
 
         public ShapeJson()

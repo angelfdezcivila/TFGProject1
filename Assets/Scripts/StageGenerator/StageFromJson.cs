@@ -47,17 +47,27 @@ namespace StageGenerator
 
         protected override void CalculateExit()
         {
-            foreach (ObstacleEntryJson access in _domain.accesses)
+            Debug.Log("Accesses: " + _domain.accesses.Count);
+            foreach (AccessEntryJson access in _domain.accesses)
             {
+                Debug.Log("ID: " + access.id);
                 if (access.shape.type == ShapeJson.ShapeTypeEnum.Rectangle)
                 // if (access.shape.type is RectangleJson)
                 {
-                    for (int i = 0; i < access.shape.height; i++)
+                    Debug.Log($"Height:{NumberIndexesInAxis(access.shape.height)} ; Width:{NumberIndexesInAxis(access.shape.width)}");
+                    // for (int i = 0; i < access.shape.height; i++)
+                    for (int i = 0; i < NumberIndexesInAxis(access.shape.height); i++)
                     {
-                        for (int j = 0; j < access.shape.width; j++)
+                        // for (int j = 0; j < access.shape.width; j++)
+                        for (int j = 0; j < NumberIndexesInAxis(access.shape.width); j++)
                         {
                             // en el json, la x en access.shape.bottomLeft es la columna y la y es la fila, por lo que hay que invertirlo
-                            SetCellType( new Vector2(i + access.shape.bottomLeft.y, j + access.shape.bottomLeft.x), Cell.CellTypeEnum.Exit);
+                            // float bottomLeftRow = i + access.shape.bottomLeft.y;
+                            // float bottomLeftColumn = j + access.shape.bottomLeft.x;
+                            float bottomLeftRow = i + NumberIndexesInAxis(access.shape.bottomLeft.y);
+                            float bottomLeftColumn = j + NumberIndexesInAxis(access.shape.bottomLeft.x);
+                            Debug.Log($"Row: {bottomLeftRow} ; Column: {bottomLeftColumn}");
+                            SetCellType( new Vector2(bottomLeftRow, bottomLeftColumn), Cell.CellTypeEnum.Exit);
                         }
                     }
                 }
