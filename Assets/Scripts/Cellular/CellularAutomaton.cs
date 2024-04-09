@@ -722,8 +722,6 @@ namespace Cellular
       _inScenarioPedestrians.ForEach(pedestrian => allPedestrians.Add(pedestrian));
       _outOfScenarioPedestrians.ForEach(pedestrian => allPedestrians.Add(pedestrian));
       allPedestrians.Sort((p1, p2) => p1.Identifier.CompareTo(p2.Identifier));
-      // allPedestrians.sort(Comparator.comparing(Pedestrian::getIdentifier));
-      // allPedestrians.ForEach(pedestrian => Debug.Log("FINISHED " + pedestrian + ", timestamp: " + pedestrian.GetPath().Count +  ", Steps: " + pedestrian.getNumberOfSteps()));
 
       // Create snapshots
       for (int t = 0; t < _timeSteps; t++) {
@@ -733,16 +731,15 @@ namespace Cellular
           if (path.Count > t)
           {
             Location location = path[t];
-            // crowd.AddCrowdToList(JsonPedestrian(pedestrian.Identifier, domain, location.Row, location.Column));
             crowd.AddCrowdToList(JsonPedestrian(pedestrian.Identifier, domain, 
-              location.Row*CellsDimension, location.Column*CellsDimension));
+              // location.Row*CellsDimension, location.Column*CellsDimension));
+              location.Row*CellsDimension + CellsDimension/2, location.Column*CellsDimension + + CellsDimension/2)); //Solución rápida junto a setear como rows y columns totales las rows/cellsDimension
           }
         }
 
         if (crowd.crowd.Count > 0) // En caso de que no haya ningún agente, es decir, que haya terminado la simulación, no hay que añadirlo al json
         {
           crowd.timestamp = t;
-          // snapshots.AddCrowdsToList(crowd);
           snapshots.Add(crowd);
         }
 

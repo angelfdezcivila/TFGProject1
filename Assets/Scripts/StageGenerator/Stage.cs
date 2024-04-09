@@ -49,8 +49,8 @@ namespace StageGenerator
             int rows, int columns)
         {
             // Los rangos son sobretodo para controlar que haya un mínimo de filas y columnas y no de error
-            _rows = Mathf.Clamp(rows, 15, 100);
-            _columns = Mathf.Clamp(columns, 15, 100);
+            _rows = (int)Mathf.Clamp(rows/cellsDimension.x, 15, 500);
+            _columns = (int)Mathf.Clamp(columns/cellsDimension.x, 15, 500);
             
             //Esto está para que el mapa no pueda ser más pequeño de lo que está pensado originalmente
             // if (cellsDimension.x < 1 || cellsDimension.y < 1 || cellsDimension.z < 1)
