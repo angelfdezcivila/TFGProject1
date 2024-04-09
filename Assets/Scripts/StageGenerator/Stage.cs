@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Cellular;
 using Events;
@@ -48,9 +49,10 @@ namespace StageGenerator
         private void InitializeConstants(GameObject cellPrefab, Transform transformParent, Vector3 cellsDimension,
             int rows, int columns)
         {
-            // Los rangos son sobretodo para controlar que haya un mínimo de filas y columnas y no de error
-            _rows = (int)Mathf.Clamp(rows/cellsDimension.x, 15, 500);
-            _columns = (int)Mathf.Clamp(columns/cellsDimension.x, 15, 500);
+            // Los rangos (clamp) son sobretodo para controlar que haya un mínimo de filas y columnas y no de error
+            // El redondeo (ceiling) es para que siempre coja el valor siguiente en caso de que el resultado sea decimal (PE si 7.4 -> Se escoge 8)
+            _rows = (int)Math.Ceiling(Mathf.Clamp(rows/cellsDimension.x, 15, 500));
+            _columns = (int)Math.Ceiling(Mathf.Clamp(columns/cellsDimension.x, 15, 500));
             
             //Esto está para que el mapa no pueda ser más pequeño de lo que está pensado originalmente
             // if (cellsDimension.x < 1 || cellsDimension.y < 1 || cellsDimension.z < 1)
