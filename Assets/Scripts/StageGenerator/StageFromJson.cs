@@ -67,8 +67,8 @@ namespace StageGenerator
                             // en el json, la x en access.shape.bottomLeft es la columna y la y es la fila, por lo que hay que invertirlo
                             // float bottomLeftRow = i + access.shape.bottomLeft.y;
                             // float bottomLeftColumn = j + access.shape.bottomLeft.x;
-                            float bottomLeftRow = i + NumberIndexesInAxis(access.shape.bottomLeft.y);
-                            float bottomLeftColumn = j + NumberIndexesInAxis(access.shape.bottomLeft.x);
+                            float bottomLeftRow = i + (int)NumberIndexesInAxis(access.shape.bottomLeft.y);
+                            float bottomLeftColumn = j + (int)NumberIndexesInAxis(access.shape.bottomLeft.x);
                             Debug.Log($"Row: {bottomLeftRow} ; Column: {bottomLeftColumn}");
                             SetCellType( new Vector2(bottomLeftRow, bottomLeftColumn), Cell.CellTypeEnum.Exit);
                         }
@@ -100,8 +100,8 @@ namespace StageGenerator
                             // en el json, la x en access.shape.bottomLeft es la columna y la y es la fila, por lo que hay que invertirlo
                             // float bottomLeftRow = i + access.shape.bottomLeft.y;
                             // float bottomLeftColumn = j + access.shape.bottomLeft.x;
-                            float bottomLeftRow = i + NumberIndexesInAxis(obstacle.shape.bottomLeft.y);
-                            float bottomLeftColumn = j + NumberIndexesInAxis(obstacle.shape.bottomLeft.x);
+                            float bottomLeftRow = i + (int)NumberIndexesInAxis(obstacle.shape.bottomLeft.y);
+                            float bottomLeftColumn = j + (int)NumberIndexesInAxis(obstacle.shape.bottomLeft.x);
                             Debug.Log($"Row: {bottomLeftRow} ; Column: {bottomLeftColumn}");
                             SetCellType( new Vector2(bottomLeftRow, bottomLeftColumn), Cell.CellTypeEnum.Obstacle);
                         }
