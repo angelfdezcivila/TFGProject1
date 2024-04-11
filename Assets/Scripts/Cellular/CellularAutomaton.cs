@@ -233,8 +233,11 @@ namespace Cellular
       if (crowdEntryJson != null)
       {
         CoordinatesJson locationCoordinates = crowdEntryJson.location.coordinates;
-        int row = (int)(locationCoordinates.X / CellsDimension);
-        int column = (int)(locationCoordinates.Y / CellsDimension);
+        // int row = (int)(locationCoordinates.X / CellsDimension);
+        // int column = (int)(locationCoordinates.Y / CellsDimension);
+        int row = (int)_stage.NumberIndexesInAxis(locationCoordinates.Y);
+        int column = (int)_stage.NumberIndexesInAxis(locationCoordinates.X);
+        
         if (_stage.IsCellExit(row, column))
         {
           pedestrian.SetExitTimeSteps(_timeSteps);

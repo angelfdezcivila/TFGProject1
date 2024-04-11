@@ -150,8 +150,8 @@ namespace StageGenerator
         
         #region Protected Getters and Setters
         
-        // Obtiene el número de índices (de filas o columnas) basado en las dimensiones de las celdas y la distancia real en ese eje
-        protected float NumberIndexesInAxis(float realPositionInAxis)
+        /// Obtiene el número del índice (de filas o columnas) basado en las dimensiones de las celdas y la distancia real en ese eje
+        public float NumberIndexesInAxis(float realPositionInAxis)
         {
             // return (int)Math.Ceiling(Mathf.Clamp(realPositionInAxis/_cellsDimension.x, 15, 500));
             // return (int)Math.Ceiling(realPositionInAxis/_cellsDimension.x);

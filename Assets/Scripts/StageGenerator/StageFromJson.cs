@@ -80,25 +80,33 @@ namespace StageGenerator
 
         protected override void CalculateObstacle()
         {
-            int numberOfBlocksPlaced = 0;
-            int maxTries = _numberOfBlocks * 3;
-            while (numberOfBlocksPlaced < _numberOfBlocks && maxTries > 0) {
-                // Debug.Log("Number of blocks = " + _numberOfBlocks + " : " + numberOfBlocksPlaced + " : " + maxTries);
-            
-                int width = Statistics.bernoulli(0.5f) ? 1 + Random.Range(0, 2) : 1 + Random.Range(0, 20);
-                // int width = bernoulli(0.5f) ? 1 + Random.Range(0, 2) : 1 + Random.Range(0, 20);
-                int height = 1 + Random.Range(0, Mathf.Max(1, _rows / (int)(2 * width)));
-    
-                int row = Random.Range(0, 1 + _rows - height);
-                // int row = Random.Range(-_rows/2, _rows/2 - height); // Solo funciona para las filas impares
-                int column = Random.Range(2, 1 + _columns - width - 2);   
-            
-                bool shouldBePlaced = ObstacleCanBePlaced(row, column, height, width);
-    
-                if (shouldBePlaced) {
-                    numberOfBlocksPlaced++;
+            Debug.Log("Obstacles: " + _domain.accesses.Count);
+            foreach (ObstacleEntryJson obstacle in _domain.obstacles)
+            {
+                Debug.Log("Name: " + obstacle.name);
+                if (obstacle.shape.type == ShapeJson.ShapeTypeEnum.Rectangle)
+                    // if (access.shape.type is RectangleJson)
+                {
+                    int height = (int)Mathf.Ceil(NumberIndexesInAxis(obstacle.shape.height));
+                    int width = (int)Mathf.Ceil(NumberIndexesInAxis(obstacle.shape.width));
+                    
+                    Debug.Log($"Height:{height} ; Width:{width}");
+                    // for (int i = 0; i < access.shape.height; i++)
+                    for (int i = 0; i < height; i++)
+                    {
+                        // for (int j = 0; j < access.shape.width; j++)
+                        for (int j = 0; j < width; j++)
+                        {
+                            // en el json, la x en access.shape.bottomLeft es la columna y la y es la fila, por lo que hay que invertirlo
+                            // float bottomLeftRow = i + access.shape.bottomLeft.y;
+                            // float bottomLeftColumn = j + access.shape.bottomLeft.x;
+                            float bottomLeftRow = i + NumberIndexesInAxis(obstacle.shape.bottomLeft.y);
+                            float bottomLeftColumn = j + NumberIndexesInAxis(obstacle.shape.bottomLeft.x);
+                            Debug.Log($"Row: {bottomLeftRow} ; Column: {bottomLeftColumn}");
+                            SetCellType( new Vector2(bottomLeftRow, bottomLeftColumn), Cell.CellTypeEnum.Obstacle);
+                        }
+                    }
                 }
-                maxTries -= 1;
             }
         }
 
