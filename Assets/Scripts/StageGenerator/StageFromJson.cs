@@ -54,12 +54,15 @@ namespace StageGenerator
                 if (access.shape.type == ShapeJson.ShapeTypeEnum.Rectangle)
                 // if (access.shape.type is RectangleJson)
                 {
-                    Debug.Log($"Height:{NumberIndexesInAxis(access.shape.height)} ; Width:{NumberIndexesInAxis(access.shape.width)}");
+                    int height = (int)Mathf.Ceil(NumberIndexesInAxis(access.shape.height));
+                    int width = (int)Mathf.Ceil(NumberIndexesInAxis(access.shape.width));
+                    
+                    Debug.Log($"Height:{height} ; Width:{width}");
                     // for (int i = 0; i < access.shape.height; i++)
-                    for (int i = 0; i < NumberIndexesInAxis(access.shape.height); i++)
+                    for (int i = 0; i < height; i++)
                     {
                         // for (int j = 0; j < access.shape.width; j++)
-                        for (int j = 0; j < NumberIndexesInAxis(access.shape.width); j++)
+                        for (int j = 0; j < width; j++)
                         {
                             // en el json, la x en access.shape.bottomLeft es la columna y la y es la fila, por lo que hay que invertirlo
                             // float bottomLeftRow = i + access.shape.bottomLeft.y;

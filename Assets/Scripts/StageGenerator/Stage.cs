@@ -1,7 +1,5 @@
-using System;
 using System.Collections.Generic;
 using Cellular;
-using Events;
 using FloorFields;
 using UnityEngine;
 
@@ -57,8 +55,8 @@ namespace StageGenerator
             
             // Los rangos (clamp) son sobretodo para controlar que haya un mínimo de filas y columnas y no de error
             // El redondeo (ceiling) es para que siempre coja el valor siguiente en caso de que el resultado sea decimal (PE si 7.4 -> Se escoge 8)
-            _rows = NumberIndexesInAxis(rows);
-            _columns = NumberIndexesInAxis(columns);
+            _rows = Mathf.Clamp((int)NumberIndexesInAxis(rows), 15, 500);
+            _columns = Mathf.Clamp((int)NumberIndexesInAxis(columns), 15, 500);
             
             _cellPrefab = cellPrefab;
             _transformParent = transformParent;
@@ -153,10 +151,12 @@ namespace StageGenerator
         #region Protected Getters and Setters
         
         // Obtiene el número de índices (de filas o columnas) basado en las dimensiones de las celdas y la distancia real en ese eje
-        protected int NumberIndexesInAxis(float realPositionInAxis)
+        protected float NumberIndexesInAxis(float realPositionInAxis)
         {
             // return (int)Math.Ceiling(Mathf.Clamp(realPositionInAxis/_cellsDimension.x, 15, 500));
-            return (int)Math.Ceiling(realPositionInAxis/_cellsDimension.x);
+            // return (int)Math.Ceiling(realPositionInAxis/_cellsDimension.x);
+            // return (int)(realPositionInAxis/_cellsDimension.x);
+            return (realPositionInAxis/_cellsDimension.x);
         }
 
         /// Cambia el tipo de una casilla del tablero en los índices 'pos'

@@ -191,11 +191,11 @@ namespace Cellular
       {
         CrowdEntryJson pedestrian = initialCrowd.crowd[i];
         CoordinatesJson coordinates = pedestrian.location.coordinates;
-        Debug.Log($"Rows: {coordinates.X} ; Columns: {coordinates.Y}");
+        Debug.Log($"Rows: {coordinates.Y} ; Columns: {coordinates.X}");
         
 
         // AddPedestrianFromJson((int)(coordinates.X / CellsDimension), (int)(coordinates.Y / CellsDimension), traceJson);
-        AddPedestrianFromJson((int)(coordinates.X / CellsDimension), (int)(coordinates.Y / CellsDimension));
+        AddPedestrianFromJson((int)(coordinates.Y / CellsDimension), (int)(coordinates.X / CellsDimension));
       }
     }
     
