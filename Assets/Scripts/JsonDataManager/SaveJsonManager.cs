@@ -60,13 +60,18 @@ namespace DataJson
         private static void SaveJson<T>(string path, T jsonObject)
         {
             // string json = JsonUtility.ToJson(jsonObject);
-            string json = JsonConvert.SerializeObject(jsonObject, Formatting.Indented); // Clase de la librería Newtonsoft
+            string json = JsonConvert.SerializeObject(jsonObject, Formatting.Indented,                        new JsonSerializerSettings()
+            { 
+                ReferenceLoopHandling = ReferenceLoopHandling.Ignore
+            }); // Clase de la librería Newtonsoft
             // string json = JsonConvert.SerializeObject(jsonObject);
 
             using (StreamWriter streamWriter = new StreamWriter(path))
             {
                 streamWriter.Write(json);
-                Debug.Log($"Trace written to file TraceJson.json successfully.");
+                // Debug.Log($"Trace written to file TraceJson.json successfully.");
+                string[] words = path.Split(' ');
+                Debug.Log($"Trace written to file {words[words.Length-1]} successfully.");
             }
         }
         

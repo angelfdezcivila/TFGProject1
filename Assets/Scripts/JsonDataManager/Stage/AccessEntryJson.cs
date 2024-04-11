@@ -9,6 +9,7 @@ namespace JsonDataManager.Stage
     {
         public int id;
         public ShapeJson shape;
+        
 
         public AccessEntryJson()
         {

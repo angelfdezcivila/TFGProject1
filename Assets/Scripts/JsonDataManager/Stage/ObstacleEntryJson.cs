@@ -8,8 +8,8 @@ namespace JsonDataManager.Stage
     public class ObstacleEntryJson
     {
         public ShapeJson shape;
-        public string name;
-        public string description;
+        public string name;         // Opcional
+        public string description;  // Opcional
 
         public ObstacleEntryJson()
         {

@@ -31,29 +31,42 @@ namespace StageGenerator
 
         protected override void CalculateExit()
         {
-            if (Statistics.bernoulli(0.9f)) {
-                for (int i = 2; i < 7; i++)
+            if (Statistics.bernoulli(0.9f))
+            {
+                int row = 2;
+                int column = _columns-1;
+                AddAccessCornerBottomLeft(row, column);
+                for (int i = row; i < 7; i++)
                 {
-                    SetCellType(new Vector2(i, _columns-1), Cell.CellTypeEnum.Exit);
+                    SetExit(i, column);
                 }
                 // scenario.setExit(new Rectangle(2, columns - 1, 5, 1));
             }
             if (Statistics.bernoulli(0.9f)) {
-                for (int i = _rows - 7; i < _rows - 2; i++)
+                int row = _rows - 7;
+                int column = _columns-1;
+                AddAccessCornerBottomLeft(row, column);
+                for (int i = row; i < _rows - 2; i++)
                 {
-                    SetCellType(new Vector2(i, _columns-1), Cell.CellTypeEnum.Exit);
+                    SetExit(i, column);
                 }
             }
             if (Statistics.bernoulli(0.9f)) {
-                for (int i = 10; i < 15; i++)
+                int row = 10;
+                int column = 0;
+                AddAccessCornerBottomLeft(row, column);
+                for (int i = row; i < 15; i++)
                 {
-                    SetCellType(new Vector2(i, 0), Cell.CellTypeEnum.Exit);
+                    SetExit(i, column);
                 }
             }
             if (Statistics.bernoulli(0.9f)) {
-                for (int i = _rows - 15; i < _rows - 10; i++)
+                int row = _rows - 15;
+                int column = 0;
+                AddAccessCornerBottomLeft(row, column);
+                for (int i = row; i < _rows - 10; i++)
                 {
-                    SetCellType(new Vector2(i, 0), Cell.CellTypeEnum.Exit);
+                    SetExit(i, column);
                 }
             }
             if (Statistics.bernoulli(0.5f)) {
@@ -62,14 +75,30 @@ namespace StageGenerator
                 // Otra solución sería hacer la salida de 1x1 o 3x3
                 int startRow = _rows / 2;
                 int startColumn = _columns / 2;
+                AddAccessCornerBottomLeft(startRow, startColumn);
                 for (int i = startRow; i < startRow + 2; i++)
                 {
                     for (int j = startColumn; j < startColumn + 2; j++)
                     {
-                        SetCellType(new Vector2(i, j), Cell.CellTypeEnum.Exit);
+                        SetExit(i, j);
                     }
                 }
             }
+        }
+
+        private void SetExit(int row, int column)
+        {
+            SetCellType(new Vector2(row, column), Cell.CellTypeEnum.Exit);
+        }
+
+        private void AddAccessCornerBottomLeft(int row, int column)
+        {
+            AccessEntryJson access = new AccessEntryJson
+            {
+                shape = new ShapeJson(ShapeJson.ShapeTypeEnum.Rectangle, new Vector2(row, column))
+            };
+            Debug.Log($"Access Corner: {access.shape.bottomLeft}");
+            _exitsCornerLeftDown.Add(access);
         }
 
         protected override void CalculateObstacle()
@@ -139,10 +168,12 @@ namespace StageGenerator
 
             if (shouldBePlaced)
             {
-                ObstacleEntryJson obstacle = new ObstacleEntryJson();
-                obstacle.shape = new ShapeJson(ShapeJson.ShapeTypeEnum.Rectangle, new Vector2(rowBorder, columnBorder));
+                ObstacleEntryJson obstacle = new ObstacleEntryJson
+                {
+                    shape = new ShapeJson(ShapeJson.ShapeTypeEnum.Rectangle, new Vector2(rowBorder, columnBorder))
+                };
                 Debug.Log($"Obstacle Corner: {obstacle.shape.bottomLeft}");
-                ObstaclesCornerLeftDown.Add(obstacle);
+                _obstaclesCornerLeftDown.Add(obstacle);
                 
                 foreach (Vector2 candidate in obstacleCandidates)
                 {

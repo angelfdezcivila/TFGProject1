@@ -54,6 +54,9 @@ namespace Cellular
     * GameObject that contains all the pedestrians in stage.
     */
     private GameObject _pedestrianContainer;
+    
+    private int domain = 1; // TODO: currently there is only a single domain
+
     #endregion
     
 
@@ -715,7 +718,6 @@ namespace Cellular
      */
     public JsonSnapshotsList JsonTrace() {
     // public List<JsonCrowdList> JsonTrace() {
-      int domain = 1; // TODO: currently there is only a single domain
     
       // Create an empty JsonArray for the snapshots
       JsonSnapshotsList snapshots = new JsonSnapshotsList();
@@ -758,8 +760,10 @@ namespace Cellular
     {
       JsonStage jsonStage = new JsonStage();
 
-      
+      DomainEntryJson domainJson = new DomainEntryJson(domain, Rows, Columns, _stage.ObstaclesCornerLeftDown, _stage.AccessesCornerLeftDown);
 
+      jsonStage.AddDomain(domainJson);
+      
       return jsonStage;
     }
     

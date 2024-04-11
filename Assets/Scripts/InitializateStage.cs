@@ -75,8 +75,8 @@ public class InitializateStage : MonoBehaviour
         // _stageBuilder = RandomStageWithBuilder.getRandomStage(cellsPrefab, transform);
         _cellsDimension = new Vector3(0.5f, 0.5f, 0.5f);
 
-        _stage = new RandomStage(cellsPrefab, transform, _cellsDimension);
-        // _stage = new RandomStage(cellsPrefab, transform, _cellsDimension, 45, 55);
+        // _stage = new RandomStage(cellsPrefab, transform, _cellsDimension);
+        _stage = new RandomStage(cellsPrefab, transform, _cellsDimension, 45, 55);
         
         InitializeAutomaton();
 
