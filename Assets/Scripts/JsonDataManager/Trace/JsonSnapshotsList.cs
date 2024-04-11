@@ -13,6 +13,7 @@ namespace JsonDataManager.Trace
         public JsonSnapshotsList()
         {
             snapshots = new List<JsonCrowdList>();
+            this.cellDimension = 1;
             // snapshots.Add(new JsonCrowdList());
         }
 

@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using JsonDataManager.Stage;
 using JsonDataManager.Trace;
 using Pedestrians;
 using StageGenerator;
@@ -712,13 +713,13 @@ namespace Cellular
      *
      * @return Json representing traces of all pedestrians through the scenario.
      */
-    // public JsonSnapshotsList JsonTrace() {
-    public List<JsonCrowdList> JsonTrace() {
+    public JsonSnapshotsList JsonTrace() {
+    // public List<JsonCrowdList> JsonTrace() {
       int domain = 1; // TODO: currently there is only a single domain
     
       // Create an empty JsonArray for the snapshots
-      // JsonSnapshotsList snapshots = new JsonSnapshotsList();
-      List<JsonCrowdList> snapshots = new List<JsonCrowdList>();
+      JsonSnapshotsList snapshots = new JsonSnapshotsList();
+      // List<JsonCrowdList> snapshots = new List<JsonCrowdList>();
 
     
       List<Pedestrian> allPedestrians = new List<Pedestrian>();
@@ -743,18 +744,25 @@ namespace Cellular
         if (crowd.crowd.Count > 0) // En caso de que no haya ningún agente, es decir, que haya terminado la simulación, no hay que añadirlo al json
         {
           crowd.timestamp = t;
-          snapshots.Add(crowd);
+          snapshots.AddCrowdsToList(crowd);
+          // snapshots.Add(crowd);
         }
 
       }
 
+      snapshots.cellDimension = CellsDimension;
       return snapshots;
     }
 
-    public void JsonStage()
+    public JsonStage JsonStage()
     {
+      JsonStage jsonStage = new JsonStage();
+
       
+
+      return jsonStage;
     }
+    
     
     public void DestroyAllAutomatons()
     {

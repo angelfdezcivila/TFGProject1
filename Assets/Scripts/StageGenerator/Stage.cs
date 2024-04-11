@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using Cellular;
 using FloorFields;
+using JsonDataManager.Stage;
 using UnityEngine;
 
 namespace StageGenerator
@@ -15,12 +16,17 @@ namespace StageGenerator
         private protected List<List<Cell>> _cellMatrix; // Matriz de casillas
         private protected Transform _transformParent;
         private protected List<Cell> _exits;
+        private protected List<AccessEntryJson> _exitsCornerLeftDown;
         private protected List<Cell> _obstacles;
+        private protected List<ObstacleEntryJson> _obstaclesCornerLeftDown;
         private protected FloorField _staticFloorField;
         private GameObject _cellsContainer;
         public FloorField StaticFloorField => _staticFloorField;
         public List<Cell> Exits => _exits;
         public List<Cell> Obstacles => _obstacles;
+        public List<AccessEntryJson> AccessesCornerLeftDown => _exitsCornerLeftDown;
+        public List<ObstacleEntryJson> ObstaclesCornerLeftDown => _obstaclesCornerLeftDown;
+
         /// Número de filas
         public int Rows => _rows;
         /// Número de columnas
@@ -66,6 +72,8 @@ namespace StageGenerator
             _cellMatrix = new List<List<Cell>>();
             _exits = new List<Cell>();
             _obstacles = new List<Cell>();
+            _exitsCornerLeftDown = new List<AccessEntryJson>();
+            _obstaclesCornerLeftDown = new List<ObstacleEntryJson>();
             
             _staticFloorField = DijkstraStaticFloorFieldWithMooreNeighbourhood.of(this);
             
@@ -114,7 +122,6 @@ namespace StageGenerator
 
         private void InitializeBoard()
         {
-            Debug.Log("Rows : " + _rows + ":::: Columns : " + _columns );
             for (int i = 0; i < _rows; i++) // Para cada fila
             {
                 _cellMatrix.Add(new List<Cell>()); // Inicializa la lista de casillas de esa fila
@@ -164,10 +171,19 @@ namespace StageGenerator
         {
             // _cellMatrix[(int)pos.x][(int)pos.y].CellType = type;
             GetRowColumnCell(pos).CellType = type;
-            if (type == Cell.CellTypeEnum.Exit)
-                _exits.Add(_cellMatrix[(int)pos.x][(int)pos.y]);
-            else if (type == Cell.CellTypeEnum.Obstacle)
-                _obstacles.Add(_cellMatrix[(int)pos.x][(int)pos.y]);
+            // if (type == Cell.CellTypeEnum.Exit)
+            //     _exits.Add(_cellMatrix[(int)pos.x][(int)pos.y]);
+            // else if (type == Cell.CellTypeEnum.Obstacle)
+            //     _obstacles.Add(_cellMatrix[(int)pos.x][(int)pos.y]);
+            switch (type)
+            {
+                case Cell.CellTypeEnum.Exit : 
+                    _exits.Add(_cellMatrix[(int)pos.x][(int)pos.y]);
+                    break;
+                case Cell.CellTypeEnum.Obstacle :
+                    _obstacles.Add(_cellMatrix[(int)pos.x][(int)pos.y]);
+                    break;
+            }
         }
 
         // Devuelve el tipo de casilla de una casilla en los índices pasados como argumento

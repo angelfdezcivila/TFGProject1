@@ -13,6 +13,7 @@ namespace JsonDataManager.Stage
     
         public JsonStage()
         {
+            gateways = new List<GatewayEntryJson>();
             domains = new List<DomainEntryJson>();
         }   
 

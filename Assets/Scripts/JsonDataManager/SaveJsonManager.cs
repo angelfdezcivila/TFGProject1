@@ -19,35 +19,18 @@ namespace DataJson
         public static void SaveTraceJson(string path, List<JsonCrowdList> snapshotsList, float cellDimension)
         {
             JsonSnapshotsList snapshotsListJson = new JsonSnapshotsList(snapshotsList, cellDimension);
-            // string json = JsonUtility.ToJson(snapshotsListJson);
-            string json = JsonConvert.SerializeObject(snapshotsListJson, Formatting.Indented); // Clase de la librería Newtonsoft
-            // string json = JsonConvert.SerializeObject(snapshotsListJson);
+            SaveJson(path, snapshotsListJson);
+        }
 
-            using (StreamWriter streamWriter = new StreamWriter(path))
-            {
-                streamWriter.Write(json);
-                Debug.Log($"Trace written to file TraceJson.json successfully.");
-            }
+        public static void SaveTraceJson(string path, JsonSnapshotsList snapshotsList)
+        {
+            SaveJson(path, snapshotsList);
         }
     
         public static JsonSnapshotsList LoadTraceJson(string path)
         {
             JsonSnapshotsList result = new JsonSnapshotsList();
-
-            if (File.Exists(path))
-            {
-                using (StreamReader streamReader = new StreamReader(path))
-                {
-                    string json = streamReader.ReadToEnd();
-                    result = JsonUtility.FromJson<JsonSnapshotsList>(json);
-                }
-            }
-            else
-            {
-                Debug.Log("File doesn't exist");
-            }
-        
-            return result;
+            return LoadJson(path, result);
         }
 
         #endregion
@@ -57,9 +40,28 @@ namespace DataJson
         public static void SaveStageJson(string path, List<GatewayEntryJson> gateways, List<DomainEntryJson> domains)
         {
             JsonStage stageJson = new JsonStage(gateways, domains);
-            // string json = JsonUtility.ToJson(stageJson);
-            string json = JsonConvert.SerializeObject(stageJson, Formatting.Indented); // Clase de la librería Newtonsoft
-            // string json = JsonConvert.SerializeObject(stageJson);
+            SaveJson(path, stageJson);
+        }
+        
+        public static void SaveStageJson(string path, JsonStage stageJson)
+        {
+            SaveJson(path, stageJson);
+        }
+    
+        public static JsonStage LoadStageJson(string path)
+        {
+            JsonStage jsonStage = new JsonStage();
+            return LoadJson(path, jsonStage);
+        }
+
+        #endregion
+        
+        
+        private static void SaveJson<T>(string path, T jsonObject)
+        {
+            // string json = JsonUtility.ToJson(jsonObject);
+            string json = JsonConvert.SerializeObject(jsonObject, Formatting.Indented); // Clase de la librería Newtonsoft
+            // string json = JsonConvert.SerializeObject(jsonObject);
 
             using (StreamWriter streamWriter = new StreamWriter(path))
             {
@@ -67,17 +69,15 @@ namespace DataJson
                 Debug.Log($"Trace written to file TraceJson.json successfully.");
             }
         }
-    
-        public static JsonStage LoadStageJson(string path)
+        
+        private static T LoadJson<T>(string path, T result)
         {
-            JsonStage result = new JsonStage();
-
             if (File.Exists(path))
             {
                 using (StreamReader streamReader = new StreamReader(path))
                 {
                     string json = streamReader.ReadToEnd();
-                    result = JsonUtility.FromJson<JsonStage>(json);
+                    result = JsonUtility.FromJson<T>(json);
                 }
             }
             else
@@ -87,8 +87,5 @@ namespace DataJson
         
             return result;
         }
-
-        #endregion
-        
     }
 }

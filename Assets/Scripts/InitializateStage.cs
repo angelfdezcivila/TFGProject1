@@ -161,9 +161,11 @@ public class InitializateStage : MonoBehaviour
     {
         // JsonSnapshotsList list = _automaton.JsonTrace();
         // SaveJsonManager.SaveScoreJson(_pathToJson, list);
-        List<JsonCrowdList> list = _automaton.JsonTrace();
-        SaveJsonManager.SaveTraceJson(_pathToTraceJson, list, _cellsDimension.x);
-        SaveJsonManager.SaveStageJson(_pathToStageJson, new List<GatewayEntryJson>(), new List<DomainEntryJson>());
+        // List<JsonCrowdList> trace = _automaton.JsonTrace();
+        JsonSnapshotsList trace = _automaton.JsonTrace();
+        JsonStage stage = _automaton.JsonStage();
+        SaveJsonManager.SaveTraceJson(_pathToTraceJson, trace);
+        SaveJsonManager.SaveStageJson(_pathToStageJson, stage);
     }
 
     #region RunAutomatonWithoutCoroutines
@@ -211,7 +213,6 @@ public class InitializateStage : MonoBehaviour
     
     private void StartSimulation(bool savingTrace)
     {
-        Debug.Log(savingTrace);
         if (!savingTrace)
         {
             // Si se detecta un json desde la ruta almacenada en la variable _pathToReadJson,

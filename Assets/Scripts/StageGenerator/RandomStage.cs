@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using JsonDataManager.Stage;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
@@ -138,6 +139,11 @@ namespace StageGenerator
 
             if (shouldBePlaced)
             {
+                ObstacleEntryJson obstacle = new ObstacleEntryJson();
+                obstacle.shape = new ShapeJson(ShapeJson.ShapeTypeEnum.Rectangle, new Vector2(rowBorder, columnBorder));
+                Debug.Log($"Obstacle Corner: {obstacle.shape.bottomLeft}");
+                ObstaclesCornerLeftDown.Add(obstacle);
+                
                 foreach (Vector2 candidate in obstacleCandidates)
                 {
                     SetCellType(candidate, Cell.CellTypeEnum.Obstacle);
