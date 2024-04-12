@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using JsonDataManager.Stage;
+using JsonDataManager.Trace;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
@@ -95,7 +96,8 @@ namespace StageGenerator
         {
             AccessEntryJson access = new AccessEntryJson
             {
-                shape = new ShapeJson(ShapeJson.ShapeTypeEnum.Rectangle, new Vector2(row, column))
+                // shape = new ShapeJson(ShapeJson.ShapeTypeEnum.Rectangle, new CoordinatesJson(row, column))
+                shape = new ShapeJson(ShapeJson.ShapeTypeEnum.Rectangle, new CoordinatesJson(column, row))
             };
             Debug.Log($"Access Corner: {access.shape.bottomLeft}");
             _exitsCornerLeftDown.Add(access);
@@ -170,7 +172,8 @@ namespace StageGenerator
             {
                 ObstacleEntryJson obstacle = new ObstacleEntryJson
                 {
-                    shape = new ShapeJson(ShapeJson.ShapeTypeEnum.Rectangle, new Vector2(rowBorder, columnBorder))
+                    // shape = new ShapeJson(ShapeJson.ShapeTypeEnum.Rectangle, new CoordinatesJson(rowBorder, columnBorder))
+                    shape = new ShapeJson(ShapeJson.ShapeTypeEnum.Rectangle, new CoordinatesJson(column, row))
                 };
                 Debug.Log($"Obstacle Corner: {obstacle.shape.bottomLeft}");
                 _obstaclesCornerLeftDown.Add(obstacle);

@@ -12,8 +12,8 @@ namespace JsonDataManager.Trace
 
         public CoordinatesJson()
         {
-            X = 0;
-            Y = 0;
+            X = 1;
+            Y = 1;
         }
     
     
@@ -21,7 +21,7 @@ namespace JsonDataManager.Trace
         {
             this.X = x;
             this.Y = y;
-            Round();
+            // Round();
         }
 
         private void Round()
