@@ -197,9 +197,11 @@ namespace Cellular
         CoordinatesJson coordinates = pedestrian.location.coordinates;
         Debug.Log($"Rows: {coordinates.Y} ; Columns: {coordinates.X}");
         
-
-        // AddPedestrianFromJson((int)(coordinates.X / CellsDimension), (int)(coordinates.Y / CellsDimension), traceJson);
-        AddPedestrianFromJson((int)(coordinates.Y / CellsDimension), (int)(coordinates.X / CellsDimension));
+        int row = (int)_stage.NumberIndexesInAxis(coordinates.Y);
+        int column = (int)_stage.NumberIndexesInAxis(coordinates.X);
+        
+        // AddPedestrianFromJson((int)(coordinates.Y / CellsDimension), (int)(coordinates.X / CellsDimension));
+        AddPedestrianFromJson(row, column);
       }
     }
     
@@ -218,10 +220,23 @@ namespace Cellular
       if (IsCellReachable(row, column)) {
         Pedestrian pedestrianLoaded = _pedestrianFactory.GetInstance(row, column, null);
         
-        // AddPathToPedestrian(traceJson, pedestrianLoaded);
+        if (_stage.IsCellExit(row, column))
+        {
+          pedestrianLoaded.SetExitTimeSteps(_timeSteps);
+          _outOfScenarioPedestrians.Add(pedestrianLoaded);
+          // Remove current pedestrian from the list
+          // pedestriansIterator = (List<Pedestrian>.Enumerator)ListExtensions.RemoveCurrent(inScenarioPedestrians, pedestrian);
+          // ListExtensions.RemoveCurrent(inScenarioPedestrians, pedestrian);
+          _inScenarioPedestrians.Remove(pedestrianLoaded);
+          // pedestriansIterator = inScenarioPedestrians.GetEnumerator();
         
-        _occupied[row, column] = true;
-        _inScenarioPedestrians.Add(pedestrianLoaded);
+          GameObject.Destroy(pedestrianLoaded.gameObject);
+        }
+        else
+        {
+          _occupied[row, column] = true;
+          _inScenarioPedestrians.Add(pedestrianLoaded);
+        }
         return true;
       } else {
         return false;
