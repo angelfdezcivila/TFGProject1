@@ -21,6 +21,8 @@ namespace StageGenerator
         private protected List<ObstacleEntryJson> _obstaclesCornerLeftDown;
         private protected FloorField _staticFloorField;
         private GameObject _cellsContainer;
+        private int _height;
+        private int _width;
         public FloorField StaticFloorField => _staticFloorField;
         public List<Cell> Exits => _exits;
         public List<Cell> Obstacles => _obstacles;
@@ -31,6 +33,10 @@ namespace StageGenerator
         public int Rows => _rows;
         /// Número de columnas
         public int Columns => _columns;
+        /// Altura del escenario
+        public int Height => _height;
+        /// Anchura del escenario
+        public int Width => _width;
         public Vector3 CellsDimension => _cellsDimension;
 
         #region Constructors
@@ -45,24 +51,27 @@ namespace StageGenerator
             InitializeConstants(cellPrefab, transformParent, cellsDimension, 10, 10);
         }
         
-        protected Stage(GameObject cellPrefab, Transform transformParent, Vector3 cellsDimension, int rows, int columns)
+        protected Stage(GameObject cellPrefab, Transform transformParent, Vector3 cellsDimension, int height, int width)
         {
-            InitializeConstants(cellPrefab, transformParent, cellsDimension, rows, columns);
+            InitializeConstants(cellPrefab, transformParent, cellsDimension, height, width);
         }
 
         private void InitializeConstants(GameObject cellPrefab, Transform transformParent, Vector3 cellsDimension,
-            int rows, int columns)
+            int height, int width)
         {
             //Esto está para que el mapa no pueda ser más pequeño de lo que está pensado originalmente
             // if (cellsDimension.x < 1 || cellsDimension.y < 1 || cellsDimension.z < 1)
             //     _cellsDimension = cellPrefab.transform.localScale;
             // else
             _cellsDimension = cellsDimension;
+
+            _height = height;
+            _width = width;
             
             // Los rangos (clamp) son sobretodo para controlar que haya un mínimo de filas y columnas y no de error
             // El redondeo (ceiling) es para que siempre coja el valor siguiente en caso de que el resultado sea decimal (PE si 7.4 -> Se escoge 8)
-            _rows = Mathf.Clamp((int)NumberIndexesInAxis(rows), 15, 500);
-            _columns = Mathf.Clamp((int)NumberIndexesInAxis(columns), 15, 500);
+            _rows = Mathf.Clamp((int)NumberIndexesInAxis(height), 15, 500);
+            _columns = Mathf.Clamp((int)NumberIndexesInAxis(width), 15, 500);
             
             _cellPrefab = cellPrefab;
             _transformParent = transformParent;

@@ -49,5 +49,13 @@ namespace JsonDataManager.Stage
             //     height = json.height;
             // }
         }
+
+        public ShapeJson(ShapeTypeEnum type, CoordinatesJson bottomLeft, float width, float height)
+        {
+            this.type = type;
+            this.bottomLeft = bottomLeft;
+            this.width = width;
+            this.height = height;
+        }
     }
 }

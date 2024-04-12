@@ -213,7 +213,7 @@ namespace Cellular
     /// <exception cref="ArgumentOutOfRangeException"></exception>
     // public bool AddPedestrianFromJson(int row, int column, JsonSnapshotsList traceJson) {
     public bool AddPedestrianFromJson(int row, int column) {
-      if (row < 0 || row >= Rows) throw new ArgumentOutOfRangeException("AddPedestrian: invalid row");
+      if (row < 0 || row >= Rows) throw new ArgumentOutOfRangeException("AddPedestrian: invalid row" + Rows);
       if (column < 0 || column >= Columns) throw new ArgumentOutOfRangeException("AddPedestrian: invalid column");
       if (IsCellReachable(row, column)) {
         Pedestrian pedestrianLoaded = _pedestrianFactory.GetInstance(row, column, null);
@@ -705,7 +705,8 @@ namespace Cellular
     
     private CoordinatesJson GetCoordinatesToPosition(float row, float column)
     {
-      CoordinatesJson coordinates = new CoordinatesJson(row, column);
+      // CoordinatesJson coordinates = new CoordinatesJson(row, column);
+      CoordinatesJson coordinates = new CoordinatesJson(column, row);
       
       return coordinates;
     }
@@ -760,7 +761,8 @@ namespace Cellular
     {
       JsonStage jsonStage = new JsonStage();
 
-      DomainEntryJson domainJson = new DomainEntryJson(domain, Rows, Columns, _stage.ObstaclesCornerLeftDown, _stage.AccessesCornerLeftDown);
+      // DomainEntryJson domainJson = new DomainEntryJson(domain, Rows, Columns, _stage.ObstaclesCornerLeftDown, _stage.AccessesCornerLeftDown);
+      DomainEntryJson domainJson = new DomainEntryJson(domain, _stage.Height, _stage.Width, _stage.ObstaclesCornerLeftDown, _stage.AccessesCornerLeftDown);
 
       jsonStage.AddDomain(domainJson);
       

@@ -29,5 +29,10 @@ namespace JsonDataManager.Trace
             X = (float)Math.Round(X, 2);
             Y = (float)Math.Round(Y, 2);
         }
+
+        public override string ToString()
+        {
+            return $"({X}, {Y})";
+        }
     }
 }

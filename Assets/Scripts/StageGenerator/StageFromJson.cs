@@ -54,8 +54,10 @@ namespace StageGenerator
                 if (access.shape.type == ShapeJson.ShapeTypeEnum.Rectangle)
                 // if (access.shape.type is RectangleJson)
                 {
-                    int height = (int)Mathf.Ceil(NumberIndexesInAxis(access.shape.height));
-                    int width = (int)Mathf.Ceil(NumberIndexesInAxis(access.shape.width));
+                    // int height = (int)Mathf.Ceil(NumberIndexesInAxis(access.shape.height));
+                    // int width = (int)Mathf.Ceil(NumberIndexesInAxis(access.shape.width));
+                    int height = (int)NumberIndexesInAxis(access.shape.height);
+                    int width = (int)NumberIndexesInAxis(access.shape.width);
                     
                     Debug.Log($"Height:{height} ; Width:{width}");
                     // for (int i = 0; i < access.shape.height; i++)
@@ -83,10 +85,11 @@ namespace StageGenerator
             Debug.Log("Obstacles: " + _domain.accesses.Count);
             foreach (ObstacleEntryJson obstacle in _domain.obstacles)
             {
-                Debug.Log("Name: " + obstacle.name);
                 if (obstacle.shape.type == ShapeJson.ShapeTypeEnum.Rectangle)
                     // if (access.shape.type is RectangleJson)
                 {
+                    Debug.Log("Name: " + obstacle.shape.bottomLeft + obstacle.shape.height + obstacle.shape.width);
+
                     int height = (int)Mathf.Ceil(NumberIndexesInAxis(obstacle.shape.height));
                     int width = (int)Mathf.Ceil(NumberIndexesInAxis(obstacle.shape.width));
                     

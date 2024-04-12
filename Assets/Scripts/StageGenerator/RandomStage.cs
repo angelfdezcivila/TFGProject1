@@ -19,8 +19,8 @@ namespace StageGenerator
         {
         }
         
-        public RandomStage(GameObject cellPrefab, Transform transformParent, Vector3 cellsDimension, int rows, int columns)
-            : base(cellPrefab, transformParent, cellsDimension, rows, columns)
+        public RandomStage(GameObject cellPrefab, Transform transformParent, Vector3 cellsDimension, int height, int columns)
+            : base(cellPrefab, transformParent, cellsDimension, height, columns)
         {
             
         }
@@ -36,17 +36,18 @@ namespace StageGenerator
             {
                 int row = 2;
                 int column = _columns-1;
-                AddAccessCornerBottomLeft(row, column);
+                AddAccessCornerBottomLeft(row, column, 1, 5);
                 for (int i = row; i < 7; i++)
                 {
                     SetExit(i, column);
                 }
+
                 // scenario.setExit(new Rectangle(2, columns - 1, 5, 1));
             }
             if (Statistics.bernoulli(0.9f)) {
                 int row = _rows - 7;
                 int column = _columns-1;
-                AddAccessCornerBottomLeft(row, column);
+                AddAccessCornerBottomLeft(row, column, 1, 5);
                 for (int i = row; i < _rows - 2; i++)
                 {
                     SetExit(i, column);
@@ -55,7 +56,7 @@ namespace StageGenerator
             if (Statistics.bernoulli(0.9f)) {
                 int row = 10;
                 int column = 0;
-                AddAccessCornerBottomLeft(row, column);
+                AddAccessCornerBottomLeft(row, column, 1, 5);
                 for (int i = row; i < 15; i++)
                 {
                     SetExit(i, column);
@@ -64,7 +65,7 @@ namespace StageGenerator
             if (Statistics.bernoulli(0.9f)) {
                 int row = _rows - 15;
                 int column = 0;
-                AddAccessCornerBottomLeft(row, column);
+                AddAccessCornerBottomLeft(row, column, 1, 5);
                 for (int i = row; i < _rows - 10; i++)
                 {
                     SetExit(i, column);
@@ -76,7 +77,7 @@ namespace StageGenerator
                 // Otra solución sería hacer la salida de 1x1 o 3x3
                 int startRow = _rows / 2;
                 int startColumn = _columns / 2;
-                AddAccessCornerBottomLeft(startRow, startColumn);
+                AddAccessCornerBottomLeft(startRow, startColumn, 2, 2);
                 for (int i = startRow; i < startRow + 2; i++)
                 {
                     for (int j = startColumn; j < startColumn + 2; j++)
@@ -92,12 +93,15 @@ namespace StageGenerator
             SetCellType(new Vector2(row, column), Cell.CellTypeEnum.Exit);
         }
 
-        private void AddAccessCornerBottomLeft(int row, int column)
+        private void AddAccessCornerBottomLeft(int row, int column, int width, int height)
         {
+            float realRow = row * CellsDimension.x;
+            float realColumn = column * CellsDimension.x;
             AccessEntryJson access = new AccessEntryJson
             {
                 // shape = new ShapeJson(ShapeJson.ShapeTypeEnum.Rectangle, new CoordinatesJson(row, column))
-                shape = new ShapeJson(ShapeJson.ShapeTypeEnum.Rectangle, new CoordinatesJson(column, row))
+                shape = new ShapeJson(ShapeJson.ShapeTypeEnum.Rectangle, new CoordinatesJson(realColumn, realRow), width*_cellsDimension.x, height*_cellsDimension.x),
+                id = _exitsCornerLeftDown.Count
             };
             Debug.Log($"Access Corner: {access.shape.bottomLeft}");
             _exitsCornerLeftDown.Add(access);
@@ -118,7 +122,7 @@ namespace StageGenerator
                 // int row = Random.Range(-_rows/2, _rows/2 - height); // Solo funciona para las filas impares
                 int column = Random.Range(2, 1 + _columns - width - 2);   
             
-                bool shouldBePlaced = ObstacleCanBePlaced(row, column, height, width);
+                bool shouldBePlaced = ObstacleCanBePlaced(row, column, width, height);
     
                 if (shouldBePlaced) {
                     numberOfBlocksPlaced++;
@@ -127,7 +131,7 @@ namespace StageGenerator
             }
         }
 
-        private bool ObstacleCanBePlaced(int row, int column, int height, int width)
+        private bool ObstacleCanBePlaced(int row, int column, int width, int height)
         {
             List<Vector2> obstacleCandidates = new List<Vector2>();
         
@@ -170,10 +174,15 @@ namespace StageGenerator
 
             if (shouldBePlaced)
             {
+                float realRow = row * CellsDimension.x;
+                float realColumn = column * CellsDimension.x;
+                int realHeight = row + height + 2 < _rows? height : heightMax - row;
+                int realWidth = width;
+
                 ObstacleEntryJson obstacle = new ObstacleEntryJson
                 {
-                    // shape = new ShapeJson(ShapeJson.ShapeTypeEnum.Rectangle, new CoordinatesJson(rowBorder, columnBorder))
-                    shape = new ShapeJson(ShapeJson.ShapeTypeEnum.Rectangle, new CoordinatesJson(column, row))
+                    // shape = new ShapeJson(ShapeJson.ShapeTypeEnum.Rectangle, new CoordinatesJson(column, row))
+                    shape = new ShapeJson(ShapeJson.ShapeTypeEnum.Rectangle, new CoordinatesJson(realColumn, realRow), realWidth*_cellsDimension.x, realHeight*_cellsDimension.x)
                 };
                 Debug.Log($"Obstacle Corner: {obstacle.shape.bottomLeft}");
                 _obstaclesCornerLeftDown.Add(obstacle);
