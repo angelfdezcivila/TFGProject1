@@ -50,14 +50,15 @@ namespace StageGenerator
             Debug.Log("Accesses: " + _domain.accesses.Count);
             foreach (AccessEntryJson access in _domain.accesses)
             {
-                Debug.Log("ID: " + access.id);
-                if (access.shape.type == ShapeJson.ShapeTypeEnum.Rectangle)
+                Debug.Log("ID: " + access.id + access.shape.bottomLeft);
+                // Hacer que la variable type se represente en el json como string, la solución facil es cambiar la variable a tipo string
+                // if (access.shape.type == ShapeJson.ShapeTypeEnum.Rectangle)
                 // if (access.shape.type is RectangleJson)
                 {
-                    // int height = (int)Mathf.Ceil(NumberIndexesInAxis(access.shape.height));
-                    // int width = (int)Mathf.Ceil(NumberIndexesInAxis(access.shape.width));
-                    int height = (int)NumberIndexesInAxis(access.shape.height);
-                    int width = (int)NumberIndexesInAxis(access.shape.width);
+                    int height = (int)Mathf.Ceil(NumberIndexesInAxis(access.shape.height));
+                    int width = (int)Mathf.Ceil(NumberIndexesInAxis(access.shape.width));
+                    // int height = (int)NumberIndexesInAxis(access.shape.height);
+                    // int width = (int)NumberIndexesInAxis(access.shape.width);
                     
                     Debug.Log($"Height:{height} ; Width:{width}");
                     // for (int i = 0; i < access.shape.height; i++)

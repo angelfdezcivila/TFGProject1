@@ -195,7 +195,7 @@ namespace Cellular
       {
         CrowdEntryJson pedestrian = initialCrowd.crowd[i];
         CoordinatesJson coordinates = pedestrian.location.coordinates;
-        Debug.Log($"Rows: {coordinates.Y} ; Columns: {coordinates.X}");
+        // Debug.Log($"Rows: {coordinates.Y} ; Columns: {coordinates.X}");
         
         int row = (int)_stage.NumberIndexesInAxis(coordinates.Y);
         int column = (int)_stage.NumberIndexesInAxis(coordinates.X);
