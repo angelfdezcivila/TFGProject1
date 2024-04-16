@@ -50,6 +50,7 @@ namespace DataJson
     
         public static JsonStage LoadStageJson(string path)
         {
+            // JsonStage jsonStage = null; //Da igual que sea null, se va a llamar igualmente a este constructor
             JsonStage jsonStage = new JsonStage();
             return LoadJson(path, jsonStage);
         }
@@ -60,10 +61,10 @@ namespace DataJson
         private static void SaveJson<T>(string path, T jsonObject)
         {
             // string json = JsonUtility.ToJson(jsonObject);
-            string json = JsonConvert.SerializeObject(jsonObject, Formatting.Indented,                        new JsonSerializerSettings()
+            string json = JsonConvert.SerializeObject(jsonObject, Formatting.Indented, new JsonSerializerSettings()  // Clase de la librería Newtonsoft
             { 
                 ReferenceLoopHandling = ReferenceLoopHandling.Ignore
-            }); // Clase de la librería Newtonsoft
+            });
             // string json = JsonConvert.SerializeObject(jsonObject);
 
             using (StreamWriter streamWriter = new StreamWriter(path))

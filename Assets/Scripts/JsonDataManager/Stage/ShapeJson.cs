@@ -15,51 +15,77 @@ namespace JsonDataManager.Stage
         {
             Rectangle
         }
-        
+
+        private ShapeType.ShapeType shapeType;
+
+        // Lo hago con un método y no una propiedad ya que el json sí detecta las propiedades
+        public ShapeType.ShapeType GetShapeType() => shapeType;
+
+        public string type;
         // public ShapeType.ShapeType type;
-        public ShapeTypeEnum type;
+        // public ShapeTypeEnum type;
+
+        #region Rectangle variables
+
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
         public CoordinatesStageJson bottomLeft;
-        
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
         public float width;
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
         public float height;
+
+        #endregion
+
+        #region Circle variables
+
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
+        public CoordinatesStageJson center;
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
         public float radius;
 
+        #endregion
+        
         public ShapeJson()
         {
+            Debug.Log("sussy");
+
             // RectangleJson rectangleJson = new RectangleJson();
             // type = rectangleJson;
             // width = rectangleJson.width;
             // height = rectangleJson.height;
 
-            type = ShapeTypeEnum.Rectangle;
-            width = 5;
-            height = 5;
+            RectangleJson rectangle = new RectangleJson();
+            shapeType = rectangle;
+            
+            type = rectangle.NameRepresentation;
+            width = rectangle.Width;
+            height = rectangle.Height;
             bottomLeft = new CoordinatesStageJson();
         }
 
-        // public ShapeJson(ShapeType.ShapeType shapeType, Vector2 bottomLeft)
-        public ShapeJson(ShapeTypeEnum shapeType, CoordinatesStageJson bottomLeft)
+        public ShapeJson(ShapeType.ShapeType shapeType)
+        // public ShapeJson(ShapeType.ShapeType shapeType, CoordinatesStageJson bottomLeft)
+        // public ShapeJson(ShapeTypeEnum shapeType, CoordinatesStageJson bottomLeft)
         {
-            this.type = shapeType;
-            this.bottomLeft = bottomLeft;
+            this.shapeType = shapeType; 
+            type = shapeType.NameRepresentation;
             
-            // if (type is RectangleJson)
-            // {
-            //     RectangleJson json = type as RectangleJson;
-            //     width = json.width;
-            //     height = json.height;
-            // }
+            if (shapeType is RectangleJson)
+            {
+                // RectangleJson rectangle = type as RectangleJson;
+                RectangleJson rectangle = (RectangleJson) shapeType;
+                bottomLeft = rectangle.BottomLeft;
+                width = rectangle.Width;
+                height = rectangle.Height;
+            }
+            else if (shapeType is CircleJson)
+            {
+                CircleJson circle = (CircleJson) shapeType;
+                Debug.Log("Circulito en " + circle.Center + " y radio " + circle.Center);
+                center = circle.Center;
+                radius = circle.Radius;
+            }
         }
 
-        public ShapeJson(ShapeTypeEnum type, CoordinatesStageJson bottomLeft, float width, float height)
-        {
-            this.type = type;
-            this.bottomLeft = bottomLeft;
-            this.width = width;
-            this.height = height;
-        }
     }
 }

@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using JsonDataManager.Stage;
+using JsonDataManager.Stage.ShapeType;
 using JsonDataManager.Trace;
 using UnityEngine;
 using Random = UnityEngine.Random;
@@ -97,10 +98,11 @@ namespace StageGenerator
         {
             float realRow = row * CellsDimension.x;
             float realColumn = column * CellsDimension.x;
+            RectangleJson accessRectangle = new RectangleJson(new CoordinatesStageJson(realColumn, realRow), width*_cellsDimension.x, height*_cellsDimension.x);
             AccessEntryJson access = new AccessEntryJson
             {
-                // shape = new ShapeJson(ShapeJson.ShapeTypeEnum.Rectangle, new CoordinatesJson(row, column))
-                shape = new ShapeJson(ShapeJson.ShapeTypeEnum.Rectangle, new CoordinatesStageJson(realColumn, realRow), width*_cellsDimension.x, height*_cellsDimension.x),
+                // shape = new ShapeJson(ShapeJson.ShapeTypeEnum.Rectangle, new CoordinatesStageJson(realColumn, realRow), width*_cellsDimension.x, height*_cellsDimension.x),
+                shape = new ShapeJson(accessRectangle),
                 id = _exitsCornerLeftDown.Count
             };
             Debug.Log($"Access Corner: {access.shape.bottomLeft}");
@@ -179,10 +181,13 @@ namespace StageGenerator
                 int realHeight = row + height + 2 < _rows? height : heightMax - row;
                 int realWidth = width;
 
+                RectangleJson accessRectangle = new RectangleJson(new CoordinatesStageJson(realColumn, realRow), realWidth*_cellsDimension.x, realHeight*_cellsDimension.x);
+
                 ObstacleEntryJson obstacle = new ObstacleEntryJson
                 {
-                    // shape = new ShapeJson(ShapeJson.ShapeTypeEnum.Rectangle, new CoordinatesJson(column, row))
-                    shape = new ShapeJson(ShapeJson.ShapeTypeEnum.Rectangle, new CoordinatesStageJson(realColumn, realRow), realWidth*_cellsDimension.x, realHeight*_cellsDimension.x)
+                    // shape = new ShapeJson(ShapeJson.ShapeTypeEnum.Rectangle, new CoordinatesStageJson(realColumn, realRow), realWidth*_cellsDimension.x, realHeight*_cellsDimension.x)
+                    // shape = new ShapeJson(accessRectangle, new CoordinatesStageJson(realColumn, realRow)),
+                    shape = new ShapeJson(accessRectangle),
                 };
                 Debug.Log($"Obstacle Corner: {obstacle.shape.bottomLeft}");
                 _obstaclesCornerLeftDown.Add(obstacle);

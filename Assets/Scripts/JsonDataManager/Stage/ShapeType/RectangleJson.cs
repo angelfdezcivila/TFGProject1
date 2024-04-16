@@ -1,22 +1,29 @@
+using System;
+using JsonDataManager.Trace;
+
 namespace JsonDataManager.Stage.ShapeType
 {
+    [Serializable]
     public class RectangleJson : ShapeType
     {
-        public int width;
-        public int height;
+        public CoordinatesStageJson BottomLeft { get; private set; }
+        public float Width { get; private set; }
+        public float Height { get; private set; }
 
-        public RectangleJson() : base()
+        public RectangleJson() : base("RECTANGLE")
         {
-            width = 1;
-            height = 1;
-            this.nameRepresentation = "RECTANGLE";
+            BottomLeft = new CoordinatesStageJson();
+            Width = 1;
+            Height = 1;
+            // this.nameRepresentation = "RECTANGLE";
         }
 
-        public RectangleJson(int width, int height) : base()
+        public RectangleJson(CoordinatesStageJson bottomLeft, float width, float height) : base("RECTANGLE")
         {
-            this.width = width;
-            this.height = height;
-            this.nameRepresentation = "RECTANGLE";
+            this.BottomLeft = bottomLeft;
+            this.Width = width;
+            this.Height = height;
+            // this.nameRepresentation = "RECTANGLE";
         }
     }
 }
