@@ -19,6 +19,8 @@ namespace UI
         [SerializeField] 
         private Toggle _saveOrLoadToggle;
         [SerializeField] 
+        private Toggle _upsideViewToggle;
+        [SerializeField] 
         private Slider _multiplierSpeedSlider; // Intentar hacer mientras se ejecuta se pueda tocar la velocidad de la simulación y que se pueda ir marcha atras
         [SerializeField] 
         private Button _startButton;
@@ -29,6 +31,7 @@ namespace UI
         {
             _saveOrLoadFolderButton.onClick.AddListener(OpenFileExplorer);
             _saveOrLoadToggle.onValueChanged.AddListener(TogglingSaveAndUpdate);
+            _upsideViewToggle.onValueChanged.AddListener(TogglingView);
             _startButton.onClick.AddListener(StartOnClick);
             
             // _multiplierSpeedSlider.onValueChanged.AddListener(UpdateTimeScale);
@@ -49,6 +52,11 @@ namespace UI
             // string path = savingTrace ? InitializateStage.JsonSaveFilePath : "";
             string path = InitializateStage.JsonInitialFilePath;
             FileExplorerEvents.OnSelectedPathForJson?.Invoke(path);
+        }
+        
+        private void TogglingView(bool upsideView)
+        {
+            CameraEvents.OnTogglingView?.Invoke(upsideView);
         }
 
         private void OpenFileExplorer()
