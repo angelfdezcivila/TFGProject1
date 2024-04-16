@@ -100,7 +100,7 @@ namespace StageGenerator
             AccessEntryJson access = new AccessEntryJson
             {
                 // shape = new ShapeJson(ShapeJson.ShapeTypeEnum.Rectangle, new CoordinatesJson(row, column))
-                shape = new ShapeJson(ShapeJson.ShapeTypeEnum.Rectangle, new CoordinatesJson(realColumn, realRow), width*_cellsDimension.x, height*_cellsDimension.x),
+                shape = new ShapeJson(ShapeJson.ShapeTypeEnum.Rectangle, new CoordinatesStageJson(realColumn, realRow), width*_cellsDimension.x, height*_cellsDimension.x),
                 id = _exitsCornerLeftDown.Count
             };
             Debug.Log($"Access Corner: {access.shape.bottomLeft}");
@@ -182,7 +182,7 @@ namespace StageGenerator
                 ObstacleEntryJson obstacle = new ObstacleEntryJson
                 {
                     // shape = new ShapeJson(ShapeJson.ShapeTypeEnum.Rectangle, new CoordinatesJson(column, row))
-                    shape = new ShapeJson(ShapeJson.ShapeTypeEnum.Rectangle, new CoordinatesJson(realColumn, realRow), realWidth*_cellsDimension.x, realHeight*_cellsDimension.x)
+                    shape = new ShapeJson(ShapeJson.ShapeTypeEnum.Rectangle, new CoordinatesStageJson(realColumn, realRow), realWidth*_cellsDimension.x, realHeight*_cellsDimension.x)
                 };
                 Debug.Log($"Obstacle Corner: {obstacle.shape.bottomLeft}");
                 _obstaclesCornerLeftDown.Add(obstacle);

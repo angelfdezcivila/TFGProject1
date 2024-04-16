@@ -1,5 +1,6 @@
 using System;
 using JsonDataManager.Trace;
+using Newtonsoft.Json;
 
 namespace JsonDataManager.Stage
 {
@@ -8,7 +9,9 @@ namespace JsonDataManager.Stage
     public class ObstacleEntryJson
     {
         public ShapeJson shape;
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
         public string name;         // Opcional
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
         public string description;  // Opcional
 
         public ObstacleEntryJson()

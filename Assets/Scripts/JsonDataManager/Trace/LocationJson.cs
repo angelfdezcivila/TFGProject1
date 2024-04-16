@@ -7,16 +7,16 @@ namespace JsonDataManager.Trace
     public class LocationJson
     {
         public int domain;
-        public CoordinatesJson coordinates;
+        public CoordinatesTraceJson coordinates;
 
         public LocationJson()
         {
             domain = 0;
-            coordinates = new CoordinatesJson();
+            coordinates = new CoordinatesTraceJson();
         }
     
     
-        public LocationJson(int domain, CoordinatesJson coordinates)
+        public LocationJson(int domain, CoordinatesTraceJson coordinates)
         {
             this.domain = domain;
             this.coordinates = coordinates;

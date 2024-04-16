@@ -52,7 +52,7 @@ namespace StageGenerator
             {
                 Debug.Log("ID: " + access.id + access.shape.bottomLeft);
                 // Hacer que la variable type se represente en el json como string, la solución facil es cambiar la variable a tipo string
-                // if (access.shape.type == ShapeJson.ShapeTypeEnum.Rectangle)
+                if (access.shape.type == ShapeJson.ShapeTypeEnum.Rectangle)
                 // if (access.shape.type is RectangleJson)
                 {
                     int height = (int)Mathf.Ceil(NumberIndexesInAxis(access.shape.height));
@@ -70,8 +70,8 @@ namespace StageGenerator
                             // en el json, la x en access.shape.bottomLeft es la columna y la y es la fila, por lo que hay que invertirlo
                             // float bottomLeftRow = i + access.shape.bottomLeft.y;
                             // float bottomLeftColumn = j + access.shape.bottomLeft.x;
-                            float bottomLeftRow = i + (int)NumberIndexesInAxis(access.shape.bottomLeft.Y);
-                            float bottomLeftColumn = j + (int)NumberIndexesInAxis(access.shape.bottomLeft.X);
+                            float bottomLeftRow = i + (int)NumberIndexesInAxis(access.shape.bottomLeft.y);
+                            float bottomLeftColumn = j + (int)NumberIndexesInAxis(access.shape.bottomLeft.x);
                             Debug.Log($"Row: {bottomLeftRow} ; Column: {bottomLeftColumn}");
                             SetCellType( new Vector2(bottomLeftRow, bottomLeftColumn), Cell.CellTypeEnum.Exit);
                         }
@@ -89,7 +89,7 @@ namespace StageGenerator
                 if (obstacle.shape.type == ShapeJson.ShapeTypeEnum.Rectangle)
                     // if (access.shape.type is RectangleJson)
                 {
-                    Debug.Log("Name: " + obstacle.shape.bottomLeft + obstacle.shape.height + obstacle.shape.width);
+                    Debug.Log("Name: " + obstacle.shape.bottomLeft + obstacle.shape.height + " , " + obstacle.shape.width);
 
                     int height = (int)Mathf.Ceil(NumberIndexesInAxis(obstacle.shape.height));
                     int width = (int)Mathf.Ceil(NumberIndexesInAxis(obstacle.shape.width));
@@ -104,8 +104,8 @@ namespace StageGenerator
                             // en el json, la x en access.shape.bottomLeft es la columna y la y es la fila, por lo que hay que invertirlo
                             // float bottomLeftRow = i + access.shape.bottomLeft.y;
                             // float bottomLeftColumn = j + access.shape.bottomLeft.x;
-                            float bottomLeftRow = i + (int)NumberIndexesInAxis(obstacle.shape.bottomLeft.Y);
-                            float bottomLeftColumn = j + (int)NumberIndexesInAxis(obstacle.shape.bottomLeft.X);
+                            float bottomLeftRow = i + (int)NumberIndexesInAxis(obstacle.shape.bottomLeft.y);
+                            float bottomLeftColumn = j + (int)NumberIndexesInAxis(obstacle.shape.bottomLeft.x);
                             Debug.Log($"Row: {bottomLeftRow} ; Column: {bottomLeftColumn}");
                             SetCellType( new Vector2(bottomLeftRow, bottomLeftColumn), Cell.CellTypeEnum.Obstacle);
                         }

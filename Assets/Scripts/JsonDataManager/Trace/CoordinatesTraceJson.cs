@@ -2,22 +2,21 @@ using System;
 
 namespace JsonDataManager.Trace
 {
-    [Serializable]
     // Representación de las coordenadas de un agente en el json
-
-    public class CoordinatesJson
+    [Serializable]
+    public class CoordinatesTraceJson
     {
         public float X;
         public float Y;
 
-        public CoordinatesJson()
+        public CoordinatesTraceJson()
         {
             X = 1;
             Y = 1;
         }
     
     
-        public CoordinatesJson(float x, float y)
+        public CoordinatesTraceJson(float x, float y)
         {
             this.X = x;
             this.Y = y;

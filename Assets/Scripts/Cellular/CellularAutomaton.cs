@@ -194,7 +194,7 @@ namespace Cellular
       for (int i = 0; i < numberOfPedestrians; i++)
       {
         CrowdEntryJson pedestrian = initialCrowd.crowd[i];
-        CoordinatesJson coordinates = pedestrian.location.coordinates;
+        CoordinatesTraceJson coordinates = pedestrian.location.coordinates;
         // Debug.Log($"Rows: {coordinates.Y} ; Columns: {coordinates.X}");
         
         int row = (int)_stage.NumberIndexesInAxis(coordinates.Y);
@@ -251,7 +251,7 @@ namespace Cellular
       CrowdEntryJson crowdEntryJson = snapshot.crowd.Find(pedestrianToFind => pedestrianToFind.id == pedestrian.Identifier);
       if (crowdEntryJson != null)
       {
-        CoordinatesJson locationCoordinates = crowdEntryJson.location.coordinates;
+        CoordinatesTraceJson locationCoordinates = crowdEntryJson.location.coordinates;
         // int row = (int)(locationCoordinates.X / CellsDimension);
         // int column = (int)(locationCoordinates.Y / CellsDimension);
         int row = (int)_stage.NumberIndexesInAxis(locationCoordinates.Y);
@@ -718,10 +718,10 @@ namespace Cellular
       return position;
     }
     
-    private CoordinatesJson GetCoordinatesToPosition(float row, float column)
+    private CoordinatesTraceJson GetCoordinatesToPosition(float row, float column)
     {
       // CoordinatesJson coordinates = new CoordinatesJson(row, column);
-      CoordinatesJson coordinates = new CoordinatesJson(column, row);
+      CoordinatesTraceJson coordinates = new CoordinatesTraceJson(column, row);
       
       return coordinates;
     }

@@ -1,6 +1,7 @@
 using System;
 using JsonDataManager.Stage.ShapeType;
 using JsonDataManager.Trace;
+using Newtonsoft.Json;
 using UnityEngine;
 
 namespace JsonDataManager.Stage
@@ -17,10 +18,13 @@ namespace JsonDataManager.Stage
         
         // public ShapeType.ShapeType type;
         public ShapeTypeEnum type;
-        public CoordinatesJson bottomLeft;
+        public CoordinatesStageJson bottomLeft;
         
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
         public float width;
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
         public float height;
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
         public float radius;
 
         public ShapeJson()
@@ -33,11 +37,11 @@ namespace JsonDataManager.Stage
             type = ShapeTypeEnum.Rectangle;
             width = 5;
             height = 5;
-            bottomLeft = new CoordinatesJson();
+            bottomLeft = new CoordinatesStageJson();
         }
 
         // public ShapeJson(ShapeType.ShapeType shapeType, Vector2 bottomLeft)
-        public ShapeJson(ShapeTypeEnum shapeType, CoordinatesJson bottomLeft)
+        public ShapeJson(ShapeTypeEnum shapeType, CoordinatesStageJson bottomLeft)
         {
             this.type = shapeType;
             this.bottomLeft = bottomLeft;
@@ -50,7 +54,7 @@ namespace JsonDataManager.Stage
             // }
         }
 
-        public ShapeJson(ShapeTypeEnum type, CoordinatesJson bottomLeft, float width, float height)
+        public ShapeJson(ShapeTypeEnum type, CoordinatesStageJson bottomLeft, float width, float height)
         {
             this.type = type;
             this.bottomLeft = bottomLeft;
