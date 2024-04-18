@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.IO;
 using JsonDataManager.Stage;
+using JsonDataManager.Stage.ShapeType;
 using JsonDataManager.Trace;
 using Newtonsoft.Json;
 using UnityEngine;
@@ -52,11 +53,44 @@ namespace DataJson
         {
             // JsonStage jsonStage = null; //Da igual que sea null, se va a llamar igualmente a este constructor
             JsonStage jsonStage = new JsonStage();
-            return LoadJson(path, jsonStage);
+            jsonStage = LoadJson(path, jsonStage);
+            foreach (DomainEntryJson domain in jsonStage.domains)
+            {
+                foreach (ObstacleEntryJson obstacle in domain.obstacles)
+                {
+                    Debug.Log("Shape before: " + obstacle.shape.ShapeType.NameRepresentation + " ;Nombre:" + obstacle.name);
+                    obstacle.shape.ShapeType = UpdateShapeType(obstacle.shape.type, obstacle.shape);
+                    Debug.Log("Shape after: " + obstacle.shape.ShapeType.NameRepresentation + " ;Nombre:" + obstacle.name);
+                }
+            }
+            
+            return jsonStage;
         }
 
         #endregion
-        
+
+        private static ShapeType UpdateShapeType(string _type, ShapeJson shape)
+        {
+            ShapeType shapeType = new RectangleJson();
+            CoordinatesStageJson bottomLeft = shape.bottomLeft;
+            float width = shape.height;
+            float height = shape.width;
+
+            CoordinatesStageJson center = shape.center;
+            float radius = shape.radius;
+
+            switch (_type.ToUpper())
+            {
+                case "RECTANGLE" : 
+                    shapeType = new RectangleJson(bottomLeft, width, height);
+                    break;
+                case "CIRCLE" :
+                    shapeType = new CircleJson(center, radius);
+                    break;
+            }
+
+            return shapeType;
+        }
         
         private static void SaveJson<T>(string path, T jsonObject)
         {

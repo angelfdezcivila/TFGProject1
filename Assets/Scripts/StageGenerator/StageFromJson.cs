@@ -53,7 +53,7 @@ namespace StageGenerator
                 Debug.Log("ID: " + access.id + access.shape.bottomLeft);
                 // Hacer que la variable type se represente en el json como string, la solución facil es cambiar la variable a tipo string
                 // if (access.shape.type == ShapeJson.ShapeTypeEnum.Rectangle)
-                if (access.shape.GetShapeType() is RectangleJson)
+                if (access.shape.ShapeType is RectangleJson)
                 {
                     int height = (int)Mathf.Ceil(NumberIndexesInAxis(access.shape.height));
                     int width = (int)Mathf.Ceil(NumberIndexesInAxis(access.shape.width));
@@ -77,6 +77,10 @@ namespace StageGenerator
                         }
                     }
                 }
+                else if (access.shape.ShapeType is CircleJson)
+                {
+                    Debug.Log("Obstacle isCircle");
+                }
             }
             
         }
@@ -87,10 +91,10 @@ namespace StageGenerator
             foreach (ObstacleEntryJson obstacle in _domain.obstacles)
             {
                 // if (obstacle.shape.type == ShapeJson.ShapeTypeEnum.Rectangle)
-                if (obstacle.shape.GetShapeType() is RectangleJson)
+                if (obstacle.shape.ShapeType is RectangleJson)
                 {
                     Debug.Log("Name: " + obstacle.shape.bottomLeft + obstacle.shape.height + " , " + obstacle.shape.width + " : TIPO " + obstacle.shape.type + obstacle.shape.radius);
-                    Debug.Log("Name: " + obstacle.shape.bottomLeft + obstacle.shape.height + " , " + obstacle.shape.width + " : TIPO " + obstacle.shape.GetShapeType().NameRepresentation);
+                    Debug.Log("Name: " + obstacle.shape.bottomLeft + obstacle.shape.height + " , " + obstacle.shape.width + " : TIPO " + obstacle.shape.ShapeType.NameRepresentation);
 
                     int height = (int)Mathf.Ceil(NumberIndexesInAxis(obstacle.shape.height));
                     int width = (int)Mathf.Ceil(NumberIndexesInAxis(obstacle.shape.width));
@@ -112,61 +116,12 @@ namespace StageGenerator
                         }
                     }
                 }
-            }
-        }
-
-        private bool ObstacleCanBePlaced(int row, int column, int height, int width)
-        {
-            List<Vector2> obstacleCandidates = new List<Vector2>();
-        
-            bool shouldBePlaced = true;
-            int rowBorder = row>2? row - 2 : 0; //Está para que si row = 1 o row = 0, siga siendo positiva y no se salga por debajo del tablero
-            int columnBorder = column>=4? column - 2 : 2; //Está para que si column = 3 o column = 2, siga teniendo un margen de 2 respecto a los bordes
-            // Debug.Log("(" + row + ", " + column + ") : (" + rowBorder + ", " + columnBorder + ") : (" + height + ", " + width + ")");
-        
-            int heightMax = row + height + 2<_rows? row + height + 2 : _rows-1; //Está para controlar que la altura máxima no sobrepase el máximo a la hora de comprobar si puede ser puesto
-            int widthMax = column + width + 2<_columns-2? column + width + 2 : _columns-1; //Está para controlar que la anchura máxima no sobrepase el máximo a la hora de comprobar si puede ser puesto
-        
-            int rowCounter = rowBorder;
-            int columnCounter = columnBorder;
-        
-            while (rowCounter < heightMax && shouldBePlaced)
-            {
-                columnCounter = columnBorder;
-
-                while (columnCounter < widthMax && shouldBePlaced)
+                else if (obstacle.shape.ShapeType is CircleJson)
                 {
-                    Vector2 cellPosition = new Vector2(rowCounter, columnCounter);
-                    //Si intersecta con otro objeto, no se puede poner el obstáculo
-                    shouldBePlaced = GetCellType(cellPosition) == Cell.CellTypeEnum.Floor;
-
-                    // Comprueba si la posicion es parte del rango o es del propio obstaculo
-                    bool isWall = (rowCounter >= row && columnCounter >= column) &&
-                                  (rowCounter < row + height && columnCounter < column + width);
-                    // Debug.Log("counters: " + rowCounter + ", " + columnCounter + " - " + isWall);
-
-                    if (shouldBePlaced && isWall)
-                    {
-                        obstacleCandidates.Add(cellPosition);
-                    }
-
-                    columnCounter++;
-                }
-
-                rowCounter++;
-            }
-
-            if (shouldBePlaced)
-            {
-                foreach (Vector2 candidate in obstacleCandidates)
-                {
-                    SetCellType(candidate, Cell.CellTypeEnum.Obstacle);
+                    Debug.Log("Obstacle isCircle");
                 }
             }
-        
-            return shouldBePlaced;
         }
-
-
+        
     }
 }
