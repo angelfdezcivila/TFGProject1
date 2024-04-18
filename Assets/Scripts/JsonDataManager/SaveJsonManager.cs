@@ -62,6 +62,10 @@ namespace DataJson
                     obstacle.shape.ShapeType = UpdateShapeType(obstacle.shape.type, obstacle.shape);
                     Debug.Log("Shape after: " + obstacle.shape.ShapeType.NameRepresentation + " ;Nombre:" + obstacle.name);
                 }
+                foreach (AccessEntryJson access in domain.accesses)
+                {
+                    access.shape.ShapeType = UpdateShapeType(access.shape.type, access.shape);
+                }
             }
             
             return jsonStage;
