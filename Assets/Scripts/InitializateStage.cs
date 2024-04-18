@@ -102,7 +102,7 @@ public class InitializateStage : MonoBehaviour
         Vector3 cellsDimension = new Vector3(traceJson.cellDimension, traceJson.cellDimension, traceJson.cellDimension);
         DomainEntryJson domain = stageJson.domains.Find(domain => domain.id == 1);
         
-        _stage = new StagefromJson(cellsPrefab, transform, cellsDimension, stageJson, domain);
+        _stage = new StageFromJson(cellsPrefab, transform, cellsDimension, stageJson, domain);
         // _stage = new RandomStage(cellsPrefab, transform, _cellsDimension);
 
         InitializeAutomaton();

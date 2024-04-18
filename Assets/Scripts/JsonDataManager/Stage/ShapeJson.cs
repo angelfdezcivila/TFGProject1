@@ -12,49 +12,23 @@ namespace JsonDataManager.Stage
     {
 
         private ShapeType.ShapeType shapeType;
-        public ShapeType.ShapeType GetShapeType
-        {
-            get
-            {
-                switch (type.ToUpper())
-                {
-                    case "RECTANGLE" :
-                        return new RectangleJson(bottomLeft, width, height);
-                    case "CIRCLE" :
-                        return new CircleJson(center, radius);
-                    default:
-                        return new RectangleJson();
-                }
-            }
-            private set
-            {
-                shapeType = value;
-                type = shapeType.NameRepresentation;
-            }
-        }
-        
-        
 
         // Lo hago con un método y no una propiedad ya que el json sí detecta las propiedades
-        // public ShapeType.ShapeType GetShapeType() => shapeType;
+        public ShapeType.ShapeType GetShapeType() => shapeType;
 
-        public string type;
-        private string Type
+        // public string type;
+        private string _type;
+        public string type
         {
-            get
-            {
-                if (shapeType is RectangleJson) return "RECTANGLE";
-                else if (shapeType is CircleJson) return "CIRCLE";
-                return "RECTANGLE";
-            }
+            get => _type;
             set
             {
-                type = value;
-                if (type.ToUpper() == "RECTANGLE")
+                _type = value;
+                if (_type.ToUpper() == "RECTANGLE")
                 {
                     shapeType = new RectangleJson(bottomLeft, width, height);
                 }
-                else if (type.ToUpper() == "CIRCLE")
+                else if (_type.ToUpper() == "CIRCLE")
                 {
                     shapeType = new CircleJson(center, radius);
                 }
@@ -89,40 +63,45 @@ namespace JsonDataManager.Stage
             // height = rectangleJson.height;
 
             RectangleJson rectangle = new RectangleJson();
-            GetShapeType = rectangle;
+            shapeType = rectangle;
             
-            type = rectangle.NameRepresentation;
+            // type = rectangle.NameRepresentation;
             width = rectangle.Width;
             height = rectangle.Height;
             bottomLeft = new CoordinatesStageJson();
             
+            type = rectangle.NameRepresentation;
             Debug.Log("sussy " + rectangle + " with name " + type);
         }
 
+        // Al cargar el json, solo se usa el constructor sin argumentos
         public ShapeJson(ShapeType.ShapeType shapeType)
         // public ShapeJson(ShapeType.ShapeType shapeType, CoordinatesStageJson bottomLeft)
         // public ShapeJson(ShapeTypeEnum shapeType, CoordinatesStageJson bottomLeft)
         {
+            // Debug.Log("ayiyiyiyi");
+            // this.shapeType = shapeType;
+            // type = shapeType.NameRepresentation;
 
-            if (shapeType is RectangleJson)
-            {
-                // RectangleJson rectangle = type as RectangleJson;
-                RectangleJson rectangle = (RectangleJson) shapeType;
-                bottomLeft = rectangle.BottomLeft;
-                width = rectangle.Width;
-                height = rectangle.Height;
-            }
-            else if (shapeType is CircleJson)
-            {
-                CircleJson circle = (CircleJson) shapeType;
-                Debug.Log("Circuito en " + circle.Center + " y radio " + circle.Center);
-                center = circle.Center;
-                radius = circle.Radius;
-            }
+            // if (shapeType is RectangleJson)
+            // {
+            //     // RectangleJson rectangle = type as RectangleJson;
+            //     RectangleJson rectangle = (RectangleJson) shapeType;
+            //     bottomLeft = rectangle.BottomLeft;
+            //     width = rectangle.Width;
+            //     height = rectangle.Height;
+            // }
+            // else if (shapeType is CircleJson)
+            // {
+            //     CircleJson circle = (CircleJson) shapeType;
+            //     Debug.Log("Circuito en " + circle.Center + " y radio " + circle.Center);
+            //     center = circle.Center;
+            //     radius = circle.Radius;
+            // }
             
-            this.GetShapeType = shapeType;
-            Type = shapeType.NameRepresentation;
-
+            Debug.Log("ayiyiyiyi");
+            this.shapeType = shapeType;
+            type = shapeType.NameRepresentation;
         }
 
     }

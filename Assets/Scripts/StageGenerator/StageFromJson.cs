@@ -6,12 +6,12 @@ using Random = UnityEngine.Random;
 
 namespace StageGenerator
 {
-    public sealed class StagefromJson : Stage
+    public sealed class StageFromJson : Stage
     {
         private JsonStage _jsonStage;
         private DomainEntryJson _domain;
         
-        public StagefromJson(GameObject cellPrefab, Transform transformParent, Vector3 cellsDimension, JsonStage stageJson)
+        public StageFromJson(GameObject cellPrefab, Transform transformParent, Vector3 cellsDimension, JsonStage stageJson)
             : base(cellPrefab, transformParent, cellsDimension)
         {
             _jsonStage = stageJson;
@@ -22,7 +22,7 @@ namespace StageGenerator
             _columns = domain.width;
         }
         
-        public StagefromJson(GameObject cellPrefab, Transform transformParent, Vector3 cellsDimension, JsonStage stageJson, int domainId)
+        public StageFromJson(GameObject cellPrefab, Transform transformParent, Vector3 cellsDimension, JsonStage stageJson, int domainId)
             : base(cellPrefab, transformParent, cellsDimension)
         {
             _jsonStage = stageJson;
@@ -33,7 +33,7 @@ namespace StageGenerator
             _columns = domain.width;
         }
 
-        public StagefromJson(GameObject cellPrefab, Transform transformParent, Vector3 cellsDimension, JsonStage stageJson, DomainEntryJson domain)
+        public StageFromJson(GameObject cellPrefab, Transform transformParent, Vector3 cellsDimension, JsonStage stageJson, DomainEntryJson domain)
             : base(cellPrefab, transformParent, cellsDimension, domain.height, domain.width)
         {
             _jsonStage = stageJson;
@@ -53,7 +53,7 @@ namespace StageGenerator
                 Debug.Log("ID: " + access.id + access.shape.bottomLeft);
                 // Hacer que la variable type se represente en el json como string, la solución facil es cambiar la variable a tipo string
                 // if (access.shape.type == ShapeJson.ShapeTypeEnum.Rectangle)
-                if (access.shape.GetShapeType is RectangleJson)
+                if (access.shape.GetShapeType() is RectangleJson)
                 {
                     int height = (int)Mathf.Ceil(NumberIndexesInAxis(access.shape.height));
                     int width = (int)Mathf.Ceil(NumberIndexesInAxis(access.shape.width));
@@ -87,10 +87,10 @@ namespace StageGenerator
             foreach (ObstacleEntryJson obstacle in _domain.obstacles)
             {
                 // if (obstacle.shape.type == ShapeJson.ShapeTypeEnum.Rectangle)
-                if (obstacle.shape.GetShapeType is RectangleJson)
+                if (obstacle.shape.GetShapeType() is RectangleJson)
                 {
                     Debug.Log("Name: " + obstacle.shape.bottomLeft + obstacle.shape.height + " , " + obstacle.shape.width + " : TIPO " + obstacle.shape.type + obstacle.shape.radius);
-                    Debug.Log("Name: " + obstacle.shape.bottomLeft + obstacle.shape.height + " , " + obstacle.shape.width + " : TIPO " + obstacle.shape.GetShapeType.NameRepresentation);
+                    Debug.Log("Name: " + obstacle.shape.bottomLeft + obstacle.shape.height + " , " + obstacle.shape.width + " : TIPO " + obstacle.shape.GetShapeType().NameRepresentation);
 
                     int height = (int)Mathf.Ceil(NumberIndexesInAxis(obstacle.shape.height));
                     int width = (int)Mathf.Ceil(NumberIndexesInAxis(obstacle.shape.width));
