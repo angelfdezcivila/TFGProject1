@@ -53,7 +53,7 @@ namespace StageGenerator
                 Debug.Log("ID: " + access.id + access.shape.bottomLeft);
                 // Hacer que la variable type se represente en el json como string, la solución facil es cambiar la variable a tipo string
                 // if (access.shape.type == ShapeJson.ShapeTypeEnum.Rectangle)
-                if (access.shape.GetShapeType() is RectangleJson)
+                if (access.shape.GetShapeType is RectangleJson)
                 {
                     int height = (int)Mathf.Ceil(NumberIndexesInAxis(access.shape.height));
                     int width = (int)Mathf.Ceil(NumberIndexesInAxis(access.shape.width));
@@ -87,10 +87,10 @@ namespace StageGenerator
             foreach (ObstacleEntryJson obstacle in _domain.obstacles)
             {
                 // if (obstacle.shape.type == ShapeJson.ShapeTypeEnum.Rectangle)
-                if (obstacle.shape.GetShapeType() is RectangleJson)
+                if (obstacle.shape.GetShapeType is RectangleJson)
                 {
-                    Debug.Log("Name: " + obstacle.shape.bottomLeft + obstacle.shape.height + " , " + obstacle.shape.width + " : TIPO " + obstacle.shape.type);
-                    Debug.Log("Name: " + obstacle.shape.bottomLeft + obstacle.shape.height + " , " + obstacle.shape.width + " : TIPO " + obstacle.shape.GetShapeType().NameRepresentation);
+                    Debug.Log("Name: " + obstacle.shape.bottomLeft + obstacle.shape.height + " , " + obstacle.shape.width + " : TIPO " + obstacle.shape.type + obstacle.shape.radius);
+                    Debug.Log("Name: " + obstacle.shape.bottomLeft + obstacle.shape.height + " , " + obstacle.shape.width + " : TIPO " + obstacle.shape.GetShapeType.NameRepresentation);
 
                     int height = (int)Mathf.Ceil(NumberIndexesInAxis(obstacle.shape.height));
                     int width = (int)Mathf.Ceil(NumberIndexesInAxis(obstacle.shape.width));

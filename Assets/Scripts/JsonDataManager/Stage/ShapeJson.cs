@@ -10,20 +10,56 @@ namespace JsonDataManager.Stage
     // Representación de la localización de un agente en el json
     public class ShapeJson
     {
-        [Serializable]
-        public enum ShapeTypeEnum
-        {
-            Rectangle
-        }
 
         private ShapeType.ShapeType shapeType;
+        public ShapeType.ShapeType GetShapeType
+        {
+            get
+            {
+                switch (type.ToUpper())
+                {
+                    case "RECTANGLE" :
+                        return new RectangleJson(bottomLeft, width, height);
+                    case "CIRCLE" :
+                        return new CircleJson(center, radius);
+                    default:
+                        return new RectangleJson();
+                }
+            }
+            private set
+            {
+                shapeType = value;
+                type = shapeType.NameRepresentation;
+            }
+        }
+        
+        
 
         // Lo hago con un método y no una propiedad ya que el json sí detecta las propiedades
-        public ShapeType.ShapeType GetShapeType() => shapeType;
+        // public ShapeType.ShapeType GetShapeType() => shapeType;
 
         public string type;
-        // public ShapeType.ShapeType type;
-        // public ShapeTypeEnum type;
+        private string Type
+        {
+            get
+            {
+                if (shapeType is RectangleJson) return "RECTANGLE";
+                else if (shapeType is CircleJson) return "CIRCLE";
+                return "RECTANGLE";
+            }
+            set
+            {
+                type = value;
+                if (type.ToUpper() == "RECTANGLE")
+                {
+                    shapeType = new RectangleJson(bottomLeft, width, height);
+                }
+                else if (type.ToUpper() == "CIRCLE")
+                {
+                    shapeType = new CircleJson(center, radius);
+                }
+            }
+        }
 
         #region Rectangle variables
 
@@ -47,29 +83,27 @@ namespace JsonDataManager.Stage
         
         public ShapeJson()
         {
-            Debug.Log("sussy");
-
             // RectangleJson rectangleJson = new RectangleJson();
             // type = rectangleJson;
             // width = rectangleJson.width;
             // height = rectangleJson.height;
 
             RectangleJson rectangle = new RectangleJson();
-            shapeType = rectangle;
+            GetShapeType = rectangle;
             
             type = rectangle.NameRepresentation;
             width = rectangle.Width;
             height = rectangle.Height;
             bottomLeft = new CoordinatesStageJson();
+            
+            Debug.Log("sussy " + rectangle + " with name " + type);
         }
 
         public ShapeJson(ShapeType.ShapeType shapeType)
         // public ShapeJson(ShapeType.ShapeType shapeType, CoordinatesStageJson bottomLeft)
         // public ShapeJson(ShapeTypeEnum shapeType, CoordinatesStageJson bottomLeft)
         {
-            this.shapeType = shapeType; 
-            type = shapeType.NameRepresentation;
-            
+
             if (shapeType is RectangleJson)
             {
                 // RectangleJson rectangle = type as RectangleJson;
@@ -81,10 +115,14 @@ namespace JsonDataManager.Stage
             else if (shapeType is CircleJson)
             {
                 CircleJson circle = (CircleJson) shapeType;
-                Debug.Log("Circulito en " + circle.Center + " y radio " + circle.Center);
+                Debug.Log("Circuito en " + circle.Center + " y radio " + circle.Center);
                 center = circle.Center;
                 radius = circle.Radius;
             }
+            
+            this.GetShapeType = shapeType;
+            Type = shapeType.NameRepresentation;
+
         }
 
     }
