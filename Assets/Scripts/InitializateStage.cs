@@ -11,6 +11,7 @@ using UnityEngine;
 using Debug = UnityEngine.Debug;
 using Random = UnityEngine.Random;
 using SimpleFileBrowser;
+using UI;
 using Button = UnityEngine.UI.Button;
 
 public class InitializateStage : MonoBehaviour
@@ -31,40 +32,25 @@ public class InitializateStage : MonoBehaviour
     // private StageWithBuilder.StageWithBuilder _stageBuilder;
     private Stage _stage;
     private CellularAutomaton _automaton;
-    public static string JsonInitialFilePath => $"{Application.persistentDataPath}/" + _traceFileName;
-    public static string JsonStageInitialFilePath => $"{Application.persistentDataPath}/" + _stageFileName;
-    private static string _traceFileName = "TraceJson.json"; // Es posible que se quiera cambiarla, por lo que por ahora lo he dejado como variable
-    private static string _stageFileName = "StageJson.json"; // Es posible que se quiera cambiarla, por lo que por ahora lo he dejado como variable
-    // private string JsonScoreFilePath => $"{Application.persistentDataPath}/" + _fileName;
-    // private string _fileName = "TraceJson.json";
-    private string _pathToTraceJson;
-    private string _pathToStageJson;
 
     void Start()
     {
-        _pathToTraceJson = JsonInitialFilePath;
-        _pathToStageJson = JsonStageInitialFilePath + _stageFileName;
         _cellsDimension = new Vector3(0.4f, 0.4f, 0.4f);
         _timeLimit = 10 * 60;
         _pedestriansVelocity = 1.3f;
         _multiplierSpeed = 8;
 
-        FileExplorerEvents.OnOpenFileExplorer += OpenFileExplorer;
         SimulationEvents.OnUpdateStageParameters += UpdateParameters;
         SimulationEvents.OnPlaySimulation += StartSimulation;
-        FileExplorerEvents.OnSelectedPathForJson += UpdatePathJson;
-
         
-        FileExplorerEvents.OnSelectedPathForJson?.Invoke(_pathToTraceJson);
+        FileExplorerEvents.OnSelectedPathForJson?.Invoke(PathsForJson.SaveTraceJson, TypeJsonButton.Trace, true);
+        FileExplorerEvents.OnSelectedPathForJson?.Invoke(PathsForJson.SaveStageJson, TypeJsonButton.Stage, true);
     }
 
     void OnDestroy()
     {
-        FileExplorerEvents.OnOpenFileExplorer -= OpenFileExplorer;
         SimulationEvents.OnUpdateStageParameters -= UpdateParameters;
         SimulationEvents.OnPlaySimulation -= StartSimulation;
-        FileExplorerEvents.OnSelectedPathForJson -= UpdatePathJson;
-
     }
 
     private void StartAndSaveSimulation()
@@ -165,8 +151,8 @@ public class InitializateStage : MonoBehaviour
         // List<JsonCrowdList> trace = _automaton.JsonTrace();
         JsonSnapshotsList trace = _automaton.JsonTrace();
         JsonStage stage = _automaton.JsonStage();
-        SaveJsonManager.SaveTraceJson(_pathToTraceJson, trace);
-        SaveJsonManager.SaveStageJson(_pathToStageJson, stage);
+        SaveJsonManager.SaveTraceJson(PathsForJson.SaveTraceJson, trace);
+        SaveJsonManager.SaveStageJson(PathsForJson.SaveStageJson, stage);
     }
 
     #region RunAutomatonWithoutCoroutines
@@ -219,8 +205,8 @@ public class InitializateStage : MonoBehaviour
             // Si se detecta un json desde la ruta almacenada en la variable _pathToReadJson,
             // el escenario también se ha precargado y coinciden el escenario cargado y el que se quiere simular
             // (ponerle un id de escenario tanto al json del escenario como al del snapshot???) simular la traza.
-            JsonSnapshotsList traceJson = SaveJsonManager.LoadTraceJson(_pathToTraceJson);
-            JsonStage stageJson = SaveJsonManager.LoadStageJson(_pathToStageJson);
+            JsonSnapshotsList traceJson = SaveJsonManager.LoadTraceJson(PathsForJson.LoadTraceJson);
+            JsonStage stageJson = SaveJsonManager.LoadStageJson(PathsForJson.LoadStageJson);
             // traceJson.snapshots.ForEach(list => Debug.Log("Loading timestep: " + list.timestamp));
             LoadSimulation(traceJson, stageJson);
         }
@@ -228,38 +214,6 @@ public class InitializateStage : MonoBehaviour
         {
             StartAndSaveSimulation();
         }
-    }
-    
-    // TODO: hay que cambiar las variables de las rutas de los json para que sean dos rutas diferentes
-    private void OpenFileExplorer(bool savingJson, Button buttonTriggered)
-    // private void OpenFileExplorer(bool savingJson)
-    {
-        if (savingJson)
-        {
-            FileBrowser.ShowLoadDialog( ( paths ) =>
-                {
-                    _pathToTraceJson = paths[0] + "/" + _traceFileName;
-                    FileExplorerEvents.OnSelectedPathForJson?.Invoke(_pathToTraceJson);
-                },
-                () => { Debug.Log("Canceled"); },
-                FileBrowser.PickMode.Folders, false, _pathToTraceJson, null, "Select Folder", "Select" );
-        }
-        else
-        {
-            FileBrowser.ShowLoadDialog( ( paths ) =>
-                {
-                    _pathToTraceJson = paths[0];
-                    FileExplorerEvents.OnSelectedPathForJson?.Invoke(_pathToTraceJson);
-                },
-                () => { Debug.Log("Canceled"); },
-                FileBrowser.PickMode.Files, false, _pathToTraceJson, null, "Select File", "Select" );
-        }
-
-    }
-    
-    private void UpdatePathJson(string path)
-    {
-        _pathToTraceJson = path;
     }
 
     private void UpdateParameters(float pedestriansVelocity, float multiplierSpeed)

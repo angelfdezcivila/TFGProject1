@@ -42,9 +42,9 @@ namespace UI
         private void Awake()
         {
             _traceSaveOrLoadFolderButton.onClick.AddListener(OpenTraceFileExplorer);
-            _traceSaveOrLoadToggle.onValueChanged.AddListener(checkActive => TogglingSaveAndUpdate(checkActive, _traceSaveOrLoadFolderButton));
+            _traceSaveOrLoadToggle.onValueChanged.AddListener(checkActive => TogglingSaveAndUpdate(checkActive, TypeJsonButton.Trace));
             _stageSaveOrLoadFolderButton.onClick.AddListener(OpenStageFileExplorer);
-            _stageSaveOrLoadToggle.onValueChanged.AddListener(checkActive => TogglingSaveAndUpdate(checkActive, _stageSaveOrLoadFolderButton));
+            _stageSaveOrLoadToggle.onValueChanged.AddListener(checkActive => TogglingSaveAndUpdate(checkActive, TypeJsonButton.Stage));
             _upsideViewToggle.onValueChanged.AddListener(TogglingView);
             _startButton.onClick.AddListener(StartOnClick);
             
@@ -60,12 +60,21 @@ namespace UI
             }
         }
 
-        private void TogglingSaveAndUpdate(bool savingJson, Button explorerButton)
+        private void TogglingSaveAndUpdate(bool savingJson, TypeJsonButton type)
         {
-            explorerButton.GetComponentInChildren<TextMeshProUGUI>().text = savingJson ? "Guardar traza en" : "Cargar traza";
-            // string path = savingTrace ? InitializateStage.JsonSaveFilePath : "";
-            string path = InitializateStage.JsonInitialFilePath;
-            FileExplorerEvents.OnSelectedPathForJson?.Invoke(path);
+            string path = "";
+            switch (type)
+            {
+                case TypeJsonButton.Trace : 
+                    _traceSaveOrLoadFolderButton.GetComponentInChildren<TextMeshProUGUI>().text = savingJson ? "Guardar traza en" : "Cargar traza";
+                    path = savingJson ? PathsForJson.SaveTraceJson : PathsForJson.LoadTraceJson;
+                    break;
+                case TypeJsonButton.Stage :
+                    _stageSaveOrLoadFolderButton.GetComponentInChildren<TextMeshProUGUI>().text = savingJson ? "Guardar escenario en" : "Cargar escenario";
+                    path = savingJson ? PathsForJson.SaveStageJson : PathsForJson.LoadStageJson;
+                    break;
+            }
+            FileExplorerEvents.OnSelectedPathForJson?.Invoke(path, type, savingJson);
         }
         
         private void TogglingView(bool upsideView)
@@ -73,12 +82,12 @@ namespace UI
             CameraEvents.OnTogglingView?.Invoke(upsideView);
         }
 
-        private void OpenTraceFileExplorer() => OpenFileExplorer(_traceSaveOrLoadToggle.isOn, _traceSaveOrLoadFolderButton);
-        private void OpenStageFileExplorer() => OpenFileExplorer(_stageSaveOrLoadToggle.isOn, _stageSaveOrLoadFolderButton);
+        private void OpenTraceFileExplorer() => OpenFileExplorer(_traceSaveOrLoadToggle.isOn, TypeJsonButton.Trace);
+        private void OpenStageFileExplorer() => OpenFileExplorer(_stageSaveOrLoadToggle.isOn, TypeJsonButton.Stage);
 
-        private void OpenFileExplorer(bool toggleIsOn, Button buttonTriggered)
+        private void OpenFileExplorer(bool toggleIsOn, TypeJsonButton type)
         {
-            FileExplorerEvents.OnOpenFileExplorer?.Invoke(toggleIsOn, buttonTriggered);
+            FileExplorerEvents.OnOpenFileExplorer?.Invoke(toggleIsOn, type);
         }
 
         // Con eventos. Uso esta implementación debido a que desde el principio vamos a tener rellenados los datos en la UI
