@@ -1,6 +1,5 @@
 using System;
 using System.Collections;
-using System.Collections.Generic;
 using Cellular;
 using DataJson;
 using Events;
@@ -12,6 +11,7 @@ using UnityEngine;
 using Debug = UnityEngine.Debug;
 using Random = UnityEngine.Random;
 using SimpleFileBrowser;
+using Button = UnityEngine.UI.Button;
 
 public class InitializateStage : MonoBehaviour
 {
@@ -31,9 +31,10 @@ public class InitializateStage : MonoBehaviour
     // private StageWithBuilder.StageWithBuilder _stageBuilder;
     private Stage _stage;
     private CellularAutomaton _automaton;
-    public static string JsonInitialFilePath => $"{Application.persistentDataPath}/" + _fileName;
-    public static string JsonStageInitialFilePath => $"{Application.persistentDataPath}/";
-    private static string _fileName = "TraceJson.json"; // Es posible que se quiera cambiarla, por lo que por ahora lo he dejado como variable
+    public static string JsonInitialFilePath => $"{Application.persistentDataPath}/" + _traceFileName;
+    public static string JsonStageInitialFilePath => $"{Application.persistentDataPath}/" + _stageFileName;
+    private static string _traceFileName = "TraceJson.json"; // Es posible que se quiera cambiarla, por lo que por ahora lo he dejado como variable
+    private static string _stageFileName = "StageJson.json"; // Es posible que se quiera cambiarla, por lo que por ahora lo he dejado como variable
     // private string JsonScoreFilePath => $"{Application.persistentDataPath}/" + _fileName;
     // private string _fileName = "TraceJson.json";
     private string _pathToTraceJson;
@@ -42,7 +43,7 @@ public class InitializateStage : MonoBehaviour
     void Start()
     {
         _pathToTraceJson = JsonInitialFilePath;
-        _pathToStageJson = JsonStageInitialFilePath + "StageJson.json";
+        _pathToStageJson = JsonStageInitialFilePath + _stageFileName;
         _cellsDimension = new Vector3(0.4f, 0.4f, 0.4f);
         _timeLimit = 10 * 60;
         _pedestriansVelocity = 1.3f;
@@ -230,16 +231,17 @@ public class InitializateStage : MonoBehaviour
     }
     
     // TODO: hay que cambiar las variables de las rutas de los json para que sean dos rutas diferentes
-    private void OpenFileExplorer(bool savingTrace)
+    private void OpenFileExplorer(bool savingJson, Button buttonTriggered)
+    // private void OpenFileExplorer(bool savingJson)
     {
-        if (savingTrace)
+        if (savingJson)
         {
             FileBrowser.ShowLoadDialog( ( paths ) =>
                 {
-                    _pathToTraceJson = paths[0] + "/" + _fileName;
+                    _pathToTraceJson = paths[0] + "/" + _traceFileName;
                     FileExplorerEvents.OnSelectedPathForJson?.Invoke(_pathToTraceJson);
                 },
-                () => { Debug.Log( "Canceled" ); },
+                () => { Debug.Log("Canceled"); },
                 FileBrowser.PickMode.Folders, false, _pathToTraceJson, null, "Select Folder", "Select" );
         }
         else
@@ -249,7 +251,7 @@ public class InitializateStage : MonoBehaviour
                     _pathToTraceJson = paths[0];
                     FileExplorerEvents.OnSelectedPathForJson?.Invoke(_pathToTraceJson);
                 },
-                () => { Debug.Log( "Canceled" ); },
+                () => { Debug.Log("Canceled"); },
                 FileBrowser.PickMode.Files, false, _pathToTraceJson, null, "Select File", "Select" );
         }
 
