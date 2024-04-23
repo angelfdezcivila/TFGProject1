@@ -191,6 +191,7 @@ namespace Cellular
       // Debug.Log($"Rows: {Rows} ; Columns: {Columns}");
       JsonCrowdList initialCrowd = traceJson.snapshots[0];
       int numberOfPedestrians = initialCrowd.crowd.Count;
+      Pedestrian.ResetIdentifiers();
       for (int i = 0; i < numberOfPedestrians; i++)
       {
         CrowdEntryJson pedestrian = initialCrowd.crowd[i];
@@ -504,19 +505,18 @@ namespace Cellular
       // timeSteps++;
     }
 
-    // TODO: los agentes no se destruye ni se detecta si han salido o no correctamente debido a que hay que cargar el escenario correspondiente
     private void TimeStepLoadedSimulation(JsonSnapshotsList traceJson)
     {
-      _timeSteps++;
-      //Se obtiene del json la lista en el timeStep correspondiente.
-      //Como al inicio hemos añadido todos los agentes del json a la lista _inScenarioPedestrians, podemos iterar sobre esta
+        _timeSteps++;
+        //Se obtiene del json la lista en el timeStep correspondiente.
+        //Como al inicio hemos añadido todos los agentes del json a la lista _inScenarioPedestrians, podemos iterar sobre esta
+        // Pedestrian[] pedestriansToMove = new Pedestrian[_inScenarioPedestrians.Count];
+        // _inScenarioPedestrians.CopyTo(pedestriansToMove);
         List<Pedestrian> pedestriansToMove = new List<Pedestrian>(_inScenarioPedestrians);
-        // List<Pedestrian> pedestriansToMove = new List<Pedestrian>(); //Esto contiene los agentes de ese timestep
-        // traceJson.snapshots[_timeSteps].crowd.ForEach(crowdEntryJson => 
-        //   pedestriansToMove.Add(_inScenarioPedestrians.Find(pedestrian => pedestrian.Identifier == crowdEntryJson.id)));
         
         foreach (Pedestrian pedestrian in pedestriansToMove)
         {
+          Debug.Log("Pedestrian id: " + pedestrian.Identifier);
           // AddPathToPedestrian(traceJson, pedestrian);
           PedestrianTimeStepLoaded(traceJson, pedestrian);
           // Location location = pedestrian.GetPath()[_timeSteps];

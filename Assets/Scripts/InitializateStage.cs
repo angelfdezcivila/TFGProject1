@@ -55,7 +55,7 @@ public class InitializateStage : MonoBehaviour
 
     private void StartAndSaveSimulation()
     {
-        DestroySimulation();
+        // DestroySimulation();
         
         // Para que las posiciones reales empiezen en esta posición 
         
@@ -75,6 +75,7 @@ public class InitializateStage : MonoBehaviour
                 .Build();
         
         int numberOfPedestrians = Random.Range(150, 600);
+        Debug.Log("Numero de agentes: " + numberOfPedestrians);
         _automaton.AddPedestriansUniformly(numberOfPedestrians, pedestrianParametersSupplier);
         
         StartCoroutine(nameof(RunAutomatonSimulationCoroutine));
@@ -84,7 +85,7 @@ public class InitializateStage : MonoBehaviour
     
     private void LoadSimulation(JsonSnapshotsList traceJson, JsonStage stageJson)
     {
-        DestroySimulation();
+        // DestroySimulation();
 
         Vector3 cellsDimension = new Vector3(traceJson.cellDimension, traceJson.cellDimension, traceJson.cellDimension);
         DomainEntryJson domain = stageJson.domains.Find(domain => domain.id == 1);
@@ -200,6 +201,8 @@ public class InitializateStage : MonoBehaviour
     
     private void StartSimulation(bool savingTrace)
     {
+        DestroySimulation();
+        
         if (!savingTrace)
         {
             // Si se detecta un json desde la ruta almacenada en la variable _pathToReadJson,
@@ -208,6 +211,7 @@ public class InitializateStage : MonoBehaviour
             JsonSnapshotsList traceJson = SaveJsonManager.LoadTraceJson(PathsForJson.LoadTraceJson);
             JsonStage stageJson = SaveJsonManager.LoadStageJson(PathsForJson.LoadStageJson);
             // traceJson.snapshots.ForEach(list => Debug.Log("Loading timestep: " + list.timestamp));
+            Debug.Log(PathsForJson.LoadTraceJson + PathsForJson.LoadStageJson);
             LoadSimulation(traceJson, stageJson);
         }
         else

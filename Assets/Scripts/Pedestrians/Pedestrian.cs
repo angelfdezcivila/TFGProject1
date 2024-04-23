@@ -304,6 +304,11 @@ namespace Pedestrians
             // transform.position = new Vector3(position.x, position.y + transform.localScale.y/2, position.z);
         }
 
+        public static void ResetIdentifiers()
+        {
+            _nextIdentifier = 0;
+        }
+
         /**
          * A hash code for this pedestrian.
          *
