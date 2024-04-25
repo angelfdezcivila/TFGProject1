@@ -99,11 +99,11 @@ namespace UI
         // Este método va a controlar si están rellenos y lo lanzará en caso de que estén correctos los datos introducidos.
         private void StartOnClick()
         {
-            bool parametersValid = _pedestrianVelocityInputField.text.Length > 0;
+            bool parametersValid = _cellDimensionInputField.text.Length > 0 && _pedestrianVelocityInputField.text.Length > 0;
             // if(_pedestrianVelocityInputField.contentType == TMP_InputField.ContentType.DecimalNumber)
             if (parametersValid)
             {
-                SimulationEvents.OnUpdateStageParameters?.Invoke((float) Double.Parse(_pedestrianVelocityInputField.text), _multiplierSpeedSlider.value);
+                SimulationEvents.OnUpdateStageParameters?.Invoke(float.Parse(_cellDimensionInputField.text), float.Parse(_pedestrianVelocityInputField.text), _multiplierSpeedSlider.value);
                 SimulationEvents.OnPlaySimulation?.Invoke(_traceSaveOrLoadToggle.isOn);
             }
         }

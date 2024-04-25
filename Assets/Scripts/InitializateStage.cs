@@ -35,7 +35,8 @@ public class InitializateStage : MonoBehaviour
 
     void Start()
     {
-        _cellsDimension = new Vector3(0.4f, 0.4f, 0.4f);
+        // _cellsDimension = new Vector3(0.4f, 0.4f, 0.4f);
+        _cellsDimension = new Vector3(0.5f, 0.5f, 0.5f);
         _timeLimit = 10 * 60;
         _pedestriansVelocity = 1.3f;
         _multiplierSpeed = 8;
@@ -60,7 +61,7 @@ public class InitializateStage : MonoBehaviour
         // Para que las posiciones reales empiezen en esta posición 
         
         // _stageBuilder = RandomStageWithBuilder.getRandomStage(cellsPrefab, transform);
-        _cellsDimension = new Vector3(0.5f, 0.5f, 0.5f);
+        // _cellsDimension = new Vector3(0.5f, 0.5f, 0.5f);
 
         // _stage = new RandomStage(cellsPrefab, transform, _cellsDimension);
         _stage = new RandomStage(cellsPrefab, transform, _cellsDimension, 45, 55);
@@ -220,9 +221,10 @@ public class InitializateStage : MonoBehaviour
         }
     }
 
-    private void UpdateParameters(float pedestriansVelocity, float multiplierSpeed)
+    private void UpdateParameters(float cellsDimensions, float pedestriansVelocity, float multiplierSpeed)
     {
         // UpdateTimeLimit(timeLimit);
+        UpdateCellsDimensions(cellsDimensions);
         UpdatePedestriansVelocity(pedestriansVelocity);
         UpdateMultiplierSpeed(multiplierSpeed);
     }
@@ -230,6 +232,11 @@ public class InitializateStage : MonoBehaviour
     private void UpdateTimeLimit(float timeLimit)
     {
         _timeLimit = timeLimit;
+    }
+    
+    private void UpdateCellsDimensions(float cellsDimensions)
+    {
+        _cellsDimension = Vector3.one * cellsDimensions;
     }
     
     private void UpdatePedestriansVelocity(float pedestriansVelocity)

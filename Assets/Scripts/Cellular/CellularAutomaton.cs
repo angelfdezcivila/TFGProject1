@@ -788,6 +788,7 @@ namespace Cellular
     public void DestroyAllAutomatons()
     {
         GameObject.Destroy(_pedestrianContainer);
+        Pedestrian.ResetIdentifiers();
         // foreach (Pedestrian pedestrian in inScenarioPedestrians)
         // {
         //     GameObject.Destroy(pedestrian);
