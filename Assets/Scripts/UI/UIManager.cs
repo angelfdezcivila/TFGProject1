@@ -8,8 +8,10 @@ namespace UI
 {
     public class UIManager : MonoBehaviour
     {
-        // TODO: Todo lo que sean números que no pueden ser negativos, hacerlo mediante sliders
+        // TODO: Todo lo que sean números que no pueden ser negativos, plantear si hacerlo mediante sliders
         // Es posible que se tenga que hacer una referencia al InitializateStage en lugar de eventos
+        [SerializeField] 
+        private TMP_InputField _cellDimensionInputField;
         [SerializeField] 
         private TMP_InputField _pedestrianVelocityInputField;
 
@@ -41,6 +43,9 @@ namespace UI
 
         private void Awake()
         {
+            _cellDimensionInputField.onEndEdit.AddListener(text => OnDecimalFieldChanged(_cellDimensionInputField));
+            _pedestrianVelocityInputField.onEndEdit.AddListener(text => OnDecimalFieldChanged(_pedestrianVelocityInputField));
+            
             _traceSaveOrLoadFolderButton.onClick.AddListener(OpenTraceFileExplorer);
             _traceSaveOrLoadToggle.onValueChanged.AddListener(checkActive => TogglingSaveAndUpdate(checkActive, TypeJsonButton.Trace));
             _stageSaveOrLoadFolderButton.onClick.AddListener(OpenStageFileExplorer);
@@ -101,6 +106,32 @@ namespace UI
                 SimulationEvents.OnUpdateStageParameters?.Invoke((float) Double.Parse(_pedestrianVelocityInputField.text), _multiplierSpeedSlider.value);
                 SimulationEvents.OnPlaySimulation?.Invoke(_traceSaveOrLoadToggle.isOn);
             }
+        }
+
+
+        //Para controlar el valor decimalo de un input
+        private void OnDecimalFieldChanged(TMP_InputField field)
+        {
+            var fieldText = field.text;
+            var number = float.Parse(fieldText);
+            if (number <= 0)
+            {
+                //TODO: Avisar de que el valor debe ser mayor a 0
+                field.text = "";
+            }
+            else if (fieldText.Contains(','))
+            {
+                string[] charAfterComa = fieldText.Split(",");
+                string strAfterComa = charAfterComa[1];
+
+                if (strAfterComa.Length > 2)
+                {
+                    var truncated = Math.Truncate(number * 100) / 100;
+                    fieldText = truncated.ToString();
+                    field.text = fieldText;
+                }
+            }
+
         }
         
     }
