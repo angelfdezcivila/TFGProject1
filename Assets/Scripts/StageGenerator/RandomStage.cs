@@ -178,7 +178,9 @@ namespace StageGenerator
             {
                 float realRow = row * CellsDimension.x;
                 float realColumn = column * CellsDimension.x;
-                int realHeight = row + height + 2 < _rows? height : heightMax - row;
+                // Comentado porque 33 + 10 + 2 < 45? 10 : 44 - 33
+                // int realHeight = row + height + 2 < _rows? height : heightMax - row;
+                int realHeight = row + height + 2 <= _rows? height : heightMax - row;
                 int realWidth = width;
 
                 RectangleJson accessRectangle = new RectangleJson(new CoordinatesStageJson(realColumn, realRow), realWidth*_cellsDimension.x, realHeight*_cellsDimension.x);
