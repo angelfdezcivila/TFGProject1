@@ -28,7 +28,7 @@ public class CameraController : MonoBehaviour
             if (_upsideCameraActive)
             {
                 // transform.position += transform.right * mouseX * speed * Time.deltaTime;
-                _upsideCamera.transform.position += _upsideCamera.transform.forward * mouseY * _speed * Time.deltaTime;
+                _upsideCamera.transform.position += _upsideCamera.transform.forward * mouseY * _speed*2 * Time.deltaTime;
                 
                 _upsideCamera.transform.position += _upsideCamera.transform.up * Input.GetAxis("Vertical") * _speed * Time.deltaTime;
                 _upsideCamera.transform.position += _upsideCamera.transform.right * Input.GetAxis("Horizontal") * _speed * Time.deltaTime;

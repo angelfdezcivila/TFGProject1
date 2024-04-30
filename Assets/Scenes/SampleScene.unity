@@ -4108,7 +4108,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _upsideCameraActive: 0
-  _speed: 5
+  _speed: 20
   _sensitivity: 5
   _freeCamera: {fileID: 963194227}
   _upsideCamera: {fileID: 231060995}
