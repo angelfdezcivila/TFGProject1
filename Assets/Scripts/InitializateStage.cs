@@ -41,8 +41,9 @@ public class InitializateStage : MonoBehaviour
         _pedestriansVelocity = 1.3f;
         _multiplierSpeed = 8;
 
-        SimulationEvents.OnUpdateStageParameters += UpdateParameters;
+        SimulationEvents.OnInitializeStageParameters += InitializeParameters;
         SimulationEvents.OnPlaySimulation += StartSimulation;
+        SimulationEvents.OnUpdateSimulationSpeed += UpdateMultiplierSpeed;
         
         FileExplorerEvents.OnSelectedPathForJson?.Invoke(PathsForJson.SaveTraceJson, TypeJsonButton.Trace, true);
         FileExplorerEvents.OnSelectedPathForJson?.Invoke(PathsForJson.SaveStageJson, TypeJsonButton.Stage, true);
@@ -50,8 +51,10 @@ public class InitializateStage : MonoBehaviour
 
     void OnDestroy()
     {
-        SimulationEvents.OnUpdateStageParameters -= UpdateParameters;
+        SimulationEvents.OnInitializeStageParameters -= InitializeParameters;
         SimulationEvents.OnPlaySimulation -= StartSimulation;
+        SimulationEvents.OnUpdateSimulationSpeed -= UpdateMultiplierSpeed;
+
     }
 
     private void StartAndSaveSimulation()
@@ -221,32 +224,37 @@ public class InitializateStage : MonoBehaviour
         }
     }
 
-    private void UpdateParameters(float cellsDimensions, float pedestriansVelocity, float multiplierSpeed)
+    private void InitializeParameters(float cellsDimensions, float pedestriansVelocity, float multiplierSpeed)
     {
-        // UpdateTimeLimit(timeLimit);
-        UpdateCellsDimensions(cellsDimensions);
-        UpdatePedestriansVelocity(pedestriansVelocity);
-        UpdateMultiplierSpeed(multiplierSpeed);
-    }
-    
-    private void UpdateTimeLimit(float timeLimit)
-    {
-        _timeLimit = timeLimit;
-    }
-    
-    private void UpdateCellsDimensions(float cellsDimensions)
-    {
+        // _timeLimit = timeLimit;
         _cellsDimension = Vector3.one * cellsDimensions;
-    }
-    
-    private void UpdatePedestriansVelocity(float pedestriansVelocity)
-    {
         _pedestriansVelocity = pedestriansVelocity;
+        _multiplierSpeed = multiplierSpeed;
+
     }
     
     private void UpdateMultiplierSpeed(float multiplierSpeed)
     {
-        _multiplierSpeed = multiplierSpeed;
+        // El problema de esta es que a la hora de actualizar el multiplicador, se está en mitad de una de las iteraciones,
+        // por lo que si se hace un cambio muy brusco, se puede llegar a notar
+        #region Automaton Parameter Implementation
+
+        if(_automaton != null)
+            _automaton.UpdateMultiplierSpeed(multiplierSpeed);
+
+        #endregion
+
+        // El problema de esta es que habría que eliminar el multiplicador o asegurarse de que siempre sea 1,
+        // ya que la velocidad de la simulación como tal dependería de un factor externo al automata como es el Time.TimeScale.
+        #region TimeScale Implementation
+
+        // if (multiplierSpeed >= 0)
+        // {
+        //     Time.timeScale = multiplierSpeed;
+        //     // Time.fixedDeltaTime = this.fixedDeltaTime * Time.timeScale;
+        // }
+
+        #endregion
     }
 
     #endregion

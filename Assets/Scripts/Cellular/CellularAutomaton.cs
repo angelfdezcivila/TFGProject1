@@ -795,5 +795,10 @@ namespace Cellular
         //     // inScenarioPedestrians.Remove(pedestrian);
         // }
     }
+
+    public void UpdateMultiplierSpeed(float multiplierSpeed)
+    {
+      _parameters.MultiplierSpeedFactor = multiplierSpeed;
+    }
   }
 }

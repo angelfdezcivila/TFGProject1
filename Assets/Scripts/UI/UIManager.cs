@@ -53,16 +53,7 @@ namespace UI
             _upsideViewToggle.onValueChanged.AddListener(TogglingView);
             _startButton.onClick.AddListener(StartOnClick);
             
-            // _multiplierSpeedSlider.onValueChanged.AddListener(UpdateTimeScale);
-        }
-
-        private void UpdateTimeScale(float multiplierSpeed)
-        {
-            if (multiplierSpeed >= 0)
-            {
-                Time.timeScale = multiplierSpeed;
-                // Time.fixedDeltaTime = this.fixedDeltaTime * Time.timeScale;
-            }
+            _multiplierSpeedSlider.onValueChanged.AddListener(value => SimulationEvents.OnUpdateSimulationSpeed?.Invoke(value));
         }
 
         private void TogglingSaveAndUpdate(bool savingJson, TypeJsonButton type)
@@ -103,13 +94,13 @@ namespace UI
             // if(_pedestrianVelocityInputField.contentType == TMP_InputField.ContentType.DecimalNumber)
             if (parametersValid)
             {
-                SimulationEvents.OnUpdateStageParameters?.Invoke(float.Parse(_cellDimensionInputField.text), float.Parse(_pedestrianVelocityInputField.text), _multiplierSpeedSlider.value);
+                SimulationEvents.OnInitializeStageParameters?.Invoke(float.Parse(_cellDimensionInputField.text), float.Parse(_pedestrianVelocityInputField.text), _multiplierSpeedSlider.value);
                 SimulationEvents.OnPlaySimulation?.Invoke(_traceSaveOrLoadToggle.isOn);
             }
         }
 
 
-        //Para controlar el valor decimalo de un input
+        //Para controlar el valor decimal de un input
         private void OnDecimalFieldChanged(TMP_InputField field)
         {
             var fieldText = field.text;
