@@ -44,6 +44,7 @@ public class InitializateStage : MonoBehaviour
         SimulationEvents.OnInitializeStageParameters += InitializeParameters;
         SimulationEvents.OnPlaySimulation += StartSimulation;
         SimulationEvents.OnUpdateSimulationSpeed += UpdateMultiplierSpeed;
+        SimulationEvents.OnGenerateRandomStage += RandomStage;
         
         FileExplorerEvents.OnSelectedPathForJson?.Invoke(PathsForJson.SaveTraceJson, TypeJsonButton.Trace, true);
         FileExplorerEvents.OnSelectedPathForJson?.Invoke(PathsForJson.SaveStageJson, TypeJsonButton.Stage, true);
@@ -54,7 +55,8 @@ public class InitializateStage : MonoBehaviour
         SimulationEvents.OnInitializeStageParameters -= InitializeParameters;
         SimulationEvents.OnPlaySimulation -= StartSimulation;
         SimulationEvents.OnUpdateSimulationSpeed -= UpdateMultiplierSpeed;
-
+        SimulationEvents.OnGenerateRandomStage -= RandomStage;
+        
     }
 
     private void StartAndSaveSimulation()
@@ -66,9 +68,11 @@ public class InitializateStage : MonoBehaviour
         // _stageBuilder = RandomStageWithBuilder.getRandomStage(cellsPrefab, transform);
         // _cellsDimension = new Vector3(0.5f, 0.5f, 0.5f);
 
-        // _stage = new RandomStage(cellsPrefab, transform, _cellsDimension);
-        _stage = new RandomStage(cellsPrefab, transform, _cellsDimension, 45, 55);
-        
+        // RandomStage();
+        if ((_automaton == null && _stage == null) || (_automaton != null && _stage != null)  //Para que solo se genere si no estaba generado antes o si estaba ya en una simulación
+            || _stage.CellsDimension != _cellsDimension) //o en caso de que se haya modificado el tamaño de celdas después de generar el escenario
+            SimulationEvents.OnGenerateRandomStage?.Invoke();
+
         InitializeAutomaton();
 
         Func<PedestrianParameters> pedestrianParametersSupplier = () =>
@@ -78,7 +82,9 @@ public class InitializateStage : MonoBehaviour
                 .VelocityPercent(Random.Range(0.3f, 1.0f))
                 .Build();
         
-        int numberOfPedestrians = Random.Range(150, 600);
+        // int numberOfPedestrians = Random.Range(150, 600);
+        int maxNumber = (_stage.Rows * _stage.Columns - (_stage.Obstacles.Count + _stage.Exits.Count))/4;
+        int numberOfPedestrians = Random.Range(maxNumber/4, maxNumber);
         Debug.Log("Numero de agentes: " + numberOfPedestrians);
         _automaton.AddPedestriansUniformly(numberOfPedestrians, pedestrianParametersSupplier);
         
@@ -86,7 +92,16 @@ public class InitializateStage : MonoBehaviour
         
         // RunAutomaton();
     }
-    
+
+    private void RandomStage()
+    {
+        _stage?.DestroyStage();
+        // _stage = new RandomStage(cellsPrefab, transform, _cellsDimension);
+        _stage = new RandomStage(cellsPrefab, transform, _cellsDimension, 45, 55);
+        
+        _stage.InstantiateStage();
+    }
+
     private void LoadSimulation(JsonSnapshotsList traceJson, JsonStage stageJson)
     {
         // DestroySimulation();
@@ -97,6 +112,7 @@ public class InitializateStage : MonoBehaviour
         _stage = new StageFromJson(cellsPrefab, transform, cellsDimension, stageJson, domain);
         // _stage = new RandomStage(cellsPrefab, transform, _cellsDimension);
 
+        _stage.InstantiateStage();
         InitializeAutomaton();
         
         StartCoroutine(nameof(LoadingSimulationCoroutine), traceJson);
@@ -105,18 +121,18 @@ public class InitializateStage : MonoBehaviour
 
     private void DestroySimulation()
     {
-        if (_stage != null)
+        if (_automaton != null && _stage != null)  //Para que solo se destruya si estaba ya en una simulación
         {
-            Debug.Log("Stage destruido");
             StopAllCoroutines();
             _stage.DestroyStage();
             _automaton.DestroyAllAutomatons();
+            Debug.Log("Simulación destruida");
         }
     }
 
     private void InitializeAutomaton()
     {
-        _stage.InstantiateStage();
+        // _stage.InstantiateStage();
         
         // Para que las posiciones reales empiezen en esta posición 
         transform.position = new Vector3(_stage.CellsDimension.x, 0, _stage.CellsDimension.z) / 2;

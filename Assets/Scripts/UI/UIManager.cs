@@ -32,12 +32,19 @@ namespace UI
         private Toggle _stageSaveOrLoadToggle;
 
         #endregion
+        
         [SerializeField] 
         private Toggle _upsideViewToggle;
         [SerializeField] 
         private Slider _multiplierSpeedSlider; // Intentar hacer mientras se ejecuta se pueda tocar la velocidad de la simulación y que se pueda ir marcha atras
         [SerializeField] 
+        private Button _randomStageButton;
+        [SerializeField] 
         private Button _startButton;
+
+        private float CellsDimensions => float.Parse(_cellDimensionInputField.text);
+        private float PedestriansVelocity => float.Parse(_pedestrianVelocityInputField.text);
+        private float MultiplierSpeed => _multiplierSpeedSlider.value;
         
         private float fixedDeltaTime;
 
@@ -51,8 +58,9 @@ namespace UI
             _stageSaveOrLoadFolderButton.onClick.AddListener(OpenStageFileExplorer);
             _stageSaveOrLoadToggle.onValueChanged.AddListener(checkActive => TogglingSaveAndUpdate(checkActive, TypeJsonButton.Stage));
             _upsideViewToggle.onValueChanged.AddListener(TogglingView);
+            _randomStageButton.onClick.AddListener(GenerateRandomStage);
             _startButton.onClick.AddListener(StartOnClick);
-            
+
             _multiplierSpeedSlider.onValueChanged.AddListener(value => SimulationEvents.OnUpdateSimulationSpeed?.Invoke(value));
         }
 
@@ -94,9 +102,17 @@ namespace UI
             // if(_pedestrianVelocityInputField.contentType == TMP_InputField.ContentType.DecimalNumber)
             if (parametersValid)
             {
-                SimulationEvents.OnInitializeStageParameters?.Invoke(float.Parse(_cellDimensionInputField.text), float.Parse(_pedestrianVelocityInputField.text), _multiplierSpeedSlider.value);
+                SimulationEvents.OnInitializeStageParameters?.Invoke(CellsDimensions, PedestriansVelocity, MultiplierSpeed);
                 SimulationEvents.OnPlaySimulation?.Invoke(_traceSaveOrLoadToggle.isOn);
+                _randomStageButton.interactable = false;
+                
             }
+        }
+        
+        private void GenerateRandomStage()
+        {
+            SimulationEvents.OnInitializeStageParameters?.Invoke(CellsDimensions, PedestriansVelocity, MultiplierSpeed);
+            SimulationEvents.OnGenerateRandomStage?.Invoke();
         }
 
 
