@@ -32,7 +32,7 @@ namespace FloorFields
             staticFloorField[i,j] = 0;
             priorityQueue.Enqueue(new MyNode(i, j, staticFloorField[i,j]));
             // priorityQueue.Add(new MyNode(i, j, staticFloorField[i,j]));  // Using a list instead of a Queue
-          } else if (scenario.IsCellBlocked(i, j)) {
+          } else if (scenario.IsCellObstacle(i, j)) {
             staticFloorField[i,j] = (float)Double.MaxValue;
           } else {
             staticFloorField[i,j] = (float)Double.MaxValue;
@@ -55,7 +55,7 @@ namespace FloorFields
           // Now that we know optimal cost for node, let's compute alternative costs to its neighbours and
           // update if they improve current ones
           foreach (var neighbour in neighbourhood.Neighbours(node.row, node.column)) {
-            if (!scenario.IsCellBlocked(neighbour)) {
+            if (!scenario.IsCellObstacle(neighbour)) {
               int rowdiff = neighbour.Row - node.row;
               int coldiff = neighbour.Column - node.column;
               float delta = Mathf.Sqrt(rowdiff*rowdiff + coldiff*coldiff);
@@ -79,7 +79,7 @@ namespace FloorFields
       // Normalize so that the closer to an exit the larger the static field
       for (int i = 0; i < getRows(); i++) {
         for (int j = 0; j < getColumns(); j++) {
-          if (!scenario.IsCellBlocked(i, j)) {
+          if (!scenario.IsCellObstacle(i, j)) {
             staticFloorField[i,j] = 1 - staticFloorField[i,j] / maxDistance;
           }
         }

@@ -233,12 +233,12 @@ namespace StageGenerator
             return _cellMatrix[(int)pos.x][(int)pos.y];
         }
         
-        public bool IsCellBlocked(int row, int column) {
+        public bool IsCellObstacle(int row, int column) {
             return GetCellType(new Vector2(row, column)) == Cell.CellTypeEnum.Obstacle;
         }
         
-        public bool IsCellBlocked(Location location) {
-            return IsCellBlocked(location.Row, location.Column);
+        public bool IsCellObstacle(Location location) {
+            return IsCellObstacle(location.Row, location.Column);
         }
         
         public bool IsCellExit(int row, int column)

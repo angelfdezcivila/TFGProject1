@@ -8,9 +8,9 @@ namespace StageGenerator
     public class Cell : MonoBehaviour
     {
         // Datos del nodo
-        public GameObject floorPrefab;
-        public GameObject obstaclePrefab;
-        public GameObject exitPrefab;
+        [SerializeField] private GameObject floorPrefab;
+        [SerializeField] private GameObject obstaclePrefab;
+        [SerializeField] private GameObject exitPrefab;
 
         [SerializeField]
         private int _rowIndex;
@@ -19,7 +19,7 @@ namespace StageGenerator
         [SerializeField]
         private CellTypeEnum _cellType;
     
-        public CellTypeEnum CellType
+        protected internal CellTypeEnum CellType
         {
             get => _cellType;
             set => _cellType = value;
@@ -50,6 +50,11 @@ namespace StageGenerator
                     Instantiate(exitPrefab, transform.position, Quaternion.identity, this.transform);
                     break;
             }
+        }
+
+        public void Destroy()
+        {
+            
         }
     
         public float DistanceTo(int row, int column) {

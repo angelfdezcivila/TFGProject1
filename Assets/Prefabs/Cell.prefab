@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4973561176037016429}
   - component: {fileID: 6115556615297312717}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Cell
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -44,9 +44,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d3e4591100ea1dd448bd56af53f3c9ea, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ColumnIndex: 0
-  RowIndex: 0
-  NodePosition: {x: 0, y: 0, z: 0}
   floorPrefab: {fileID: 8441967192002828875, guid: 329486060d666c042a1c072281217219, type: 3}
   obstaclePrefab: {fileID: 6006956349249013967, guid: 87191ca58e62362499336afb941c4bd9, type: 3}
   exitPrefab: {fileID: 6006956349249013967, guid: 3284ec4af2af4b045a14c4f173ed60ef, type: 3}
+  _rowIndex: 0
+  _columnIndex: 0
+  _cellType: 0

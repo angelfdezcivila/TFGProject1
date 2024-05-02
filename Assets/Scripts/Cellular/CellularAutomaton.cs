@@ -360,7 +360,7 @@ namespace Cellular
       if (column < 0 || column >= Columns)
         throw new ArgumentException("isCellReachable: invalid column");
     
-      return !_occupied[row,column] && !_stage.IsCellBlocked(row, column);
+      return !_occupied[row,column] && !_stage.IsCellObstacle(row, column);
     }
 
     /**
