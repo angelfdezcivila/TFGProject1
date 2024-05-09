@@ -27,11 +27,33 @@ public class InitializateStage : MonoBehaviour
     private float _pedestriansVelocity;
     private float _multiplierSpeed;
 
+    private bool _showModal = false;
+    // private const float WindowWidth = 400;
+    private float WindowWidth => Screen.width * 0.21f;
+    private float WindowHeight => Screen.height * 0.18f;
+
     #endregion
     
     // private StageWithBuilder.StageWithBuilder _stageBuilder;
     private Stage _stage;
     private CellularAutomaton _automaton;
+    private Statistics _statistics;
+    
+    private string StatisticsText
+    {
+        get
+        {
+            if (_statistics == null)
+                return "Statistics not computed yet.";
+            string text = $"Mean steps: {_statistics.meanSteps} \n" +
+                          $"Mean evacuation time: {_statistics.meanEvacuationTime} \n" +
+                          $"Median steps: {_statistics.medianSteps} \n" +
+                          $"Median evacuation time: {_statistics.medianEvacuationTime} \n" +
+                          $"Number of evacuees: {_statistics.numberOfEvacuees} \n" +
+                          $"Number of non evacuees: {_statistics.numberOfNonEvacuees}";
+            return text;
+        }
+    }
 
     void Start()
     {
@@ -57,6 +79,46 @@ public class InitializateStage : MonoBehaviour
         SimulationEvents.OnUpdateSimulationSpeed -= UpdateMultiplierSpeed;
         SimulationEvents.OnGenerateRandomStage -= RandomStage;
         
+    }
+    
+    private void OnGUI()
+    {
+        GUI.backgroundColor = Color.black;
+        GUI.contentColor = Color.white;
+        if (_showModal)
+        {
+            // Define the window position and size
+            Rect windowRect = new Rect((Screen.width-WindowWidth)/2, (Screen.height-WindowHeight)/2, WindowWidth, WindowHeight);
+            // Display the modal window
+            windowRect = GUI.ModalWindow(
+                0, // Unique ID for the window
+                windowRect,
+                DrawModalWindowContents,
+                "Statistics"
+            );
+        }
+    }
+
+    // To Debug Statistics window
+    // private void Update()
+    // {
+    //     if (Input.GetKeyDown(KeyCode.Space))
+    //     {
+    //         _showModal = !_showModal;
+    //     }
+    // }
+
+    private void DrawModalWindowContents(int windowID)
+    {
+        GUILayout.Space(10);
+        // Display the message inside the modal window
+        GUILayout.Label(StatisticsText);
+        GUILayout.Space(10);
+        // Add a button to close the modal window
+        if (GUILayout.Button("Close"))
+        {
+            _showModal = false;
+        }
     }
 
     private void StartAndSaveSimulation()
@@ -153,16 +215,16 @@ public class InitializateStage : MonoBehaviour
     private IEnumerator RunAutomatonSimulationCoroutine()
     {
         yield return _automaton.RunAutomatonSimulationCoroutine();
-        Statistics statistics = _automaton.computeStatistics();
-        Debug.Log(statistics);
+         _statistics = _automaton.computeStatistics();
+        _showModal = true;
         SaveInJson();
     }
     
     private IEnumerator LoadingSimulationCoroutine(JsonSnapshotsList traceJson)
     {
         yield return _automaton.LoadingSimulationCoroutine(traceJson);
-        Statistics statistics = _automaton.computeStatistics();
-        Debug.Log(statistics);
+        _statistics = _automaton.computeStatistics();
+        _showModal = true;
     }
     
     private void SaveInJson()

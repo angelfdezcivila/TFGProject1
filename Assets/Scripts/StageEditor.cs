@@ -10,6 +10,7 @@ public class StageEditor : MonoBehaviour
     [SerializeField] private LayerMask layersToCheck;
     [SerializeField] private Camera _freeCamera;
     [SerializeField] private Camera _upsideCamera;
+    
     private Camera _camera;
     private Vector3 _lastCursorPosition;
 
