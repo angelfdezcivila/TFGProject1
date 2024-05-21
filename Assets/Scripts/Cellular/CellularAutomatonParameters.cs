@@ -11,19 +11,22 @@ namespace Cellular
     , float MultiplierSpeedFactor
   ) {
   
-    public Stage Scenario { get; set; } = Scenario;
-    public Neighbourhood Neighbourhood { get; set; } = Neighbourhood;
-    public float TimeLimit { get; set; } = TimeLimit;
-    public float TimePerTick { get; set; } = TimePerTick;
+    public Stage Scenario { get; private set; } = Scenario;
+    public Neighbourhood Neighbourhood { get; private set; } = Neighbourhood;
+    public float TimeLimit { get; private set; } = TimeLimit;
+    public float TimePerTick { get; private set; } = TimePerTick;
     public float MultiplierSpeedFactor { get; set; } = MultiplierSpeedFactor;
 
-    /**
-   * Classes for building cellular automaton parameters by providing each one.
-   */
+
+    /// <summary>
+    /// Classes for building cellular automaton parameters by providing each one.
+    /// </summary>
     public class Builder {
-      /**
-     * @param scenario Static scenario where simulation takes place.
-     */
+      /// <summary>
+      /// Method to set stage.
+      /// </summary>
+      /// <param name="scenario">Static scenario where simulation takes place.</param>
+      /// <returns></returns>
       public BuilderWithScenario Scenario(Stage scenario) {
         BuilderWithScenario builder = new BuilderWithScenario();
         builder._stage = scenario;
@@ -35,9 +38,11 @@ namespace Cellular
         public BuilderWithScenario() {
         }
 
-        /**
-       * @param timeLimit Time limit of simulation in seconds.
-       */
+        /// <summary>
+        /// Method to set time limit.
+        /// </summary>
+        /// <param name="timeLimit">Time limit of simulation in seconds.</param>
+        /// <returns></returns>
         public BuilderWithScenarioWithTimeLimit TimeLimit(float timeLimit) {
           BuilderWithScenarioWithTimeLimit builder = new BuilderWithScenarioWithTimeLimit(this);
           builder._timeLimit = timeLimit;
@@ -59,33 +64,39 @@ namespace Cellular
           this._multiplierSpeedFactor = 20; // default GUI time is x20 faster
         }
 
-        /**
-       * @param buildNeighbourhood a function taking current scenario and returning neighbourhood relationship used by
-       *                           automaton.
-       */
+        /// <summary>
+        /// Method to set the neighbourhood.
+        /// </summary>
+        /// <param name="buildNeighbourhood">A function taking current scenario and returning neighbourhood relationship used by automaton.</param>
+        /// <returns></returns>
         public BuilderWithScenarioWithTimeLimit Neighbourhood(Func<Stage, Neighbourhood> buildNeighbourhood)
         {
           this._neighbourhood = buildNeighbourhood.Invoke(_stage);
           return this;
         }
-
-        /**
-       * @param timePerTick Seconds of time elapsed for each tick of simulation.
-       *                       Notice that definition of this parameter also implies
-       *                       a redefinition of {@link BuilderWithScenarioWithTimeLimit#pedestrianReferenceVelocity(double)}
-       *                       in accordance with scenario's cell dimensions.
-       */
+        
+        /// <summary>
+        /// Method to set time per tick.
+        /// </summary>
+        /// <param name="timePerTick">Seconds of time elapsed for each tick of simulation.
+        /// Notice that definition of this parameter also implies
+        /// a redefinition of {@link BuilderWithScenarioWithTimeLimit#pedestrianReferenceVelocity(double)}
+        /// in accordance with scenario's cell dimensions.
+        /// </param>
+        /// <returns></returns>
         public BuilderWithScenarioWithTimeLimit TimePerTick(float timePerTick) {
           this._timePerTick = timePerTick;
           return this;
         }
 
-        /**
-       * @param pedestrianReferenceVelocity Maximum pedestrian velocity in meters per second.
-       *                       Notice that definition of this parameter also implies
-       *                       a redefinition of {@link BuilderWithScenarioWithTimeLimit#timePerTick(double)}
-       *                       in accordance with scenario's cell dimensions.
-       */
+        /// <summary>
+        /// Method to set the maximum pedestrian velocity.
+        /// </summary>
+        /// <param name="pedestrianReferenceVelocity">Maximum pedestrian velocity in meters per second.
+        /// Notice that definition of this parameter also implies
+        /// a redefinition of {@link BuilderWithScenarioWithTimeLimit#timePerTick(double)}
+        /// in accordance with scenario's cell dimensions.</param>
+        /// <returns></returns>
         public BuilderWithScenarioWithTimeLimit PedestrianReferenceVelocity(float pedestrianReferenceVelocity) {
           // TODO: Aquí se está suponiendo que las celdas son cuadradas, pero en caso de poder no serlo se debería de cambiar esta operación
           // Por ahora no se va a tener en cuenta las dimensiones de las celdas para la velocidad de los agentes ya que los agentes van a tener el tamaño de las celdas
@@ -94,9 +105,11 @@ namespace Cellular
           return this;
         }
 
-        /**
-       * @param GUITimeFactor Acceleration for rendering animation wrt real time.
-       */
+        /// <summary>
+        /// Method to set multiplier speed factor.
+        /// </summary>
+        /// <param name="multiplierSpeedFactor">Acceleration for rendering animation wrt real time.</param>
+        /// <returns></returns>
         public BuilderWithScenarioWithTimeLimit MultiplierSpeedFactor(float multiplierSpeedFactor) {
           this._multiplierSpeedFactor = multiplierSpeedFactor;
           return this;

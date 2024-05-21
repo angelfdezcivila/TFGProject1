@@ -10,9 +10,7 @@ using StageGenerator;
 using UnityEngine;
 using Debug = UnityEngine.Debug;
 using Random = UnityEngine.Random;
-using SimpleFileBrowser;
 using UI;
-using Button = UnityEngine.UI.Button;
 
 public class InitializateStage : MonoBehaviour
 {
@@ -20,7 +18,7 @@ public class InitializateStage : MonoBehaviour
     public GameObject cellsPrefab;
     public GameObject pedestrianPrefab;
 
-    #region private parameters
+    #region Private variables
 
     private Vector3 _cellsDimension;
     private float _timeLimit;
@@ -29,16 +27,16 @@ public class InitializateStage : MonoBehaviour
 
     private bool _showModal = false;
     // private const float WindowWidth = 400;
-    private float WindowWidth => Screen.width * 0.21f;
-    private float WindowHeight => Screen.height * 0.18f;
-
-    #endregion
     
     // private StageWithBuilder.StageWithBuilder _stageBuilder;
     private Stage _stage;
     private CellularAutomaton _automaton;
     private Statistics _statistics;
+
+    #endregion
     
+    private float WindowWidth => Screen.width * 0.21f;
+    private float WindowHeight => Screen.height * 0.18f;
     private string StatisticsText
     {
         get
@@ -55,6 +53,8 @@ public class InitializateStage : MonoBehaviour
         }
     }
 
+    #region Unity Events
+
     void Start()
     {
         // _cellsDimension = new Vector3(0.4f, 0.4f, 0.4f);
@@ -62,31 +62,33 @@ public class InitializateStage : MonoBehaviour
         _timeLimit = 10 * 60;
         _pedestriansVelocity = 1.3f;
         _multiplierSpeed = 8;
-
-        SimulationEvents.OnInitializeStageParameters += InitializeParameters;
-        SimulationEvents.OnPlaySimulation += StartSimulation;
-        SimulationEvents.OnUpdateSimulationSpeed += UpdateMultiplierSpeed;
-        SimulationEvents.OnGenerateRandomStage += RandomStage;
         
         FileExplorerEvents.OnSelectedPathForJson?.Invoke(PathsForJson.SaveTraceJson, TypeJsonButton.Trace, true);
         FileExplorerEvents.OnSelectedPathForJson?.Invoke(PathsForJson.SaveStageJson, TypeJsonButton.Stage, true);
     }
 
-    void OnDestroy()
+    void OnEnable()
+    {
+        SimulationEvents.OnInitializeStageParameters += InitializeParameters;
+        SimulationEvents.OnPlaySimulation += StartSimulation;
+        SimulationEvents.OnGenerateRandomStage += RandomStage;
+        SimulationEvents.OnUpdateSimulationSpeed += UpdateMultiplierSpeed;
+    }
+
+    void OnDisable()
     {
         SimulationEvents.OnInitializeStageParameters -= InitializeParameters;
         SimulationEvents.OnPlaySimulation -= StartSimulation;
-        SimulationEvents.OnUpdateSimulationSpeed -= UpdateMultiplierSpeed;
         SimulationEvents.OnGenerateRandomStage -= RandomStage;
-        
+        SimulationEvents.OnUpdateSimulationSpeed -= UpdateMultiplierSpeed;
     }
     
-    private void OnGUI()
+    void OnGUI()
     {
-        GUI.backgroundColor = Color.black;
-        GUI.contentColor = Color.white;
         if (_showModal)
         {
+            GUI.backgroundColor = Color.black;
+            GUI.contentColor = Color.white;
             // Define the window position and size
             Rect windowRect = new Rect((Screen.width-WindowWidth)/2, (Screen.height-WindowHeight)/2, WindowWidth, WindowHeight);
             // Display the modal window
@@ -120,19 +122,30 @@ public class InitializateStage : MonoBehaviour
             _showModal = false;
         }
     }
+    
+    #endregion
+
+    #region Private Methods
+
+    private void DestroySimulation()
+    {
+        if (_automaton != null && _stage != null)  //Gets destroyed only if it was already in a simulation.
+        {
+            StopAllCoroutines();
+            _stage.DestroyStage();
+            _automaton.DestroyAllAutomatons();
+            Debug.Log("Simulación destruida");
+        }
+    }
 
     private void StartAndSaveSimulation()
     {
-        // DestroySimulation();
-        
-        // Para que las posiciones reales empiezen en esta posición 
-        
         // _stageBuilder = RandomStageWithBuilder.getRandomStage(cellsPrefab, transform);
         // _cellsDimension = new Vector3(0.5f, 0.5f, 0.5f);
-
+        
         // RandomStage();
-        if ((_automaton == null && _stage == null) || (_automaton != null && _stage != null)  //Para que solo se genere si no estaba generado antes o si estaba ya en una simulación
-            || _stage.CellsDimension != _cellsDimension) //o en caso de que se haya modificado el tamaño de celdas después de generar el escenario
+        if ((_automaton == null && _stage == null) || (_automaton != null && _stage != null)  //To be generated only if it was not generated before or if it was already in a simulation
+            || _stage.CellsDimension != _cellsDimension) //or in case the cell size has been modified after generating the scenario
             SimulationEvents.OnGenerateRandomStage?.Invoke();
 
         InitializeAutomaton();
@@ -147,7 +160,7 @@ public class InitializateStage : MonoBehaviour
         // int numberOfPedestrians = Random.Range(150, 600);
         int maxNumber = (_stage.Rows * _stage.Columns - (_stage.Obstacles.Count + _stage.Exits.Count))/4;
         int numberOfPedestrians = Random.Range(maxNumber/4, maxNumber);
-        Debug.Log("Numero de agentes: " + numberOfPedestrians);
+        // Debug.Log("Numero de agentes: " + numberOfPedestrians);
         _automaton.AddPedestriansUniformly(numberOfPedestrians, pedestrianParametersSupplier);
         
         StartCoroutine(nameof(RunAutomatonSimulationCoroutine));
@@ -155,18 +168,14 @@ public class InitializateStage : MonoBehaviour
         // RunAutomaton();
     }
 
-    private void RandomStage()
+    private void LoadSimulation()
     {
-        _stage?.DestroyStage();
-        // _stage = new RandomStage(cellsPrefab, transform, _cellsDimension);
-        _stage = new RandomStage(cellsPrefab, transform, _cellsDimension, 45, 55);
-        
-        _stage.InstantiateStage();
-    }
-
-    private void LoadSimulation(JsonSnapshotsList traceJson, JsonStage stageJson)
-    {
-        // DestroySimulation();
+        // TODO: Leer este comentario
+        // Si se detecta un json desde la ruta almacenada en la variable _pathToReadJson,
+        // el escenario también se ha precargado y coinciden el escenario cargado y el que se quiere simular
+        // (ponerle un id de escenario tanto al json del escenario como al del snapshot???) simular la traza.
+        JsonSnapshotsList traceJson = SaveJsonManager.LoadTraceJson(PathsForJson.LoadTraceJson);
+        JsonStage stageJson = SaveJsonManager.LoadStageJson(PathsForJson.LoadStageJson);
 
         Vector3 cellsDimension = new Vector3(traceJson.cellDimension, traceJson.cellDimension, traceJson.cellDimension);
         DomainEntryJson domain = stageJson.domains.Find(domain => domain.id == 1);
@@ -181,22 +190,11 @@ public class InitializateStage : MonoBehaviour
         
     }
 
-    private void DestroySimulation()
-    {
-        if (_automaton != null && _stage != null)  //Para que solo se destruya si estaba ya en una simulación
-        {
-            StopAllCoroutines();
-            _stage.DestroyStage();
-            _automaton.DestroyAllAutomatons();
-            Debug.Log("Simulación destruida");
-        }
-    }
-
     private void InitializeAutomaton()
     {
         // _stage.InstantiateStage();
         
-        // Para que las posiciones reales empiezen en esta posición 
+        // For the actual positions to start in this position
         transform.position = new Vector3(_stage.CellsDimension.x, 0, _stage.CellsDimension.z) / 2;
         
         var cellularAutomatonParameters =
@@ -215,7 +213,7 @@ public class InitializateStage : MonoBehaviour
     private IEnumerator RunAutomatonSimulationCoroutine()
     {
         yield return _automaton.RunAutomatonSimulationCoroutine();
-         _statistics = _automaton.computeStatistics();
+         _statistics = _automaton.ComputeStatistics();
         _showModal = true;
         SaveInJson();
     }
@@ -223,7 +221,7 @@ public class InitializateStage : MonoBehaviour
     private IEnumerator LoadingSimulationCoroutine(JsonSnapshotsList traceJson)
     {
         yield return _automaton.LoadingSimulationCoroutine(traceJson);
-        _statistics = _automaton.computeStatistics();
+        _statistics = _automaton.ComputeStatistics();
         _showModal = true;
     }
     
@@ -237,10 +235,12 @@ public class InitializateStage : MonoBehaviour
         SaveJsonManager.SaveTraceJson(PathsForJson.SaveTraceJson, trace);
         SaveJsonManager.SaveStageJson(PathsForJson.SaveStageJson, stage);
     }
+    
+    #endregion
 
     #region RunAutomatonWithoutCoroutines
 
-    //Este método debería de ir en un update
+    //this void should be in an Update
 
     // private void RunAutomaton()
     // {
@@ -286,20 +286,9 @@ public class InitializateStage : MonoBehaviour
         DestroySimulation();
         
         if (!savingTrace)
-        {
-            // Si se detecta un json desde la ruta almacenada en la variable _pathToReadJson,
-            // el escenario también se ha precargado y coinciden el escenario cargado y el que se quiere simular
-            // (ponerle un id de escenario tanto al json del escenario como al del snapshot???) simular la traza.
-            JsonSnapshotsList traceJson = SaveJsonManager.LoadTraceJson(PathsForJson.LoadTraceJson);
-            JsonStage stageJson = SaveJsonManager.LoadStageJson(PathsForJson.LoadStageJson);
-            // traceJson.snapshots.ForEach(list => Debug.Log("Loading timestep: " + list.timestamp));
-            Debug.Log(PathsForJson.LoadTraceJson + PathsForJson.LoadStageJson);
-            LoadSimulation(traceJson, stageJson);
-        }
+            LoadSimulation();
         else
-        {
             StartAndSaveSimulation();
-        }
     }
 
     private void InitializeParameters(float cellsDimensions, float pedestriansVelocity, float multiplierSpeed)
@@ -308,11 +297,20 @@ public class InitializateStage : MonoBehaviour
         _cellsDimension = Vector3.one * cellsDimensions;
         _pedestriansVelocity = pedestriansVelocity;
         _multiplierSpeed = multiplierSpeed;
-
+    }
+    
+    private void RandomStage()
+    {
+        _stage?.DestroyStage();
+        // _stage = new RandomStage(cellsPrefab, transform, _cellsDimension);
+        _stage = new RandomStage(cellsPrefab, transform, _cellsDimension, 45, 55);
+        
+        _stage.InstantiateStage();
     }
     
     private void UpdateMultiplierSpeed(float multiplierSpeed)
     {
+        //TODO: Comprobar estos comentarios
         // El problema de esta es que a la hora de actualizar el multiplicador, se está en mitad de una de las iteraciones,
         // por lo que si se hace un cambio muy brusco, se puede llegar a notar
         #region Automaton Parameter Implementation

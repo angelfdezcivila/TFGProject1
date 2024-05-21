@@ -9,45 +9,48 @@ namespace UI
     public class UIManager : MonoBehaviour
     {
         // TODO: Todo lo que sean números que no pueden ser negativos, plantear si hacerlo mediante sliders
-        // Es posible que se tenga que hacer una referencia al InitializateStage en lugar de eventos
-        [SerializeField] 
+        [Header("UI elements")]
+        
+        [SerializeField]
         private TMP_InputField _cellDimensionInputField;
-        [SerializeField] 
+        [SerializeField]
         private TMP_InputField _pedestrianVelocityInputField;
 
         #region Trace save or load
 
-        [SerializeField] 
+        [SerializeField]
         private Button _traceSaveOrLoadFolderButton;
-        [SerializeField] 
+        [SerializeField]
         private Toggle _traceSaveOrLoadToggle;
 
         #endregion
         
         #region Stage save or load
 
-        [SerializeField] 
+        [SerializeField]
         private Button _stageSaveOrLoadFolderButton;
-        [SerializeField] 
+        [SerializeField]
         private Toggle _stageSaveOrLoadToggle;
 
         #endregion
         
-        [SerializeField] 
+        [SerializeField]
         private Toggle _upsideViewToggle;
-        [SerializeField] 
-        private Slider _multiplierSpeedSlider; // Intentar hacer mientras se ejecuta se pueda tocar la velocidad de la simulación y que se pueda ir marcha atras
-        [SerializeField] 
+        [SerializeField]
+        private Slider _multiplierSpeedSlider;
+        [SerializeField]
         private Button _randomStageButton;
-        [SerializeField] 
+        [SerializeField]
         private Button _startButton;
+
+        #region Properties
 
         private float CellsDimensions => float.Parse(_cellDimensionInputField.text);
         private float PedestriansVelocity => float.Parse(_pedestrianVelocityInputField.text);
         private float MultiplierSpeed => _multiplierSpeedSlider.value;
-        
-        private float fixedDeltaTime;
 
+        #endregion
+        
         private void Awake()
         {
             _cellDimensionInputField.onEndEdit.AddListener(text => OnDecimalFieldChanged(_cellDimensionInputField));
@@ -64,6 +67,8 @@ namespace UI
             _multiplierSpeedSlider.onValueChanged.AddListener(value => SimulationEvents.OnUpdateSimulationSpeed?.Invoke(value));
         }
 
+        #region Listeners Methods
+        
         private void TogglingSaveAndUpdate(bool savingJson, TypeJsonButton type)
         {
             string path = "";
@@ -81,19 +86,14 @@ namespace UI
             FileExplorerEvents.OnSelectedPathForJson?.Invoke(path, type, savingJson);
         }
         
-        private void TogglingView(bool upsideView)
-        {
-            CameraEvents.OnTogglingView?.Invoke(upsideView);
-        }
+        private void TogglingView(bool upsideView) => CameraEvents.OnTogglingView?.Invoke(upsideView);
 
         private void OpenTraceFileExplorer() => OpenFileExplorer(_traceSaveOrLoadToggle.isOn, TypeJsonButton.Trace);
         private void OpenStageFileExplorer() => OpenFileExplorer(_stageSaveOrLoadToggle.isOn, TypeJsonButton.Stage);
 
-        private void OpenFileExplorer(bool toggleIsOn, TypeJsonButton type)
-        {
-            FileExplorerEvents.OnOpenFileExplorer?.Invoke(toggleIsOn, type);
-        }
+        private void OpenFileExplorer(bool toggleIsOn, TypeJsonButton type) => FileExplorerEvents.OnOpenFileExplorer?.Invoke(toggleIsOn, type);
 
+        // TODO: tener en cuenta este comentario para la memoria??
         // Con eventos. Uso esta implementación debido a que desde el principio vamos a tener rellenados los datos en la UI
         // Este método va a controlar si están rellenos y lo lanzará en caso de que estén correctos los datos introducidos.
         private void StartOnClick()
@@ -105,7 +105,6 @@ namespace UI
                 SimulationEvents.OnInitializeStageParameters?.Invoke(CellsDimensions, PedestriansVelocity, MultiplierSpeed);
                 SimulationEvents.OnPlaySimulation?.Invoke(_traceSaveOrLoadToggle.isOn);
                 _randomStageButton.interactable = false;
-                
             }
         }
         
@@ -116,7 +115,10 @@ namespace UI
         }
 
 
-        //Para controlar el valor decimal de un input
+        /// <summary>
+        /// To control the decimal value of an input.
+        /// </summary>
+        /// <param name="field">The input field to be controlled.</param>
         private void OnDecimalFieldChanged(TMP_InputField field)
         {
             var fieldText = field.text;
@@ -140,6 +142,8 @@ namespace UI
             }
 
         }
+        
+        #endregion
         
     }
 }

@@ -73,9 +73,9 @@ namespace StageGenerator
                 }
             }
             if (Statistics.bernoulli(0.5f)) {
-                // En el caso de que el numero de filas y/o columnas sea impar,
-                // la salida central estará desplazada una casilla hacia la derecha y/o hacia arriba respectivamente
-                // Otra solución sería hacer la salida de 1x1 o 3x3
+                // In case the number of rows and/or columns is odd,
+                // the central access will be shifted one cell to the right and/or upwards respectively
+                // Another solution would be to make the acces 1x1 or 3x3.
                 int startRow = _rows / 2;
                 int startColumn = _columns / 2;
                 AddAccessCornerBottomLeft(startRow, startColumn, 2, 2);
@@ -105,7 +105,7 @@ namespace StageGenerator
                 shape = new ShapeJson(accessRectangle),
                 id = _exitsCornerLeftDown.Count
             };
-            Debug.Log($"Access Corner: {access.shape.bottomLeft}");
+            // Debug.Log($"Access Corner: {access.shape.bottomLeft}");
             _exitsCornerLeftDown.Add(access);
         }
 
@@ -138,12 +138,12 @@ namespace StageGenerator
             List<Vector2> obstacleCandidates = new List<Vector2>();
         
             bool shouldBePlaced = true;
-            int rowBorder = row>2? row - 2 : 0; //Está para que si row = 1 o row = 0, siga siendo positiva y no se salga por debajo del tablero
-            int columnBorder = column>=4? column - 2 : 2; //Está para que si column = 3 o column = 2, siga teniendo un margen de 2 respecto a los bordes
+            int rowBorder = row>2? row - 2 : 0; // If row = 1 or row = 0, it remains positive and does not go under the board.
+            int columnBorder = column>=4? column - 2 : 2; // If column = 3 or column = 2, it still has a margin of 2 to the edges.
             // Debug.Log("(" + row + ", " + column + ") : (" + rowBorder + ", " + columnBorder + ") : (" + height + ", " + width + ")");
         
-            int heightMax = row + height + 2<_rows? row + height + 2 : _rows-1; //Está para controlar que la altura máxima no sobrepase el máximo a la hora de comprobar si puede ser puesto
-            int widthMax = column + width + 2<_columns-2? column + width + 2 : _columns-1; //Está para controlar que la anchura máxima no sobrepase el máximo a la hora de comprobar si puede ser puesto
+            int heightMax = row + height + 2<_rows? row + height + 2 : _rows-1; // To control that the maximum height does not exceed the maximum when checking if it can be put on.
+            int widthMax = column + width + 2<_columns-2? column + width + 2 : _columns-1; // To control that the maximum width does not exceed the maximum when checking if it can be set.
         
             int rowCounter = rowBorder;
             int columnCounter = columnBorder;
@@ -155,10 +155,10 @@ namespace StageGenerator
                 while (columnCounter < widthMax && shouldBePlaced)
                 {
                     Vector2 cellPosition = new Vector2(rowCounter, columnCounter);
-                    //Si intersecta con otro objeto, no se puede poner el obstáculo
+                    // If the obstacle intersects with another object, it cannot be placed.
                     shouldBePlaced = GetCellType(cellPosition) == Cell.CellTypeEnum.Floor;
 
-                    // Comprueba si la posicion es parte del rango o es del propio obstaculo
+                    // Checks if the position is part of the range or part of the obstacle itself.
                     bool isWall = (rowCounter >= row && columnCounter >= column) &&
                                   (rowCounter < row + height && columnCounter < column + width);
                     // Debug.Log("counters: " + rowCounter + ", " + columnCounter + " - " + isWall);
@@ -178,7 +178,7 @@ namespace StageGenerator
             {
                 float realRow = row * CellsDimension.x;
                 float realColumn = column * CellsDimension.x;
-                // Comentado porque 33 + 10 + 2 < 45? 10 : 44 - 33
+                // comented because 33 + 10 + 2 < 45? 10 : 44 - 33
                 // int realHeight = row + height + 2 < _rows? height : heightMax - row;
                 int realHeight = row + height + 2 <= _rows? height : heightMax - row;
                 int realWidth = width;
@@ -191,7 +191,7 @@ namespace StageGenerator
                     // shape = new ShapeJson(accessRectangle, new CoordinatesStageJson(realColumn, realRow)),
                     shape = new ShapeJson(accessRectangle),
                 };
-                Debug.Log($"Obstacle Corner: {obstacle.shape.bottomLeft}");
+                // Debug.Log($"Obstacle Corner: {obstacle.shape.bottomLeft}");
                 _obstaclesCornerLeftDown.Add(obstacle);
                 
                 foreach (Vector2 candidate in obstacleCandidates)
