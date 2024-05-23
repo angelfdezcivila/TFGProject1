@@ -8,8 +8,10 @@ namespace StageGenerator
 {
     public sealed class StageFromJson : Stage
     {
-        private JsonStage _jsonStage;
+        private JsonStage _jsonStage;   // Se almacena para el momento que haya más de un dominio disponible
         private DomainEntryJson _domain;
+
+        #region Constructors
         
         public StageFromJson(GameObject cellPrefab, Transform transformParent, Vector3 cellsDimension, JsonStage stageJson)
             : base(cellPrefab, transformParent, cellsDimension)
@@ -39,6 +41,8 @@ namespace StageGenerator
             _jsonStage = stageJson;
             _domain = domain;
         }
+        
+        #endregion
 
         #region Overrided Methods
 
@@ -68,7 +72,9 @@ namespace StageGenerator
         }
         
         #endregion
-        
+
+        #region Private Methods
+
         private void InstantiateBlock(ShapeJson shape, Cell.CellTypeEnum cellType)
         {
             // if (shape.type == ShapeJson.ShapeTypeEnum.Rectangle)
@@ -76,19 +82,13 @@ namespace StageGenerator
             {
                 int height = (int)Mathf.Ceil(NumberIndexesInAxis(shape.height));
                 int width = (int)Mathf.Ceil(NumberIndexesInAxis(shape.width));
-                // int height = (int)NumberIndexesInAxis(access.shape.height);
-                // int width = (int)NumberIndexesInAxis(access.shape.width);
                     
                 // Debug.Log($"Height:{height} ; Width:{width}");
-                // for (int i = 0; i < access.shape.height; i++)
                 for (int i = 0; i < height; i++)
                 {
-                    // for (int j = 0; j < access.shape.width; j++)
                     for (int j = 0; j < width; j++)
                     {
-                        // en el json, la x en access.shape.bottomLeft es la columna y la y es la fila, por lo que hay que invertirlo
-                        // float bottomLeftRow = i + access.shape.bottomLeft.y;
-                        // float bottomLeftColumn = j + access.shape.bottomLeft.x;
+                        // In json, x in obstacleOrAccess.shape.bottomLeft is the column index and y is the row index
                         float bottomLeftRow = i + (int)NumberIndexesInAxis(shape.bottomLeft.y);
                         float bottomLeftColumn = j + (int)NumberIndexesInAxis(shape.bottomLeft.x);
                         // Debug.Log($"Row: {bottomLeftRow} ; Column: {bottomLeftColumn}");
@@ -101,6 +101,8 @@ namespace StageGenerator
                 Debug.Log(cellType + " isCircle");
             }
         }
+        
+        #endregion
         
     }
 }

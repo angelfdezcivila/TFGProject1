@@ -20,8 +20,9 @@ public class InitializateStage : MonoBehaviour
 
     #region Private variables
 
-    private Vector3 _cellsDimension;
     private float _timeLimit;
+    private Vector3 _cellsDimension;
+    private int _pedestrianNumber;
     private float _pedestriansVelocity;
     private float _multiplierSpeed;
 
@@ -34,7 +35,9 @@ public class InitializateStage : MonoBehaviour
     private Statistics _statistics;
 
     #endregion
-    
+
+    #region Private Properties
+
     private float WindowWidth => Screen.width * 0.21f;
     private float WindowHeight => Screen.height * 0.18f;
     private string StatisticsText
@@ -52,14 +55,17 @@ public class InitializateStage : MonoBehaviour
             return text;
         }
     }
+    
+    #endregion
 
     #region Unity Events
 
     void Start()
     {
+        _timeLimit = 10 * 60;
         // _cellsDimension = new Vector3(0.4f, 0.4f, 0.4f);
         _cellsDimension = new Vector3(0.5f, 0.5f, 0.5f);
-        _timeLimit = 10 * 60;
+        _pedestrianNumber = 1;
         _pedestriansVelocity = 1.3f;
         _multiplierSpeed = 8;
         
@@ -157,9 +163,9 @@ public class InitializateStage : MonoBehaviour
                 .VelocityPercent(Random.Range(0.3f, 1.0f))
                 .Build();
         
-        // int numberOfPedestrians = Random.Range(150, 600);
         int maxNumber = (_stage.Rows * _stage.Columns - (_stage.Obstacles.Count + _stage.Exits.Count))/4;
-        int numberOfPedestrians = Random.Range(maxNumber/4, maxNumber);
+        // int numberOfPedestrians = Random.Range(maxNumber/4, maxNumber);
+        int numberOfPedestrians = Mathf.Clamp(_pedestrianNumber, 1, maxNumber);
         // Debug.Log("Numero de agentes: " + numberOfPedestrians);
         _automaton.AddPedestriansUniformly(numberOfPedestrians, pedestrianParametersSupplier);
         
@@ -291,10 +297,11 @@ public class InitializateStage : MonoBehaviour
             StartAndSaveSimulation();
     }
 
-    private void InitializeParameters(float cellsDimensions, float pedestriansVelocity, float multiplierSpeed)
+    private void InitializeParameters(float cellsDimensions, int pedestrianNumber, float pedestriansVelocity, float multiplierSpeed)
     {
         // _timeLimit = timeLimit;
         _cellsDimension = Vector3.one * cellsDimensions;
+        _pedestrianNumber = pedestrianNumber;
         _pedestriansVelocity = pedestriansVelocity;
         _multiplierSpeed = multiplierSpeed;
     }

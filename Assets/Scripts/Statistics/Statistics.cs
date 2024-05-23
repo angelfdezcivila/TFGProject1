@@ -20,7 +20,7 @@ public record Statistics(
     public int numberOfEvacuees { get; set; } = numberOfEvacuees;
     public int numberOfNonEvacuees { get; set; } = numberOfNonEvacuees;
     
-    public static bool bernoulli(float successProbability) {
+    public static bool Bernoulli(float successProbability) {
         if (!(successProbability < 0.0) && !(successProbability > 1.0)) {
             return Random.value < successProbability;
         } else {

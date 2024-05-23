@@ -10,6 +10,8 @@ namespace StageGenerator
     public sealed class RandomStage : Stage
     {
         
+        #region Constructors
+
         public RandomStage(GameObject cellPrefab, Transform transformParent)
             : base(cellPrefab, transformParent, new Vector3(1f, 1f, 1f), 45, 90)
         {
@@ -23,17 +25,44 @@ namespace StageGenerator
         public RandomStage(GameObject cellPrefab, Transform transformParent, Vector3 cellsDimension, int height, int columns)
             : base(cellPrefab, transformParent, cellsDimension, height, columns)
         {
-            
         }
+        
+        #endregion
+        
+        #region Overrided Methods
 
         protected override int SetNumberOfBlocks()
         {
             return Random.Range(50, 120);
         }
+        
+        protected override void CalculateObstacle()
+        {
+            int numberOfBlocksPlaced = 0;
+            int maxTries = _numberOfBlocks * 3;
+            while (numberOfBlocksPlaced < _numberOfBlocks && maxTries > 0) {
+                // Debug.Log("Number of blocks = " + _numberOfBlocks + " : " + numberOfBlocksPlaced + " : " + maxTries);
+            
+                int width = Statistics.Bernoulli(0.5f) ? 1 + Random.Range(0, 2) : 1 + Random.Range(0, 20);
+                // int width = bernoulli(0.5f) ? 1 + Random.Range(0, 2) : 1 + Random.Range(0, 20);
+                int height = 1 + Random.Range(0, Mathf.Max(1, _rows / (int)(2 * width)));
+    
+                int row = Random.Range(0, 1 + _rows - height);
+                // int row = Random.Range(-_rows/2, _rows/2 - height); // Solo funciona para las filas impares
+                int column = Random.Range(2, 1 + _columns - width - 2);   
+            
+                bool shouldBePlaced = ObstacleCanBePlaced(row, column, width, height);
+    
+                if (shouldBePlaced) {
+                    numberOfBlocksPlaced++;
+                }
+                maxTries -= 1;
+            }
+        }
 
         protected override void CalculateExit()
         {
-            if (Statistics.bernoulli(0.9f))
+            if (Statistics.Bernoulli(0.9f))
             {
                 int row = 2;
                 int column = _columns-1;
@@ -45,7 +74,7 @@ namespace StageGenerator
 
                 // scenario.setExit(new Rectangle(2, columns - 1, 5, 1));
             }
-            if (Statistics.bernoulli(0.9f)) {
+            if (Statistics.Bernoulli(0.9f)) {
                 int row = _rows - 7;
                 int column = _columns-1;
                 AddAccessCornerBottomLeft(row, column, 1, 5);
@@ -54,7 +83,7 @@ namespace StageGenerator
                     SetExit(i, column);
                 }
             }
-            if (Statistics.bernoulli(0.9f)) {
+            if (Statistics.Bernoulli(0.9f)) {
                 int row = 10;
                 int column = 0;
                 AddAccessCornerBottomLeft(row, column, 1, 5);
@@ -63,7 +92,7 @@ namespace StageGenerator
                     SetExit(i, column);
                 }
             }
-            if (Statistics.bernoulli(0.9f)) {
+            if (Statistics.Bernoulli(0.9f)) {
                 int row = _rows - 15;
                 int column = 0;
                 AddAccessCornerBottomLeft(row, column, 1, 5);
@@ -72,7 +101,7 @@ namespace StageGenerator
                     SetExit(i, column);
                 }
             }
-            if (Statistics.bernoulli(0.5f)) {
+            if (Statistics.Bernoulli(0.5f)) {
                 // In case the number of rows and/or columns is odd,
                 // the central access will be shifted one cell to the right and/or upwards respectively
                 // Another solution would be to make the acces 1x1 or 3x3.
@@ -88,6 +117,10 @@ namespace StageGenerator
                 }
             }
         }
+        
+        #endregion
+
+        #region Private Methods
 
         private void SetExit(int row, int column)
         {
@@ -107,30 +140,6 @@ namespace StageGenerator
             };
             // Debug.Log($"Access Corner: {access.shape.bottomLeft}");
             _exitsCornerLeftDown.Add(access);
-        }
-
-        protected override void CalculateObstacle()
-        {
-            int numberOfBlocksPlaced = 0;
-            int maxTries = _numberOfBlocks * 3;
-            while (numberOfBlocksPlaced < _numberOfBlocks && maxTries > 0) {
-                // Debug.Log("Number of blocks = " + _numberOfBlocks + " : " + numberOfBlocksPlaced + " : " + maxTries);
-            
-                int width = Statistics.bernoulli(0.5f) ? 1 + Random.Range(0, 2) : 1 + Random.Range(0, 20);
-                // int width = bernoulli(0.5f) ? 1 + Random.Range(0, 2) : 1 + Random.Range(0, 20);
-                int height = 1 + Random.Range(0, Mathf.Max(1, _rows / (int)(2 * width)));
-    
-                int row = Random.Range(0, 1 + _rows - height);
-                // int row = Random.Range(-_rows/2, _rows/2 - height); // Solo funciona para las filas impares
-                int column = Random.Range(2, 1 + _columns - width - 2);   
-            
-                bool shouldBePlaced = ObstacleCanBePlaced(row, column, width, height);
-    
-                if (shouldBePlaced) {
-                    numberOfBlocksPlaced++;
-                }
-                maxTries -= 1;
-            }
         }
 
         private bool ObstacleCanBePlaced(int row, int column, int width, int height)
@@ -203,6 +212,7 @@ namespace StageGenerator
             return shouldBePlaced;
         }
 
+        #endregion
 
     }
 }

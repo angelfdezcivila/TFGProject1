@@ -9,31 +9,30 @@ namespace UI
     public class UIManager : MonoBehaviour
     {
         // TODO: Todo lo que sean números que no pueden ser negativos, plantear si hacerlo mediante sliders
-        [Header("UI elements")]
-        
+
+        #region Private fields
+
+        [Header("Simulation parameters fields")]
         [SerializeField]
         private TMP_InputField _cellDimensionInputField;
         [SerializeField]
+        private TMP_InputField _pedestrianNumber;
+        [SerializeField]
         private TMP_InputField _pedestrianVelocityInputField;
-
-        #region Trace save or load
-
+        
+        [Header("Save or load trace")]
         [SerializeField]
         private Button _traceSaveOrLoadFolderButton;
         [SerializeField]
         private Toggle _traceSaveOrLoadToggle;
 
-        #endregion
-        
-        #region Stage save or load
-
+        [Header("Save or load stage")]
         [SerializeField]
         private Button _stageSaveOrLoadFolderButton;
         [SerializeField]
         private Toggle _stageSaveOrLoadToggle;
-
-        #endregion
         
+        [Header("Running Simulation fields")]
         [SerializeField]
         private Toggle _upsideViewToggle;
         [SerializeField]
@@ -43,9 +42,12 @@ namespace UI
         [SerializeField]
         private Button _startButton;
 
+        #endregion
+        
         #region Properties
 
         private float CellsDimensions => float.Parse(_cellDimensionInputField.text);
+        private int PedestrianNumber => int.Parse(_pedestrianNumber.text);
         private float PedestriansVelocity => float.Parse(_pedestrianVelocityInputField.text);
         private float MultiplierSpeed => _multiplierSpeedSlider.value;
 
@@ -54,6 +56,7 @@ namespace UI
         private void Awake()
         {
             _cellDimensionInputField.onEndEdit.AddListener(text => OnDecimalFieldChanged(_cellDimensionInputField));
+            _pedestrianNumber.onEndEdit.AddListener(text => OnNaturalFieldChanged(_pedestrianNumber));
             _pedestrianVelocityInputField.onEndEdit.AddListener(text => OnDecimalFieldChanged(_pedestrianVelocityInputField));
             
             _traceSaveOrLoadFolderButton.onClick.AddListener(OpenTraceFileExplorer);
@@ -102,7 +105,7 @@ namespace UI
             // if(_pedestrianVelocityInputField.contentType == TMP_InputField.ContentType.DecimalNumber)
             if (parametersValid)
             {
-                SimulationEvents.OnInitializeStageParameters?.Invoke(CellsDimensions, PedestriansVelocity, MultiplierSpeed);
+                SimulationEvents.OnInitializeStageParameters?.Invoke(CellsDimensions, PedestrianNumber, PedestriansVelocity, MultiplierSpeed);
                 SimulationEvents.OnPlaySimulation?.Invoke(_traceSaveOrLoadToggle.isOn);
                 _randomStageButton.interactable = false;
             }
@@ -110,7 +113,7 @@ namespace UI
         
         private void GenerateRandomStage()
         {
-            SimulationEvents.OnInitializeStageParameters?.Invoke(CellsDimensions, PedestriansVelocity, MultiplierSpeed);
+            SimulationEvents.OnInitializeStageParameters?.Invoke(CellsDimensions, PedestrianNumber, PedestriansVelocity, MultiplierSpeed);
             SimulationEvents.OnGenerateRandomStage?.Invoke();
         }
 
@@ -140,7 +143,21 @@ namespace UI
                     field.text = fieldText;
                 }
             }
-
+        }
+        
+        /// <summary>
+        /// To control the natural number value of an input.
+        /// </summary>
+        /// <param name="field">The input field to be controlled.</param>
+        private void OnNaturalFieldChanged(TMP_InputField field)
+        {
+            var fieldText = field.text;
+            var number = int.Parse(fieldText);
+            if (number <= 0)
+            {
+                //TODO: Avisar de que el valor debe ser mayor a 0
+                field.text = "";
+            }
         }
         
         #endregion

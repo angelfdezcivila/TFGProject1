@@ -214,7 +214,7 @@ namespace Cellular
 
     #region Adding pedestrians
 
-        /// <summary>
+    /// <summary>
     /// Adds a new pedestrian to this automaton.
     /// </summary>
     /// <param name="row">Row index of scenario where new pedestrian should be placed.</param>
@@ -333,11 +333,11 @@ namespace Cellular
       while (pedestriansIterator.MoveNext())
       {
         Pedestrian pedestrian = pedestriansIterator.Current;
-        int row = pedestrian.GetRow();
-        int column = pedestrian.GetColumn();
+        int row = pedestrian.Row;
+        int column = pedestrian.Column;
         if (_stage.IsCellExit(row, column))
         {
-          pedestrian.SetExitTimeSteps(_timeSteps);
+          pedestrian.ExitTimeSteps = _timeSteps;
           _outOfScenarioPedestrians.Add(pedestrian);
           // Remove current pedestrian from the list
           // pedestriansIterator = (List<Pedestrian>.Enumerator)ListExtensions.RemoveCurrent(inScenarioPedestrians, pedestrian);
@@ -355,11 +355,11 @@ namespace Cellular
             if (WillBeOccupied(location)) {
               // new location already taken by another pedestrian. Don't move
               _occupiedNextState[row,column] = true;
-              pedestrian.doNotMove();
+              pedestrian.DoNotMove();
             } else {
               // move to new location
               _occupiedNextState[location.Row,location.Column] = true;
-              pedestrian.moveTo(location);
+              pedestrian.MoveTo(location);
 
               // Vector3 position = stage.GetRowColumnCell(new Vector2(location.Row, location.Column)).transform.position;
               // pedestrian.moveTo(new Location(position.x, position.z));
@@ -368,7 +368,7 @@ namespace Cellular
           else
           {
             _occupiedNextState[row,column] = true;
-            pedestrian.doNotMove();
+            pedestrian.DoNotMove();
           }
         }
       }
@@ -457,7 +457,7 @@ namespace Cellular
         
         if (_stage.IsCellExit(row, column))
         {
-          pedestrianLoaded.SetExitTimeSteps(_timeSteps);
+          pedestrianLoaded.ExitTimeSteps = _timeSteps;
           _outOfScenarioPedestrians.Add(pedestrianLoaded);
           // Remove current pedestrian from the list
           // pedestriansIterator = (List<Pedestrian>.Enumerator)ListExtensions.RemoveCurrent(inScenarioPedestrians, pedestrian);
@@ -498,7 +498,7 @@ namespace Cellular
         
         if (_stage.IsCellExit(row, column))
         {
-          pedestrian.SetExitTimeSteps(_timeSteps);
+          pedestrian.ExitTimeSteps = _timeSteps;
           _outOfScenarioPedestrians.Add(pedestrian);
           // Remove current pedestrian from the list
           // pedestriansIterator = (List<Pedestrian>.Enumerator)ListExtensions.RemoveCurrent(inScenarioPedestrians, pedestrian);
@@ -510,7 +510,7 @@ namespace Cellular
         }
         else
         {
-          pedestrian.moveTo(row, column);
+          pedestrian.MoveTo(row, column);
         }
       }
       
@@ -574,7 +574,7 @@ namespace Cellular
       for (int i = 0; i < _outOfScenarioPedestrians.Count; i++)
       {
         Pedestrians.Pedestrian evacuee = _outOfScenarioPedestrians[i];
-        times[i] = evacuee.getExitTimeSteps() * _parameters.TimePerTick;
+        times[i] = evacuee.ExitTimeSteps * _parameters.TimePerTick;
       }
       // int i = 0;
       // foreach (Pedestrian.Pedestrian evacuee in outOfScenarioPedestrians) {
@@ -597,7 +597,7 @@ namespace Cellular
       foreach (Pedestrians.Pedestrian nonEvacuee in _inScenarioPedestrians) {
         float shortestDistance = (float)Double.MaxValue;
         foreach(Cell exit in _stage.Exits) {
-          var distance = exit.DistanceTo(nonEvacuee.getLocation());
+          var distance = exit.DistanceTo(nonEvacuee.Location);
           if (distance < shortestDistance)
             shortestDistance = distance;
         }
@@ -620,7 +620,7 @@ namespace Cellular
 
       int i = 0;
       foreach (Pedestrian pedestrian in _outOfScenarioPedestrians) {
-        steps[i] = pedestrian.getNumberOfSteps();
+        steps[i] = pedestrian.NumberOfSteps;
         i += 1;
       }
       float meanSteps = Statistics.Mean(steps);
@@ -675,7 +675,7 @@ namespace Cellular
       for (int t = 0; t < _timeSteps; t++) {
         JsonCrowdList crowd = new JsonCrowdList();
         foreach (Pedestrian pedestrian in allPedestrians) {
-          List<Location> path = pedestrian.GetPath();
+          List<Location> path = pedestrian.Path;
           if (path.Count > t)
           {
             Location location = path[t];
@@ -739,7 +739,7 @@ namespace Cellular
     {
       foreach (Pedestrian pedestrian in _inScenarioPedestrians)
       {
-        pedestrian.paint();
+        pedestrian.Paint();
       }
     }
     
