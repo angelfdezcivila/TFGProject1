@@ -58,9 +58,9 @@ namespace DataJson
             {
                 foreach (ObstacleEntryJson obstacle in domain.obstacles)
                 {
-                    Debug.Log("Shape before: " + obstacle.shape.ShapeType.NameRepresentation + " ;Nombre:" + obstacle.name);
+                    // Debug.Log("Shape before: " + obstacle.shape.ShapeType.NameRepresentation + " ;Nombre:" + obstacle.name);
                     obstacle.shape.ShapeType = UpdateShapeType(obstacle.shape.type, obstacle.shape);
-                    Debug.Log("Shape after: " + obstacle.shape.ShapeType.NameRepresentation + " ;Nombre:" + obstacle.name);
+                    // Debug.Log("Shape after: " + obstacle.shape.ShapeType.NameRepresentation + " ;Nombre:" + obstacle.name);
                 }
                 foreach (AccessEntryJson access in domain.accesses)
                 {

@@ -27,7 +27,6 @@ public class InitializateStage : MonoBehaviour
     private float _multiplierSpeed;
 
     private bool _showModal = false;
-    // private const float WindowWidth = 400;
     
     // private StageWithBuilder.StageWithBuilder _stageBuilder;
     private Stage _stage;
@@ -136,24 +135,33 @@ public class InitializateStage : MonoBehaviour
     private void DestroySimulation()
     {
         if (_automaton != null && _stage != null)  //Gets destroyed only if it was already in a simulation.
+        // if (_stage != null)  //Gets destroyed only if it was already in a simulation.
         {
             StopAllCoroutines();
             _stage.DestroyStage();
             _automaton.DestroyAllAutomatons();
             Debug.Log("Simulación destruida");
         }
+        else if(_stage != null)
+        {
+            StopAllCoroutines();
+            _stage.DestroyStage();
+            Debug.Log("Escenario destruido");
+        }
     }
 
-    private void StartAndSaveSimulation()
+    private void StartAndSaveSimulation(bool savingStage)
     {
         // _stageBuilder = RandomStageWithBuilder.getRandomStage(cellsPrefab, transform);
         // _cellsDimension = new Vector3(0.5f, 0.5f, 0.5f);
         
-        // RandomStage();
-        if ((_automaton == null && _stage == null) || (_automaton != null && _stage != null)  //To be generated only if it was not generated before or if it was already in a simulation
+        // In case we want to generate a trace from a loaded stage
+        if (!savingStage)
+            LoadStage(_cellsDimension);
+        else if ((_automaton == null && _stage == null) || (_automaton != null && _stage != null)  //To be generated only if it was not generated before or if it was already in a simulation
             || _stage.CellsDimension != _cellsDimension) //or in case the cell size has been modified after generating the scenario
             SimulationEvents.OnGenerateRandomStage?.Invoke();
-
+        
         InitializeAutomaton();
 
         Func<PedestrianParameters> pedestrianParametersSupplier = () =>
@@ -181,19 +189,22 @@ public class InitializateStage : MonoBehaviour
         // el escenario también se ha precargado y coinciden el escenario cargado y el que se quiere simular
         // (ponerle un id de escenario tanto al json del escenario como al del snapshot???) simular la traza.
         JsonSnapshotsList traceJson = SaveJsonManager.LoadTraceJson(PathsForJson.LoadTraceJson);
-        JsonStage stageJson = SaveJsonManager.LoadStageJson(PathsForJson.LoadStageJson);
-
         Vector3 cellsDimension = new Vector3(traceJson.cellDimension, traceJson.cellDimension, traceJson.cellDimension);
-        DomainEntryJson domain = stageJson.domains.Find(domain => domain.id == 1);
-        
-        _stage = new StageFromJson(cellsPrefab, transform, cellsDimension, stageJson, domain);
-        // _stage = new RandomStage(cellsPrefab, transform, _cellsDimension);
-
-        _stage.InstantiateStage();
+        LoadStage(cellsDimension);
         InitializeAutomaton();
         
         StartCoroutine(nameof(LoadingSimulationCoroutine), traceJson);
         
+    }
+
+    private void LoadStage(Vector3 cellsDimension)
+    {
+        JsonStage stageJson = SaveJsonManager.LoadStageJson(PathsForJson.LoadStageJson);
+        
+        DomainEntryJson domain = stageJson.domains.Find(domain => domain.id == 1);
+        _stage = new StageFromJson(cellsPrefab, transform, cellsDimension, stageJson, domain);
+
+        _stage.InstantiateStage();
     }
 
     private void InitializeAutomaton()
@@ -287,14 +298,19 @@ public class InitializateStage : MonoBehaviour
 
     #region Callbacks
     
-    private void StartSimulation(bool savingTrace)
+    private void StartSimulation(bool savingTrace, bool savingStage)
     {
+        // In the case of wanting to simulate a trace of a specific scenario in another scenario, it does nothing.
+        if (!savingTrace && savingStage)
+            return;
+        
         DestroySimulation();
         
+        // if (!savingTrace && !savingStage)
         if (!savingTrace)
             LoadSimulation();
         else
-            StartAndSaveSimulation();
+            StartAndSaveSimulation(savingStage);
     }
 
     private void InitializeParameters(float cellsDimensions, int pedestrianNumber, float pedestriansVelocity, float multiplierSpeed)

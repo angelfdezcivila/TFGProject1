@@ -47,7 +47,7 @@ namespace UI
         #region Properties
 
         private float CellsDimensions => float.Parse(_cellDimensionInputField.text);
-        private int PedestrianNumber => int.Parse(_pedestrianNumber.text);
+        private int PedestriansNumber => int.Parse(_pedestrianNumber.text);
         private float PedestriansVelocity => float.Parse(_pedestrianVelocityInputField.text);
         private float MultiplierSpeed => _multiplierSpeedSlider.value;
 
@@ -105,15 +105,15 @@ namespace UI
             // if(_pedestrianVelocityInputField.contentType == TMP_InputField.ContentType.DecimalNumber)
             if (parametersValid)
             {
-                SimulationEvents.OnInitializeStageParameters?.Invoke(CellsDimensions, PedestrianNumber, PedestriansVelocity, MultiplierSpeed);
-                SimulationEvents.OnPlaySimulation?.Invoke(_traceSaveOrLoadToggle.isOn);
+                SimulationEvents.OnInitializeStageParameters?.Invoke(CellsDimensions, PedestriansNumber, PedestriansVelocity, MultiplierSpeed);
+                SimulationEvents.OnPlaySimulation?.Invoke(_traceSaveOrLoadToggle.isOn, _stageSaveOrLoadToggle.isOn);
                 _randomStageButton.interactable = false;
             }
         }
         
         private void GenerateRandomStage()
         {
-            SimulationEvents.OnInitializeStageParameters?.Invoke(CellsDimensions, PedestrianNumber, PedestriansVelocity, MultiplierSpeed);
+            SimulationEvents.OnInitializeStageParameters?.Invoke(CellsDimensions, PedestriansNumber, PedestriansVelocity, MultiplierSpeed);
             SimulationEvents.OnGenerateRandomStage?.Invoke();
         }
 
