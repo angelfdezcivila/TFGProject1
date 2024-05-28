@@ -132,17 +132,16 @@ public class InitializateStage : MonoBehaviour
 
     #region Private Methods
 
-    private void DestroySimulation()
+    private void DestroySimulation(bool savingStage)
     {
         if (_automaton != null && _stage != null)  //Gets destroyed only if it was already in a simulation.
-        // if (_stage != null)  //Gets destroyed only if it was already in a simulation.
         {
             StopAllCoroutines();
             _stage.DestroyStage();
             _automaton.DestroyAllAutomatons();
             Debug.Log("Simulación destruida");
         }
-        else if(_stage != null)
+        else if(_stage != null && !savingStage) // In case a random stage has been generated before starting a simulation
         {
             StopAllCoroutines();
             _stage.DestroyStage();
@@ -304,7 +303,7 @@ public class InitializateStage : MonoBehaviour
         if (!savingTrace && savingStage)
             return;
         
-        DestroySimulation();
+        DestroySimulation(savingStage);
         
         // if (!savingTrace && !savingStage)
         if (!savingTrace)
