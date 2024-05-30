@@ -1,23 +1,24 @@
 using System.Collections.Generic;
-using Cellular;
 
-public interface Neighbourhood {
-    /**
-     * Returns neighbourhood of a cell.
-     *
-     * @param row    vertical coordinate of cell.
-     * @param column horizontal  coordinate of cell.
-     * @return locations of all cells in neighborhood of cell.
-     */
-    List<Location> Neighbours(int row, int column);
-
-    /**
-     * Returns neighbourhood of a cell.
-     *
-     * @param location location of cell.
-     * @return locations of all cells in neighborhood of cell.
-     */
-    List<Location> Neighbours(Location location) {
-        return Neighbours(location.Row, location.Column);
+namespace Cellular.Neighbourhood
+{
+    public interface INeighbourhood {
+        
+        /// <summary>
+        /// Returns neighbourhood of a cell.
+        /// </summary>
+        /// <param name="row">vertical coordinate of cell.</param>
+        /// <param name="column">horizontal coordinate of cell.</param>
+        /// <returns>Locations of all cells in neighborhood of cell.</returns>
+        List<Location> Neighbours(int row, int column);
+        
+        /// <summary>
+        /// Returns neighbourhood of a cell.
+        /// </summary>
+        /// <param name="location">Location of cell.</param>
+        /// <returns>locations of all cells in neighborhood of cell.</returns>
+        List<Location> Neighbours(Location location) {
+            return Neighbours(location.Row, location.Column);
+        }
     }
 }

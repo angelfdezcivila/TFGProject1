@@ -6,8 +6,9 @@ using JsonDataManager.Trace;
 using Newtonsoft.Json;
 using UnityEngine;
 
-namespace DataJson
+namespace JsonDataManager
 {
+    // TODO: tener en cuenta este comentario para la memoria
     // Parece ser que el problema para redondear las coordenadas se debe a que el Jsonutility no se lleva bien con los valores decimales,
     // por lo que a la hora de pasar el float al json, le añade un montón de decimales.
     // Para arreglar esto, mirar UnityNewtonsoftJsonSerializer ,Newtonsoft y SimpleJson 
@@ -51,7 +52,7 @@ namespace DataJson
     
         public static JsonStage LoadStageJson(string path)
         {
-            // JsonStage jsonStage = null; //Da igual que sea null, se va a llamar igualmente a este constructor
+            // JsonStage jsonStage = null; // It doesn't matter if it is null, this constructor will still be called
             JsonStage jsonStage = new JsonStage();
             jsonStage = LoadJson(path, jsonStage);
             foreach (DomainEntryJson domain in jsonStage.domains)
@@ -73,7 +74,7 @@ namespace DataJson
 
         #endregion
 
-        private static ShapeType UpdateShapeType(string _type, ShapeJson shape)
+        private static ShapeType UpdateShapeType(string type, ShapeJson shape)
         {
             ShapeType shapeType = new RectangleJson();
             CoordinatesStageJson bottomLeft = shape.bottomLeft;
@@ -83,14 +84,14 @@ namespace DataJson
             CoordinatesStageJson center = shape.center;
             float radius = shape.radius;
 
-            switch (_type.ToUpper())
+            switch (type.ToUpper())
             {
                 case "RECTANGLE" : 
                     shapeType = new RectangleJson(bottomLeft, width, height);
                     break;
-                case "CIRCLE" :
-                    shapeType = new CircleJson(center, radius);
-                    break;
+                // case "CIRCLE" :
+                //     shapeType = new CircleJson(center, radius);
+                //     break;
             }
 
             return shapeType;
@@ -99,16 +100,15 @@ namespace DataJson
         private static void SaveJson<T>(string path, T jsonObject)
         {
             // string json = JsonUtility.ToJson(jsonObject);
-            string json = JsonConvert.SerializeObject(jsonObject, Formatting.Indented, new JsonSerializerSettings()  // Clase de la librería Newtonsoft
+            string json = JsonConvert.SerializeObject(jsonObject, Formatting.Indented, new JsonSerializerSettings()  // Class of the library Newtonsoft
             { 
                 ReferenceLoopHandling = ReferenceLoopHandling.Ignore
             });
-            // string json = JsonConvert.SerializeObject(jsonObject);
+            // string json = JsonConvert.SerializeObject(jsonObject); // Class of the library Newtonsoft
 
             using (StreamWriter streamWriter = new StreamWriter(path))
             {
                 streamWriter.Write(json);
-                // Debug.Log($"Trace written to file TraceJson.json successfully.");
                 string[] words = path.Split(' ');
                 Debug.Log($"Trace written to file {words[words.Length-1]} successfully.");
             }

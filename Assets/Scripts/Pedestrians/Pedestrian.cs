@@ -112,21 +112,21 @@ namespace Pedestrians
         /// desirability the higher the willingness to move to such location). We do not use the term probability because
         /// sum of all desirabilities do not have to be 1.
         /// </summary>
-        /// <param name="location">Where we should move.</param>
-        /// <param name="desirability">Willing to move to such location.</param>
-        private record TentativeMovement(Location location, double desirability) : IComparable<TentativeMovement>
+        /// <param name="Location">Where we should move.</param>
+        /// <param name="Desirability">Willing to move to such location.</param>
+        private record TentativeMovement(Location Location, double Desirability) : IComparable<TentativeMovement>
         {
             public int CompareTo(TentativeMovement other)
             {
-                return this.desirability.CompareTo(other.desirability);
+                return this.Desirability.CompareTo(other.Desirability);
             }
 
-            public Location location { get; } = location;
-            public double desirability { get; } = desirability;
+            public Location Location { get; } = Location;
+            public double Desirability { get; } = Desirability;
 
             public override string ToString()
             {
-                return location.ToString() + ", desirability: " + desirability;
+                return Location.ToString() + ", desirability: " + Desirability;
             }
         }
         
@@ -190,19 +190,16 @@ namespace Pedestrians
         /// <returns>The Location of the next movement. Null if it can't move or if Bernoulli based in pedestrians speed returns false.</returns>
         public Location ChooseMovement()
         {
-            if (Statistics.Bernoulli(_parameters.velocityPercent))
+            if (Statistics.Statistics.Bernoulli(_parameters.VelocityPercent))
             {
                 // try to move at this step to respect pedestrian speed
                 List<TentativeMovement> movements = ComputeTransitionDesirabilities();
-                // Debug.Log("id: " + _identifier + ", Position: " + _row + ", " + _column);
-                // movements.ForEach(movement => Debug.Log(movement));
 
-                // if (movements.Count <= 0)
                 if (movements.Count > 0)
                 {
                     // choose one movement according to discrete distribution of desirabilities
-                    TentativeMovement chosen = Statistics.Discrete(movements, m => m.desirability);
-                    return chosen.location;
+                    TentativeMovement chosen = Statistics.Statistics.Discrete(movements, m => m.Desirability);
+                    return chosen.Location;
                     // return chosen.location != null ? chosen.location : null;
                 }
             }
@@ -254,9 +251,8 @@ namespace Pedestrians
                         }
                     }
 
-                    double attraction = _parameters.fieldAttractionBias * scenario.StaticFloorField.getField(neighbour);
-                    // float attraction = parameters.fieldAttractionBias;
-                    double repulsion = _parameters.crowdRepulsion / (1 + numberOfReachableCellsAround);
+                    double attraction = _parameters.FieldAttractionBias * scenario.StaticFloorField.GetField(neighbour);
+                    double repulsion = _parameters.CrowdRepulsion / (1 + numberOfReachableCellsAround);
                     double desirability = Math.Exp(attraction - repulsion);
                     movements.Add(new TentativeMovement(neighbour, desirability));
                     if (desirability < minDesirability)
@@ -265,8 +261,8 @@ namespace Pedestrians
             }
             var gradientMovements = new List<TentativeMovement>(neighbours.Count);
             foreach (TentativeMovement m in movements)
-                gradientMovements.Add(new TentativeMovement(m.location,
-                    DESIRABILITY_EPSILON + m.desirability - minDesirability));
+                gradientMovements.Add(new TentativeMovement(m.Location,
+                    DESIRABILITY_EPSILON + m.Desirability - minDesirability));
 
             return gradientMovements;
         }
@@ -280,7 +276,6 @@ namespace Pedestrians
         /// </summary>
         public override int GetHashCode()
         {
-            // return Integer.hashCode(identifier);
             return HashCode.Combine(_identifier);
         }
         
@@ -308,7 +303,6 @@ namespace Pedestrians
         {
             return "Pedestrian" + "(" + Location.ToString() + ", id: " + _identifier + ")";
             // return "Pedestrian" + "(" + Location().ToString() + ", " + _identifier + ")";
-
         }
         
         #endregion

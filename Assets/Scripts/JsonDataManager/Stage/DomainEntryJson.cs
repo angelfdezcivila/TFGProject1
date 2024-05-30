@@ -1,11 +1,10 @@
 using System;
 using System.Collections.Generic;
-using UnityEngine.Serialization;
 
 namespace JsonDataManager.Stage
 {
+    // Representation of a domain (a stage) of an enviroment
     [Serializable]
-    //Representación de los obstáculos de un dominio de un entorno
     public class DomainEntryJson
     {
         public int id;

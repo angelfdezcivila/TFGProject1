@@ -1,8 +1,9 @@
 using System;
 using System.Collections;
 using Cellular;
-using DataJson;
+using Cellular.Neighbourhood;
 using Events;
+using JsonDataManager;
 using JsonDataManager.Stage;
 using JsonDataManager.Trace;
 using Pedestrians;
@@ -28,10 +29,9 @@ public class InitializateStage : MonoBehaviour
 
     private bool _showModal = false;
     
-    // private StageWithBuilder.StageWithBuilder _stageBuilder;
     private Stage _stage;
     private CellularAutomaton _automaton;
-    private Statistics _statistics;
+    private Statistics.Statistics _statistics;
 
     #endregion
 
@@ -45,12 +45,12 @@ public class InitializateStage : MonoBehaviour
         {
             if (_statistics == null)
                 return "Statistics not computed yet.";
-            string text = $"Mean steps: {_statistics.meanSteps} \n" +
-                          $"Mean evacuation time: {_statistics.meanEvacuationTime} \n" +
-                          $"Median steps: {_statistics.medianSteps} \n" +
-                          $"Median evacuation time: {_statistics.medianEvacuationTime} \n" +
-                          $"Number of evacuees: {_statistics.numberOfEvacuees} \n" +
-                          $"Number of non evacuees: {_statistics.numberOfNonEvacuees}";
+            string text = $"Mean steps: {_statistics.MeanSteps} \n" +
+                          $"Mean evacuation time: {_statistics.MeanEvacuationTime} \n" +
+                          $"Median steps: {_statistics.MedianSteps} \n" +
+                          $"Median evacuation time: {_statistics.MedianEvacuationTime} \n" +
+                          $"Number of evacuees: {_statistics.NumberOfEvacuees} \n" +
+                          $"Number of non evacuees: {_statistics.NumberOfNonEvacuees}";
             return text;
         }
     }
@@ -62,7 +62,6 @@ public class InitializateStage : MonoBehaviour
     void Start()
     {
         _timeLimit = 10 * 60;
-        // _cellsDimension = new Vector3(0.4f, 0.4f, 0.4f);
         _cellsDimension = new Vector3(0.5f, 0.5f, 0.5f);
         _pedestrianNumber = 1;
         _pedestriansVelocity = 1.3f;
@@ -134,7 +133,7 @@ public class InitializateStage : MonoBehaviour
 
     private void DestroySimulation(bool savingStage)
     {
-        if (_automaton != null && _stage != null)  //Gets destroyed only if it was already in a simulation.
+        if (_automaton != null && _stage != null) // Gets destroyed only if it was already in a simulation.
         {
             StopAllCoroutines();
             _stage.DestroyStage();
@@ -217,7 +216,7 @@ public class InitializateStage : MonoBehaviour
             new CellularAutomatonParameters.Builder()
                 .Scenario(_stage) // use this scenario
                 .TimeLimit(_timeLimit) // 10 minutes is time limit for simulation by default
-                .Neighbourhood(MooreNeighbourhood.of) // use Moore's Neighbourhood for automaton
+                .Neighbourhood(MooreNeighbourhood.Of) // use Moore's Neighbourhood for automaton
                 .PedestrianReferenceVelocity(_pedestriansVelocity) // fastest pedestrians walk at 1.3 m/s by default
                 .MultiplierSpeedFactor(_multiplierSpeed) // perform animation x8 times faster than real time by default
                 .Build();

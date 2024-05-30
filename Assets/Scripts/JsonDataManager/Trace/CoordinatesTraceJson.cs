@@ -2,7 +2,7 @@ using System;
 
 namespace JsonDataManager.Trace
 {
-    // Representación de las coordenadas de un agente en el json
+    // Representation of a pedestrian's coordinates in json
     [Serializable]
     public class CoordinatesTraceJson
     {
@@ -23,11 +23,11 @@ namespace JsonDataManager.Trace
             // Round();
         }
 
-        private void Round()
-        {
-            X = (float)Math.Round(X, 2);
-            Y = (float)Math.Round(Y, 2);
-        }
+        // private void Round()
+        // {
+        //     X = (float)Math.Round(X, 2);
+        //     Y = (float)Math.Round(Y, 2);
+        // }
 
         public override string ToString()
         {

@@ -1,25 +1,22 @@
 using System;
 using JsonDataManager.Stage.ShapeType;
-using JsonDataManager.Trace;
 using Newtonsoft.Json;
 using UnityEngine;
 
 namespace JsonDataManager.Stage
 {
+    // Representation of shape of an access or an obstacle in json
     [Serializable]
-    // Representación de la localización de un agente en el json
     public class ShapeJson
     {
 
-        private ShapeType.ShapeType shapeType;
-
-        // Lo hago con un método y no una propiedad ya que el json sí detecta las propiedades a la hora de guardar
-        // public ShapeType.ShapeType GetShapeType() => shapeType;
+        private ShapeType.ShapeType _shapeType;
+        
         [JsonIgnore]
         public ShapeType.ShapeType ShapeType
         {
-            get => shapeType;
-            set => shapeType = value;
+            get => _shapeType;
+            set => _shapeType = value;
         }
 
         public string type;
@@ -52,7 +49,7 @@ namespace JsonDataManager.Stage
             // height = rectangleJson.height;
 
             RectangleJson rectangle = new RectangleJson();
-            shapeType = rectangle;
+            _shapeType = rectangle;
 
             width = rectangle.Width;
             height = rectangle.Height;
@@ -61,7 +58,7 @@ namespace JsonDataManager.Stage
             type = rectangle.NameRepresentation;
         }
 
-        // Al cargar el json, solo se usa el constructor sin argumentos
+        // When loading the json, only the constructor with no arguments is used.
         public ShapeJson(ShapeType.ShapeType shapeType)
         // public ShapeJson(ShapeType.ShapeType shapeType, CoordinatesStageJson bottomLeft)
         // public ShapeJson(ShapeTypeEnum shapeType, CoordinatesStageJson bottomLeft)
@@ -82,7 +79,7 @@ namespace JsonDataManager.Stage
                 radius = circle.Radius;
             }
             
-            this.shapeType = shapeType;
+            this._shapeType = shapeType;
             type = shapeType.NameRepresentation;
         }
 

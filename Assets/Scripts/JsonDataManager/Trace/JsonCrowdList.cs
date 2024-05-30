@@ -3,18 +3,16 @@ using System.Collections.Generic;
 
 namespace JsonDataManager.Trace
 {
+    // Representation of a tick of time in json
     [Serializable]
-    //Representación de un tick de tiempo en el json
     public class JsonCrowdList
     {
-        // public List<SnapshotsEntryJson> battleActionList;
         public List<CrowdEntryJson> crowd;
         public float timestamp;
     
         public JsonCrowdList()
         {
             crowd = new List<CrowdEntryJson>();
-            // crowd.Add(new CrowdEntryJson());
         }
 
         public JsonCrowdList(List<CrowdEntryJson> crowdList, float timestamp)

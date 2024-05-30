@@ -7,7 +7,7 @@ namespace JsonDataManager.Stage.ShapeType
     {
         public string NameRepresentation { get; private set; }
 
-        public ShapeType(string nameRepresentation)
+        protected ShapeType(string nameRepresentation)
         {
             this.NameRepresentation = nameRepresentation;
         }

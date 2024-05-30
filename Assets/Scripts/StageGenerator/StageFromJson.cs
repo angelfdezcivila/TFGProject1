@@ -1,14 +1,12 @@
-using System.Collections.Generic;
 using JsonDataManager.Stage;
 using JsonDataManager.Stage.ShapeType;
 using UnityEngine;
-using Random = UnityEngine.Random;
 
 namespace StageGenerator
 {
     public sealed class StageFromJson : Stage
     {
-        private JsonStage _jsonStage;   // Se almacena para el momento que haya más de un dominio disponible
+        // private JsonStage _jsonStage;   // It is stored for the moment when more than one domain is available.
         private DomainEntryJson _domain;
 
         #region Constructors
@@ -16,7 +14,6 @@ namespace StageGenerator
         public StageFromJson(GameObject cellPrefab, Transform transformParent, Vector3 cellsDimension, JsonStage stageJson)
             : base(cellPrefab, transformParent, cellsDimension)
         {
-            _jsonStage = stageJson;
             DomainEntryJson domain = stageJson.domains.Find(domain => domain.id == 1);
             _domain = domain;
             
@@ -27,7 +24,7 @@ namespace StageGenerator
         public StageFromJson(GameObject cellPrefab, Transform transformParent, Vector3 cellsDimension, JsonStage stageJson, int domainId)
             : base(cellPrefab, transformParent, cellsDimension)
         {
-            _jsonStage = stageJson;
+            // _jsonStage = stageJson;
             DomainEntryJson domain = stageJson.domains.Find(domain => domain.id == domainId);
             _domain = domain;
             
@@ -38,7 +35,7 @@ namespace StageGenerator
         public StageFromJson(GameObject cellPrefab, Transform transformParent, Vector3 cellsDimension, JsonStage stageJson, DomainEntryJson domain)
             : base(cellPrefab, transformParent, cellsDimension, domain.height, domain.width)
         {
-            _jsonStage = stageJson;
+            // _jsonStage = stageJson;
             _domain = domain;
         }
         
@@ -51,7 +48,7 @@ namespace StageGenerator
             return _domain.obstacles.Count;
         }
 
-        protected override void CalculateExit()
+        protected override void CalculateExits()
         {
             // Debug.Log("Accesses: " + _domain.accesses.Count);
             foreach (AccessEntryJson access in _domain.accesses)

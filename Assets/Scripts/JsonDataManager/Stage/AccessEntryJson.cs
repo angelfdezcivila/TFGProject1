@@ -3,8 +3,8 @@ using JsonDataManager.Trace;
 
 namespace JsonDataManager.Stage
 {
+    // Representation of an access in json
     [Serializable]
-    // Representación de un obstáculo en el json
     public class AccessEntryJson
     {
         public int id;

@@ -2,8 +2,8 @@ using System;
 
 namespace JsonDataManager.Trace
 {
+    // Representation of a pedestrian in json
     [Serializable]
-    // Representación de un agente en el json
     public class CrowdEntryJson
     {
         public LocationJson location;

@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Cellular.Neighbourhood;
 using JsonDataManager.Stage;
 using JsonDataManager.Trace;
 using Pedestrians;
@@ -25,7 +26,7 @@ namespace Cellular
     /// <summary>
     /// Neighbourhood relationship used by this automaton.
     /// </summary>
-    private readonly Neighbourhood _neighbourhood;
+    private readonly INeighbourhood _neighbourhood;
     /// <summary>
     /// {@code true} if cell is occupied by a pedestrian in current discrete state.
     /// </summary>
@@ -391,7 +392,7 @@ namespace Cellular
     
     public void InitializeStaticFloor()
     {
-      _stage.StaticFloorField.initialize();
+      _stage.StaticFloorField.Initialize();
       _timeSteps = 0;
     }
   
@@ -576,11 +577,6 @@ namespace Cellular
         Pedestrians.Pedestrian evacuee = _outOfScenarioPedestrians[i];
         times[i] = evacuee.ExitTimeSteps * _parameters.TimePerTick;
       }
-      // int i = 0;
-      // foreach (Pedestrian.Pedestrian evacuee in outOfScenarioPedestrians) {
-      //   times[i] = evacuee.getExitTimeSteps() * parameters.TimePerTick;
-      //   i += 1;
-      // }
 
       return times;
     }
@@ -613,7 +609,7 @@ namespace Cellular
     /// Computes some statistics regarding the execution of the simulation.
     /// </summary>
     /// <returns>Statistics collected after running simulation.</returns>
-    public Statistics ComputeStatistics() {
+    public Statistics.Statistics ComputeStatistics() {
       int numberOfEvacuees = NumberOfEvacuees;
       float[] evacuationTimes = EvacuationTimes();
       int[] steps = new int[numberOfEvacuees];
@@ -623,13 +619,13 @@ namespace Cellular
         steps[i] = pedestrian.NumberOfSteps;
         i += 1;
       }
-      float meanSteps = Statistics.Mean(steps);
-      float meanEvacuationTime = Statistics.Mean(evacuationTimes);
-      float medianSteps = Statistics.Median(steps);
-      float medianEvacuationTime = Statistics.Median(evacuationTimes);
+      float meanSteps = Statistics.Statistics.Mean(steps);
+      float meanEvacuationTime = Statistics.Statistics.Mean(evacuationTimes);
+      float medianSteps = Statistics.Statistics.Median(steps);
+      float medianEvacuationTime = Statistics.Statistics.Median(evacuationTimes);
       int numberOfNonEvacuees = NumberOfNonEvacuees;
 
-      return new Statistics(meanSteps, meanEvacuationTime
+      return new Statistics.Statistics(meanSteps, meanEvacuationTime
         , medianSteps, medianEvacuationTime
         , numberOfEvacuees, numberOfNonEvacuees);
     }
@@ -648,7 +644,6 @@ namespace Cellular
     
     private CoordinatesTraceJson GetCoordinatesToPosition(float row, float column)
     {
-      // CoordinatesJson coordinates = new CoordinatesJson(row, column);
       CoordinatesTraceJson coordinates = new CoordinatesTraceJson(column, row);
       
       return coordinates;

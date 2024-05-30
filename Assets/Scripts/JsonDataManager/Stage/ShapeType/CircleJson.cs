@@ -1,5 +1,4 @@
 using System;
-using JsonDataManager.Trace;
 
 namespace JsonDataManager.Stage.ShapeType
 {

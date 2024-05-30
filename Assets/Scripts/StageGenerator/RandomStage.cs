@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using JsonDataManager.Stage;
 using JsonDataManager.Stage.ShapeType;
-using JsonDataManager.Trace;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
@@ -43,12 +42,11 @@ namespace StageGenerator
             while (numberOfBlocksPlaced < _numberOfBlocks && maxTries > 0) {
                 // Debug.Log("Number of blocks = " + _numberOfBlocks + " : " + numberOfBlocksPlaced + " : " + maxTries);
             
-                int width = Statistics.Bernoulli(0.5f) ? 1 + Random.Range(0, 2) : 1 + Random.Range(0, 20);
-                // int width = bernoulli(0.5f) ? 1 + Random.Range(0, 2) : 1 + Random.Range(0, 20);
+                int width = Statistics.Statistics.Bernoulli(0.5f) ? 1 + Random.Range(0, 2) : 1 + Random.Range(0, 20);
                 int height = 1 + Random.Range(0, Mathf.Max(1, _rows / (int)(2 * width)));
     
                 int row = Random.Range(0, 1 + _rows - height);
-                // int row = Random.Range(-_rows/2, _rows/2 - height); // Solo funciona para las filas impares
+                // int row = Random.Range(-_rows/2, _rows/2 - height); // Only works for odd rows
                 int column = Random.Range(2, 1 + _columns - width - 2);   
             
                 bool shouldBePlaced = ObstacleCanBePlaced(row, column, width, height);
@@ -60,9 +58,9 @@ namespace StageGenerator
             }
         }
 
-        protected override void CalculateExit()
+        protected override void CalculateExits()
         {
-            if (Statistics.Bernoulli(0.9f))
+            if (Statistics.Statistics.Bernoulli(0.9f))
             {
                 int row = 2;
                 int column = _columns-1;
@@ -74,7 +72,7 @@ namespace StageGenerator
 
                 // scenario.setExit(new Rectangle(2, columns - 1, 5, 1));
             }
-            if (Statistics.Bernoulli(0.9f)) {
+            if (Statistics.Statistics.Bernoulli(0.9f)) {
                 int row = _rows - 7;
                 int column = _columns-1;
                 AddAccessCornerBottomLeft(row, column, 1, 5);
@@ -83,7 +81,7 @@ namespace StageGenerator
                     SetExit(i, column);
                 }
             }
-            if (Statistics.Bernoulli(0.9f)) {
+            if (Statistics.Statistics.Bernoulli(0.9f)) {
                 int row = 10;
                 int column = 0;
                 AddAccessCornerBottomLeft(row, column, 1, 5);
@@ -92,7 +90,7 @@ namespace StageGenerator
                     SetExit(i, column);
                 }
             }
-            if (Statistics.Bernoulli(0.9f)) {
+            if (Statistics.Statistics.Bernoulli(0.9f)) {
                 int row = _rows - 15;
                 int column = 0;
                 AddAccessCornerBottomLeft(row, column, 1, 5);
@@ -101,7 +99,7 @@ namespace StageGenerator
                     SetExit(i, column);
                 }
             }
-            if (Statistics.Bernoulli(0.5f)) {
+            if (Statistics.Statistics.Bernoulli(0.5f)) {
                 // In case the number of rows and/or columns is odd,
                 // the central access will be shifted one cell to the right and/or upwards respectively
                 // Another solution would be to make the acces 1x1 or 3x3.

@@ -1,10 +1,9 @@
 using System;
-using Cellular;
 using StageGenerator;
 
-namespace FloorFields
+namespace Cellular.FloorFields
 {
-    public abstract class StaticFloorField : FloorField {
+    public abstract class StaticFloorField : IFloorField {
         protected readonly double[,] staticFloorField;
         protected readonly Stage scenario;
 
@@ -13,26 +12,26 @@ namespace FloorFields
             this.scenario = scenario;
         }
 
-        public abstract void initialize();
+        public abstract void Initialize();
 
-        public int getRows() {
+        public int GetRows() {
             return scenario.Rows;
         }
 
-        public int getColumns() {
+        public int GetColumns() {
             return scenario.Columns;
         }
 
-        public double getField(int row, int column) {
-            if (row < 0 || row >= getRows())
-                throw new ArgumentException("getField: invalid row");
-            if (column < 0 || column >= getColumns())
-                throw new ArgumentException("getField: invalid column");
+        public double GetField(int row, int column) {
+            if (row < 0 || row >= GetRows())
+                throw new ArgumentException("GetField: invalid row");
+            if (column < 0 || column >= GetColumns())
+                throw new ArgumentException("GetField: invalid column");
             return staticFloorField[row,column];
         }
 
-        public double getField(Location location) {
-            return getField(location.Row, location.Column);
+        public double GetField(Location location) {
+            return GetField(location.Row, location.Column);
         }
     }
 }

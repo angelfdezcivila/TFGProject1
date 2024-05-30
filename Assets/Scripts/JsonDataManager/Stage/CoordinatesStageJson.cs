@@ -1,9 +1,8 @@
 using System;
-using UnityEngine.Serialization;
 
-namespace JsonDataManager.Trace
+namespace JsonDataManager.Stage
 {
-    // Representación de las coordenadas de un agente en el json
+    // Representation of coordinates of an access or an obstacle in json
     [Serializable]
     public class CoordinatesStageJson
     {

@@ -1,18 +1,19 @@
 using System;
+using Cellular.Neighbourhood;
 using StageGenerator;
 
 namespace Cellular
 {
   public record CellularAutomatonParameters(
     Stage Scenario
-    , Neighbourhood Neighbourhood
+    , INeighbourhood Neighbourhood
     , float TimeLimit
     , float TimePerTick
     , float MultiplierSpeedFactor
   ) {
   
     public Stage Scenario { get; private set; } = Scenario;
-    public Neighbourhood Neighbourhood { get; private set; } = Neighbourhood;
+    public INeighbourhood Neighbourhood { get; private set; } = Neighbourhood;
     public float TimeLimit { get; private set; } = TimeLimit;
     public float TimePerTick { get; private set; } = TimePerTick;
     public float MultiplierSpeedFactor { get; set; } = MultiplierSpeedFactor;
@@ -34,7 +35,7 @@ namespace Cellular
       }
     
       public class BuilderWithScenario {
-        public Stage _stage;
+        internal Stage _stage;
         public BuilderWithScenario() {
         }
 
@@ -53,13 +54,13 @@ namespace Cellular
       public class BuilderWithScenarioWithTimeLimit {
         private Stage _stage;
         public float _timeLimit;
-        private Neighbourhood _neighbourhood;
+        private INeighbourhood _neighbourhood;
         private float _timePerTick;
         private float _multiplierSpeedFactor;
 
         public BuilderWithScenarioWithTimeLimit(BuilderWithScenario builder) {
           this._stage = builder._stage;
-          this._neighbourhood = VonNeumannNeighbourhood.of(_stage); // default neighbourhood
+          this._neighbourhood = VonNeumannNeighbourhood.Of(_stage); // default neighbourhood
           this._timePerTick = 0.4f; // default is 0.4 secs per tick
           this._multiplierSpeedFactor = 20; // default GUI time is x20 faster
         }
@@ -69,7 +70,7 @@ namespace Cellular
         /// </summary>
         /// <param name="buildNeighbourhood">A function taking current scenario and returning neighbourhood relationship used by automaton.</param>
         /// <returns></returns>
-        public BuilderWithScenarioWithTimeLimit Neighbourhood(Func<Stage, Neighbourhood> buildNeighbourhood)
+        public BuilderWithScenarioWithTimeLimit Neighbourhood(Func<Stage, INeighbourhood> buildNeighbourhood)
         {
           this._neighbourhood = buildNeighbourhood.Invoke(_stage);
           return this;

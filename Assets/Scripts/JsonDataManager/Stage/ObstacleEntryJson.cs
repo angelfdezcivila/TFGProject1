@@ -4,15 +4,15 @@ using Newtonsoft.Json;
 
 namespace JsonDataManager.Stage
 {
+    // Representation of an obstacle in json
     [Serializable]
-    // Representación de un obstáculo en el json
     public class ObstacleEntryJson
     {
         public ShapeJson shape;
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
-        public string name;         // Opcional
+        public string name;         // Optional
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
-        public string description;  // Opcional
+        public string description;  // Optional
 
         public ObstacleEntryJson()
         {

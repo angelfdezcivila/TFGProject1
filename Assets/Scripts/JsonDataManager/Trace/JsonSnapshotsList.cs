@@ -3,8 +3,8 @@ using System.Collections.Generic;
 
 namespace JsonDataManager.Trace
 {
+    // Representation of the trace in json
     [Serializable]
-    //Representación de la traza entera en el json
     public class JsonSnapshotsList
     {
         public List<JsonCrowdList> snapshots;
@@ -14,7 +14,6 @@ namespace JsonDataManager.Trace
         {
             snapshots = new List<JsonCrowdList>();
             this.cellDimension = 1;
-            // snapshots.Add(new JsonCrowdList());
         }
 
         public JsonSnapshotsList(List<JsonCrowdList> snapshotsList, float cellDimension)

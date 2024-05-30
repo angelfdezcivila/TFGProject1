@@ -7,7 +7,7 @@ namespace StageGenerator
     [Serializable]
     public class Cell : MonoBehaviour
     {
-        // Datos del nodo
+        // Node data
         [SerializeField] private GameObject floorPrefab;
         [SerializeField] private GameObject obstaclePrefab;
         [SerializeField] private GameObject exitPrefab;
@@ -58,14 +58,14 @@ namespace StageGenerator
         }
     
         public float DistanceTo(int row, int column) {
-            return Mathf.Sqrt(distanceSqr(row, column));
+            return Mathf.Sqrt(DistanceSqr(row, column));
         }
         
         public float DistanceTo(Location location) {
             return DistanceTo(location.Row, location.Column);
         }
         
-        public int distanceSqr(int row, int column) {
+        public int DistanceSqr(int row, int column) {
             var dh = Mathf.Max(_columnIndex - column, Mathf.Max(0, column - _columnIndex));
             var dv = Mathf.Max(_rowIndex - row, Mathf.Max(0, row - _rowIndex));
             return dh*dh + dv*dv;

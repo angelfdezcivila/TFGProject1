@@ -20,24 +20,26 @@ public class CameraController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetMouseButton(1))
+        if (Input.GetMouseButton(1)) // If right click is pressed
         {
             Cursor.visible = false;
             float mouseX = Input.GetAxis("Mouse X");
             float mouseY = Input.GetAxis("Mouse Y");
+
+            float axisY = Input.GetAxis("Vertical");
+            float axisX = Input.GetAxis("Horizontal");
             if (_upsideCameraActive)
             {
-                // transform.position += transform.right * mouseX * speed * Time.deltaTime;
                 _upsideCamera.transform.position += _upsideCamera.transform.forward * mouseY * _speed*2 * Time.deltaTime;
                 
-                _upsideCamera.transform.position += _upsideCamera.transform.up * Input.GetAxis("Vertical") * _speed * Time.deltaTime;
-                _upsideCamera.transform.position += _upsideCamera.transform.right * Input.GetAxis("Horizontal") * _speed * Time.deltaTime;
+                _upsideCamera.transform.position += _upsideCamera.transform.up * axisY * _speed * Time.deltaTime;
+                _upsideCamera.transform.position += _upsideCamera.transform.right * axisX * _speed * Time.deltaTime;
             }
             else
             {
                 // Move the camera forward, backward, left, and right
-                _freeCamera.transform.position += _freeCamera.transform.forward * Input.GetAxis("Vertical") * _speed * Time.deltaTime;
-                _freeCamera.transform.position += _freeCamera.transform.right * Input.GetAxis("Horizontal") * _speed * Time.deltaTime;
+                _freeCamera.transform.position += _freeCamera.transform.forward * axisY * _speed * Time.deltaTime;
+                _freeCamera.transform.position += _freeCamera.transform.right * axisX * _speed * Time.deltaTime;
 
                 // Rotate the camera based on the mouse movement
                 _freeCamera.transform.eulerAngles += new Vector3(-mouseY * _sensitivity, mouseX * _sensitivity, 0);

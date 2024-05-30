@@ -5,6 +5,7 @@ using Events;
 using StageGenerator;
 using UnityEngine;
 
+// TODO: Clase sin utilizar
 public class StageEditor : MonoBehaviour
 {
     [SerializeField] private LayerMask layersToCheck;

@@ -1,9 +1,8 @@
 using System;
 
-namespace JsonDataManager.Trace
+namespace JsonDataManager.Stage
 {
     [Serializable]
-    // Representación de un agente en el json
     public class GatewayEntryJson
     {
         public int id;

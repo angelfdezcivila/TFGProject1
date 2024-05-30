@@ -78,11 +78,11 @@ namespace UI
             switch (type)
             {
                 case TypeJsonButton.Trace : 
-                    _traceSaveOrLoadFolderButton.GetComponentInChildren<TextMeshProUGUI>().text = savingJson ? "Guardar traza en" : "Cargar traza";
+                    _traceSaveOrLoadFolderButton.GetComponentInChildren<TextMeshProUGUI>().text = savingJson ? "Save trace in" : "Load trace from";
                     path = savingJson ? PathsForJson.SaveTraceJson : PathsForJson.LoadTraceJson;
                     break;
                 case TypeJsonButton.Stage :
-                    _stageSaveOrLoadFolderButton.GetComponentInChildren<TextMeshProUGUI>().text = savingJson ? "Guardar escenario en" : "Cargar escenario";
+                    _stageSaveOrLoadFolderButton.GetComponentInChildren<TextMeshProUGUI>().text = savingJson ? "Save stage in" : "Load stage from";
                     path = savingJson ? PathsForJson.SaveStageJson : PathsForJson.LoadStageJson;
                     break;
             }
@@ -96,13 +96,12 @@ namespace UI
 
         private void OpenFileExplorer(bool toggleIsOn, TypeJsonButton type) => FileExplorerEvents.OnOpenFileExplorer?.Invoke(toggleIsOn, type);
 
-        // TODO: tener en cuenta este comentario para la memoria??
+        // TODO: tener en cuenta este comentario para la memoria
         // Con eventos. Uso esta implementación debido a que desde el principio vamos a tener rellenados los datos en la UI
         // Este método va a controlar si están rellenos y lo lanzará en caso de que estén correctos los datos introducidos.
         private void StartOnClick()
         {
             bool parametersValid = _cellDimensionInputField.text.Length > 0 && _pedestrianVelocityInputField.text.Length > 0;
-            // if(_pedestrianVelocityInputField.contentType == TMP_InputField.ContentType.DecimalNumber)
             if (parametersValid)
             {
                 SimulationEvents.OnInitializeStageParameters?.Invoke(CellsDimensions, PedestriansNumber, PedestriansVelocity, MultiplierSpeed);

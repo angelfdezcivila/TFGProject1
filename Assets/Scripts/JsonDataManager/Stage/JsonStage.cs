@@ -1,9 +1,9 @@
 using System;
 using System.Collections.Generic;
-using JsonDataManager.Trace;
 
 namespace JsonDataManager.Stage
 {
+    // Representation of the environment (with its domains)
     [Serializable]
     //Representación del entorno (con sus dominios) entero
     public class JsonStage

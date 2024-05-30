@@ -1,8 +1,6 @@
-using System;
 using Events;
 using TMPro;
 using UnityEngine;
-using UnityEngine.UI;
 
 namespace UI
 {
@@ -10,7 +8,7 @@ namespace UI
     {
         public TypeJsonButton type;
         private TextMeshProUGUI _folderTMP;
-        private string path;
+        private string _path;
 
         void OnEnable() => FileExplorerEvents.OnSelectedPathForJson += OnUpdateFolderText;
         void OnDisable() => FileExplorerEvents.OnSelectedPathForJson -= OnUpdateFolderText;
@@ -20,7 +18,7 @@ namespace UI
             _folderTMP = GetComponent<TextMeshProUGUI>();
         }
 
-        // La variable de savingJson no influye en este caso, ya que lo unico que quiero es modificar el texto de la UI en caso de que sea Trace o Stage
+        // The 'savingJson' variable has no influence in this case, since the only thing I want is to modify the UI text in case it is Trace or Stage.
         private void OnUpdateFolderText(string path, TypeJsonButton type, bool savingJson)
         {
             OnUpdateFolderText(path, type);
@@ -31,7 +29,7 @@ namespace UI
             if (this.type == type)
             {
                 _folderTMP.text = "Ruta: \n" + path;
-                this.path = path;
+                this._path = path;
             }
         }
     }

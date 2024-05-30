@@ -1,13 +1,12 @@
 using System.Collections.Generic;
-using StageGenerator;
-using UnityEditor;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
 
 // Una implementación alternativa para la creación del esenario
-namespace TestingStageWithBuilder
+namespace StageGenerator.TestingStageWithBuilder
 {
+    // TODO: Clase sin utilizar
     public class StageWithBuilder
     {
         public GameObject cellPivotPrefab;
