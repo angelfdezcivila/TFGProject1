@@ -28,7 +28,7 @@ namespace UI
         {
             if (this.type == type)
             {
-                _folderTMP.text = "Ruta: \n" + path;
+                _folderTMP.text = "Path: \n" + path;
                 this._path = path;
             }
         }
